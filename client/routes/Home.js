@@ -8,6 +8,10 @@ var AmazonComponents = require('./Home-Amazon-Components');
 var AmazonRelatedResultsDisplay = AmazonComponents.AmazonRelatedResultsDisplay;
 var AmazonIndividualResultDisplay = AmazonComponents.AmazonIndividualResultDisplay;
 
+var BestbuyComponents = require('./Home-Bestbuy-Components');
+var BestbuyRelatedResultsDisplay = BestbuyComponents.BestbuyRelatedResultsDisplay;
+var BestbuyIndividualResultDisplay = BestbuyComponents.BestbuyIndividualResultDisplay;
+
 // Centralized display for all components
 var DisplayBox = React.createClass({
   // Sets initial state properties to empty arrays to avoid undefined errors
@@ -83,23 +87,6 @@ var SearchForm = React.createClass({
 
           <center><button className="btn btn-primary">Submit</button></center>
         </form>
-      </div>
-    );
-  }
-});
-
-// Component that displays related results from Best Buy API
-var BestbuyRelatedResultsDisplay = React.createClass({
-  render: function() {
-    var resultNodes = this.props.data.bestbuy.map(function(result, index) {
-      return (
-        result
-      );
-    });
-    return (
-      <div className="related-results-display hidden">
-        <h3>Best Buy Related Results</h3>
-        {resultNodes}
       </div>
     );
   }
