@@ -65,3 +65,18 @@ button {
   text-anchor: middle;
 }
 
+.chart {
+  border: 1px solid gray;
+}
+
+.legend text {
+  fill: gray;
+  font: 16px sans-serif;
+  text-anchor: middle;
+}
+
+.storeLegend text {
+  fill: white;
+  font: 14px sans-serif;
+  text-anchor: start;
+}
