@@ -1,3 +1,21 @@
+body {
+  font: 300 16px/22px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 .logo-container {
-  margin-top: 80px;
+  color: #F6E8B1;
+  text-align: center;
+  background: #89725B;
+  padding-top: 60px;
+  padding-bottom: 25px;
+}
+
+.logo-title {
+  font-size: 65px;
+  font-weight: 100;
+}
+
+.logo-tagline {
+  font-size: 25px;
+  font-weight: 100;
 }
