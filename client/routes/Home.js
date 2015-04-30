@@ -81,3 +81,9 @@ var Home = React.createClass({
 });
 
 module.exports = Home;
+
+var data = [
+  {amazon: [{amazon1: 'amazon1'}, {amazon2: 'amazon2'}]},
+  {walmart: [{walmart1: 'walmart1'}, {walmart2: 'walmart2'}]},
+  {bestBuy: [{bestBuy1: 'bestBuy1'}, {bestBuy2: 'bestBuy2'}]}
+  ]
