@@ -28,12 +28,6 @@ app.get('*', function(req, res) {
 
 app.post('/general-query', function(req, res) {
   res.send([
-    {amazon: [{amazon1: 'amazon1'}, {amazon2: 'amazon2'}]}
-  ]);
-});
-
-app.post('/general-query', function(req, res) {
-  res.send([
     {walmart:
       [
         {"itemId":30135922 ,"parentItemId":30135922,"name":"Apple iPod touch 32GB","msrp":249,"salePrice":229,"upc":"885909827367","categoryPath":"Electronics/iPods & MP3 Players/Apple iPods"},
