@@ -2,7 +2,25 @@ React = require('react');
 
 var DisplayBox = React.createClass({
   getInitialState: function() {
-    return {data: []};
+    return {
+      amazon: {amazon: []},
+      walmart: {walmart: []},
+      bestbuy: {bestbuy: []},      
+    };
+  },
+  postRequest: function(api, query) {
+    
+    var url = 'general-query-' + api;
+
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data: query,
+      success: function(data) {
+
+      }
+    });
   },
   handleQuerySubmit: function(query) {
     $.ajax({
@@ -11,10 +29,16 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: query,
       success: function(data) {
-        this.setState({data: data});
+        $('.related-results-display').removeClass('hidden');
+
+        this.setState({
+          amazon: data[0],
+          walmart: data[1],
+          bestbuy: data[2]
+        });
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
+        console.error('general-query', status, err.toString());
       }.bind(this)
     });
   },
@@ -22,18 +46,40 @@ var DisplayBox = React.createClass({
     return (
       <div className="displayBox">
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
-        <h2>Related Results</h2>
-        <GeneralResultsList data={this.state.data} />
+        <AmazonRelatedResultsDisplay data={this.state.amazon} />
+        <WalmartRelatedResultsDisplay data={this.state.walmart} />
       </div>
     );
   }
 });
 
-var GeneralResultsList = React.createClass({
+var AmazonRelatedResultsDisplay = React.createClass({
   render: function() {
+    var resultNodes = this.props.data.amazon.map(function(result, index) {
+      return (
+        result
+      );
+    });
     return (
-      <div>
-        <p>test</p>
+      <div className="related-results-display hidden">
+        <h2>Amazon Related Results</h2>
+        {resultNodes}
+      </div>
+    );
+  }
+});
+
+var WalmartRelatedResultsDisplay = React.createClass({
+  render: function() {
+    var resultNodes = this.props.data.walmart.map(function(result, index) {
+      return (
+        result
+      );
+    });
+    return (
+      <div className="related-results-display hidden">
+        <h2>Walmart Related Results</h2>
+        {resultNodes}
       </div>
     );
   }

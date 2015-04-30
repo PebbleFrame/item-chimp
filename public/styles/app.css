@@ -25,6 +25,7 @@ body {
 /* ========== HOME PAGE =============== */
 
 .home-page {
+  text-align: center;
   margin-top: 30px;
 }
 
@@ -47,3 +48,6 @@ body {
 button {
   margin-top: 7px;
 }
+
+/* ============== HOME PAGE RESULTS DISPLAY ============= */
+
