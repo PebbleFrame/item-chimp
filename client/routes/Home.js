@@ -1,7 +1,12 @@
 var React = require('react');
+
 var WalmartComponents = require('./Home-Walmart-Components');
 var WalmartRelatedResultsDisplay = WalmartComponents.WalmartRelatedResultsDisplay;
 var WalmartIndividualResultDisplay = WalmartComponents.WalmartIndividualResultDisplay;
+
+var AmazonComponents = require('./Home-Amazon-Components');
+var AmazonRelatedResultsDisplay = AmazonComponents.AmazonRelatedResultsDisplay;
+var AmazonIndividualResultDisplay = AmazonComponents.AmazonIndividualResultDisplay;
 
 // Centralized display for all components
 var DisplayBox = React.createClass({
@@ -78,38 +83,6 @@ var SearchForm = React.createClass({
 
           <center><button className="btn btn-primary">Submit</button></center>
         </form>
-      </div>
-    );
-  }
-});
-
-// Component that displays related results from Amazon API
-var AmazonRelatedResultsDisplay = React.createClass({
-  render: function() {
-    var resultNodes = this.props.data.amazon.map(function(result, index) {
-      console.log(result);
-      var attributes = result.Items.Item.ItemAttributes;
-      return (
-        <AmazonIndividualResultDisplay name={attributes.Title} />
-      );
-    });
-    return (
-      <div className="related-results-display hidden">
-        <h3>Amazon Related Results</h3>
-        {resultNodes}
-      </div>
-    );
-  }
-});
-
-// Component that displays individual results for Amazon
-var AmazonIndividualResultDisplay = React.createClass({
-  render: function() {
-    return (
-      <div className="amazon-individual-display">
-        <h4 className="product-name">
-          {this.props.name}
-        </h4>
       </div>
     );
   }
