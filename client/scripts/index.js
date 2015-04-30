@@ -1,5 +1,5 @@
-var React = require('react'),
-  Router = require('react-router');
+var React = require('react');
+var Router = require('react-router');
 
 // Component for the bootstrap navbar
 // React Router routes are included in here
