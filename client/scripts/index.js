@@ -5,7 +5,8 @@ var Header = React.createClass({
   render: function() {
     return (
       <div className="page-header">
-        <h1>reactExpress</h1>
+        <h1>Shopagator</h1>
+        <h3>A Data Visualization Tool for Shoppers</h3>
       </div>
     );
   }
