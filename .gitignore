@@ -28,3 +28,5 @@ node_modules
 
 # Bower Components
 public/lib
+
+.idea/
