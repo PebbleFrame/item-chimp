@@ -11,6 +11,7 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: query,
       success: function(data) {
+        console.log('success!', data);
         this.setState({data: data});
       }.bind(this),
       error: function(xhr, status, err) {
