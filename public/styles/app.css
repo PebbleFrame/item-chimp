@@ -2,11 +2,13 @@ body {
   font: 300 16px/22px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+/* ================ LOGO AREA ============= */
+
 .logo-container {
   color: #F6E8B1;
   text-align: center;
   background: #89725B;
-  padding-top: 60px;
+  padding-top: 50px;
   padding-bottom: 25px;
 }
 
@@ -18,4 +20,30 @@ body {
 .logo-tagline {
   font-size: 25px;
   font-weight: 100;
+}
+
+/* ========== HOME PAGE =============== */
+
+.home-page {
+  margin-top: 30px;
+}
+
+.form-title {
+  text-align: center;
+  font-weight: 200;
+}
+
+.logo-image {
+  height: 70px;
+  margin-right: 15px;
+  margin-top: -8px;
+}
+
+.home-page input {
+  width: 280px;
+  margin: 0 auto;
+}
+
+button {
+  margin-top: 7px;
 }

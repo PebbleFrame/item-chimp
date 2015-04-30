@@ -5,7 +5,7 @@ var LogoArea = React.createClass({
   render: function() {
     return (
       <div className="logo-container">
-        <h1 className="logo-title">ShopChimp</h1>
+        <h1 className="logo-title"><img src="images/chimp.png" className="logo-image" />ShopChimp</h1>
         <h3 className="logo-tagline">A Data Visualization Tool for Shoppers</h3>
       </div>
     );
