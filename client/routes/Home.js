@@ -4,6 +4,9 @@ var DisplayBox = React.createClass({
   getInitialState: function() {
     return {data: []};
   },
+  postRequest: function(api) {
+    
+  },
   handleQuerySubmit: function(query) {
     $.ajax({
       url: 'general-query',
