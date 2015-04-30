@@ -57,7 +57,7 @@ var DisplayBox = React.createClass({
     return {
       amazon: {amazon: []},
       walmart: {walmart: []},
-      bestbuy: {bestBuy: []},      
+      bestbuy: {bestbuy: []},      
     };
   },
 
@@ -74,8 +74,8 @@ var DisplayBox = React.createClass({
 
         // Set the state to contain data for each separate API
         this.setState({
-          amazon: data[0],
-          walmart: data[1],
+          walmart: data[0],
+          amazon: data[1],
           bestbuy: data[2]
         });
       }.bind(this),
@@ -151,6 +151,7 @@ var AmazonRelatedResultsDisplay = React.createClass({
 var WalmartRelatedResultsDisplay = React.createClass({
   render: function() {
     var resultNodes = this.props.data.walmart.map(function(result, index) {
+      console.log(result.name);
       return (
         <WalmartIndividualResultDisplay name={result.name} />
       );
@@ -168,7 +169,7 @@ var WalmartIndividualResultDisplay = React.createClass({
   render: function() {
     return (
       <div className="walmart-individual-display">
-        <h3 className="product-name">this.props.name</h3>
+        <h3 className="product-name">{this.props.name}</h3>
       </div>
     );
   }
@@ -177,7 +178,7 @@ var WalmartIndividualResultDisplay = React.createClass({
 // Component that displays related results from Best Buy API
 var BestbuyRelatedResultsDisplay = React.createClass({
   render: function() {
-    var resultNodes = this.props.data.bestBuy.map(function(result, index) {
+    var resultNodes = this.props.data.bestbuy.map(function(result, index) {
       return (
         result
       );
