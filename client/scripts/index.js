@@ -4,8 +4,8 @@ var React = require('react'),
 var Header = React.createClass({
   render: function() {
     return (
-      <div className="page-header">
-        <h1>Shopagator</h1>
+      <div className="container logo-container">
+        <h1>ShopChimp</h1>
         <h3>A Data Visualization Tool for Shoppers</h3>
       </div>
     );
@@ -15,15 +15,29 @@ var Header = React.createClass({
 var PageNav = React.createClass({
   render: function() {
     return (
-      <nav className="nav navbar-default">
-        <ul className="nav navbar-nav">
-          <li className="active home">
-            <Router.Link to="home">Home</Router.Link>
-          </li>
-          <li className="about">
-            <Router.Link to="about">About</Router.Link>
-          </li>
-        </ul>
+      <nav className="navbar navbar-default navbar-fixed-top">
+        <div className="container-fluid">
+          <div className="navbar-header">
+            <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+              <span className="sr-only">Toggle navigation</span>
+              <span className="icon-bar"></span>
+              <span className="icon-bar"></span>
+              <span className="icon-bar"></span>
+            </button>
+            <Router.Link to="home" className="navbar-brand home">ShopChimp</Router.Link>
+          </div>
+
+          <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul className="nav navbar-nav navbar-right">
+              <li className="active home">
+                <Router.Link to="about">About</Router.Link>
+              </li>
+              <li className="about">
+                <Router.Link to="about">About</Router.Link>
+              </li>
+            </ul>
+          </div>
+        </div>
       </nav>
     );
   }
