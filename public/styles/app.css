@@ -29,7 +29,7 @@ body {
   margin-top: 30px;
 }
 
-.form-title {
+.query-form-title {
   text-align: center;
   font-weight: 200;
 }
@@ -51,3 +51,7 @@ button {
 
 /* ============== HOME PAGE RESULTS DISPLAY ============= */
 
+.related-results-display {
+  float: left;
+  width: 33.3333333%;
+}

@@ -29,6 +29,7 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: query,
       success: function(data) {
+        $('.query-form-container').addClass('hidden');
         $('.related-results-display').removeClass('hidden');
 
         console.log(data[2]);
@@ -47,10 +48,13 @@ var DisplayBox = React.createClass({
   render: function() {
     return (
       <div className="displayBox">
+        
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
+
         <AmazonRelatedResultsDisplay data={this.state.amazon} />
         <WalmartRelatedResultsDisplay data={this.state.walmart} />
         <BestbuyRelatedResultsDisplay data={this.state.bestbuy} />
+
       </div>
     );
   }
@@ -65,7 +69,7 @@ var AmazonRelatedResultsDisplay = React.createClass({
     });
     return (
       <div className="related-results-display hidden">
-        <h2>Amazon Related Results</h2>
+        <h3>Amazon Related Results</h3>
         {resultNodes}
       </div>
     );
@@ -81,7 +85,7 @@ var WalmartRelatedResultsDisplay = React.createClass({
     });
     return (
       <div className="related-results-display hidden">
-        <h2>Walmart Related Results</h2>
+        <h3>Walmart Related Results</h3>
         {resultNodes}
       </div>
     );
@@ -97,7 +101,7 @@ var BestbuyRelatedResultsDisplay = React.createClass({
     });
     return (
       <div className="related-results-display hidden">
-        <h2>Best Buy Related Results</h2>
+        <h3>Best Buy Related Results</h3>
         {resultNodes}
       </div>
     );
@@ -116,8 +120,8 @@ var SearchForm = React.createClass({
   },
   render: function() {
     return (
-      <div>
-        <h4 className="form-title">ShopChimp, at your service.</h4>
+      <div className="query-form-container">
+        <h4 className="query-form-title">ShopChimp, at your service.</h4>
 
         <form className="query-form" onSubmit={this.handleSubmit}>
           <input type="text" placeholder="Enter a product" className="form-control" ref="query" />
