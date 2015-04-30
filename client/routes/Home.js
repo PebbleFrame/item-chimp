@@ -5,7 +5,7 @@ var DisplayBox = React.createClass({
     return {
       amazon: {amazon: []},
       walmart: {walmart: []},
-      bestbuy: {bestbuy: []},      
+      bestbuy: {bestBuy: []},      
     };
   },
   postRequest: function(api, query) {
@@ -31,6 +31,8 @@ var DisplayBox = React.createClass({
       success: function(data) {
         $('.related-results-display').removeClass('hidden');
 
+        console.log(data[2]);
+
         this.setState({
           amazon: data[0],
           walmart: data[1],
@@ -48,6 +50,7 @@ var DisplayBox = React.createClass({
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
         <AmazonRelatedResultsDisplay data={this.state.amazon} />
         <WalmartRelatedResultsDisplay data={this.state.walmart} />
+        <BestbuyRelatedResultsDisplay data={this.state.bestbuy} />
       </div>
     );
   }
@@ -79,6 +82,22 @@ var WalmartRelatedResultsDisplay = React.createClass({
     return (
       <div className="related-results-display hidden">
         <h2>Walmart Related Results</h2>
+        {resultNodes}
+      </div>
+    );
+  }
+});
+
+var BestbuyRelatedResultsDisplay = React.createClass({
+  render: function() {
+    var resultNodes = this.props.data.bestBuy.map(function(result, index) {
+      return (
+        result
+      );
+    });
+    return (
+      <div className="related-results-display hidden">
+        <h2>Best Buy Related Results</h2>
         {resultNodes}
       </div>
     );
