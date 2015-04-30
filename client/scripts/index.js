@@ -15,11 +15,16 @@ var Header = React.createClass({
 var PageNav = React.createClass({
   render: function() {
     return (
-      <div className="nav">
-        <Router.Link to="home">Home</Router.Link>
-        &nbsp; | &nbsp;
-        <Router.Link to="about">About</Router.Link>
-      </div>
+      <nav className="nav navbar-default">
+        <ul className="nav navbar-nav">
+          <li className="active home">
+            <Router.Link to="home">Home</Router.Link>
+          </li>
+          <li className="about">
+            <Router.Link to="about">About</Router.Link>
+          </li>
+        </ul>
+      </nav>
     );
   }
 });
@@ -27,10 +32,12 @@ var PageNav = React.createClass({
 var App = React.createClass({
   render: function() {
     return (
-      <div className="container">
+      <div>
+        <header>
+          <PageNav />
+        </header>
         <Header />
-        <PageNav />
-        <Router.RouteHandler/>
+        <Router.RouteHandler />
       </div>
     );
   }

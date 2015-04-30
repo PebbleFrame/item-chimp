@@ -3,7 +3,10 @@ React = require('react');
 var Home = React.createClass({
 	render: function() {
 		return (
-			<p>Home page</p>
+      <div>
+  			<p>Home page</p>
+        <input type="text" />
+      </div>
 		);
 	}
 });
