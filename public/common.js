@@ -1,0 +1,1 @@
+console.error("Error: Parsing file /Users/michael/code/hr/pebbleframe/client/scripts/index.js: Unexpected token (7:6)");

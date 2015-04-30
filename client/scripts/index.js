@@ -1,21 +1,21 @@
 var React = require('react'),
   Router = require('react-router');
   
-var Header = React.createClass({
+var LogoArea = React.createClass({
   render: function() {
     return (
-      <div className="container logo-container">
-        <h1>ShopChimp</h1>
-        <h3>A Data Visualization Tool for Shoppers</h3>
+      <div className="logo-container">
+        <h1 className="logo-title"><img src="images/chimp.png" className="logo-image" />ShopChimp</h1>
+        <h3 className="logo-tagline">A Data Visualization Tool for Shoppers</h3>
       </div>
     );
   }
 });
 
-var PageNav = React.createClass({
+var Navbar = React.createClass({
   render: function() {
     return (
-      <nav className="navbar navbar-default navbar-fixed-top">
+      <nav className="navbar navbar-inverse navbar-fixed-top">
         <div className="container-fluid">
           <div className="navbar-header">
             <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -30,7 +30,7 @@ var PageNav = React.createClass({
           <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul className="nav navbar-nav navbar-right">
               <li className="active home">
-                <Router.Link to="about">About</Router.Link>
+                <Router.Link to="home">Home</Router.Link>
               </li>
               <li className="about">
                 <Router.Link to="about">About</Router.Link>
@@ -48,10 +48,14 @@ var App = React.createClass({
     return (
       <div>
         <header>
-          <PageNav />
+          <Navbar />
         </header>
-        <Header />
-        <Router.RouteHandler />
+
+        <LogoArea />
+
+        <div className="container">
+          <Router.RouteHandler />
+        </div>
       </div>
     );
   }
