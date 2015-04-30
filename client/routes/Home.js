@@ -169,7 +169,9 @@ var WalmartIndividualResultDisplay = React.createClass({
   render: function() {
     return (
       <div className="walmart-individual-display">
-        <h3 className="product-name">{this.props.name}</h3>
+        <h4 className="product-name">
+          {this.props.name}
+        </h4>
       </div>
     );
   }
