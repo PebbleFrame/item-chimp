@@ -29,7 +29,8 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: query,
       success: function(data) {
-        console.log(data[0])
+        $('.related-results-display').removeClass('hidden');
+
         this.setState({
           amazon: data[0],
           walmart: data[1],
@@ -60,7 +61,7 @@ var AmazonRelatedResultsDisplay = React.createClass({
       );
     });
     return (
-      <div>
+      <div className="related-results-display hidden">
         <h2>Amazon Related Results</h2>
         {resultNodes}
       </div>
@@ -76,7 +77,7 @@ var WalmartRelatedResultsDisplay = React.createClass({
       );
     });
     return (
-      <div>
+      <div className="related-results-display hidden">
         <h2>Walmart Related Results</h2>
         {resultNodes}
       </div>
