@@ -2,10 +2,25 @@ React = require('react');
 
 var DisplayBox = React.createClass({
   getInitialState: function() {
-    return {data: []};
+    return {
+      amazon: {amazon: []},
+      walmart: {walmart: []},
+      bestbuy: {bestbuy: []},      
+    };
   },
-  postRequest: function(api) {
+  postRequest: function(api, query) {
     
+    var url = 'general-query-' + api;
+
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data: query,
+      success: function(data) {
+
+      }
+    });
   },
   handleQuerySubmit: function(query) {
     $.ajax({
@@ -14,7 +29,12 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: query,
       success: function(data) {
-        this.setState({data: data});
+        console.log(data[0])
+        this.setState({
+          amazon: data[0],
+          walmart: data[1],
+          bestbuy: data[2]
+        });
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('general-query', status, err.toString());
@@ -25,23 +45,39 @@ var DisplayBox = React.createClass({
     return (
       <div className="displayBox">
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
-        <RelatedResultsDisplay data={this.state.data} />
+        <AmazonRelatedResultsDisplay data={this.state.amazon} />
+        <WalmartRelatedResultsDisplay data={this.state.walmart} />
       </div>
     );
   }
 });
 
-var RelatedResultsDisplay = React.createClass({
+var AmazonRelatedResultsDisplay = React.createClass({
   render: function() {
-    var resultNodes = this.props.data.map(function(result, index) {
-      console.log(result);
+    var resultNodes = this.props.data.amazon.map(function(result, index) {
       return (
         result
       );
     });
     return (
       <div>
-        <h2>Related Results</h2>
+        <h2>Amazon Related Results</h2>
+        {resultNodes}
+      </div>
+    );
+  }
+});
+
+var WalmartRelatedResultsDisplay = React.createClass({
+  render: function() {
+    var resultNodes = this.props.data.walmart.map(function(result, index) {
+      return (
+        result
+      );
+    });
+    return (
+      <div>
+        <h2>Walmart Related Results</h2>
         {resultNodes}
       </div>
     );
