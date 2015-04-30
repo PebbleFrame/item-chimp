@@ -1,6 +1,8 @@
 React = require('react');
 
+// Centralized display for all components
 var DisplayBox = React.createClass({
+  // Sets initial state properties to empty arrays to avoid undefined errors
   getInitialState: function() {
     return {
       amazon: {amazon: []},
@@ -8,20 +10,8 @@ var DisplayBox = React.createClass({
       bestbuy: {bestBuy: []},      
     };
   },
-  postRequest: function(api, query) {
-    
-    var url = 'general-query-' + api;
 
-    $.ajax({
-      url: url,
-      dataType: 'json',
-      type: 'POST',
-      data: query,
-      success: function(data) {
-
-      }
-    });
-  },
+  // Called when user submits a query
   handleQuerySubmit: function(query) {
     $.ajax({
       url: 'general-query',
@@ -29,11 +19,10 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: query,
       success: function(data) {
-        $('.query-form-container').addClass('hidden');
+        // Show Related Results after user submits query
         $('.related-results-display').removeClass('hidden');
 
-        console.log(data[2]);
-
+        // Set the state to contain data for each separate API
         this.setState({
           amazon: data[0],
           walmart: data[1],
@@ -60,63 +49,20 @@ var DisplayBox = React.createClass({
   }
 });
 
-var AmazonRelatedResultsDisplay = React.createClass({
-  render: function() {
-    var resultNodes = this.props.data.amazon.map(function(result, index) {
-      return (
-        result
-      );
-    });
-    return (
-      <div className="related-results-display hidden">
-        <h3>Amazon Related Results</h3>
-        {resultNodes}
-      </div>
-    );
-  }
-});
-
-// name, salePrice, upc, categoryPath, 
-var WalmartRelatedResultsDisplay = React.createClass({
-  render: function() {
-    var resultNodes = this.props.data.walmart.map(function(result, index) {
-      return (
-        result
-      );
-    });
-    return (
-      <div className="related-results-display hidden">
-        <h3>Walmart Related Results</h3>
-        {resultNodes}
-      </div>
-    );
-  }
-});
-
-var BestbuyRelatedResultsDisplay = React.createClass({
-  render: function() {
-    var resultNodes = this.props.data.bestBuy.map(function(result, index) {
-      return (
-        result
-      );
-    });
-    return (
-      <div className="related-results-display hidden">
-        <h3>Best Buy Related Results</h3>
-        {resultNodes}
-      </div>
-    );
-  }
-});
-
+// Component for the query-submit form
 var SearchForm = React.createClass({
   handleSubmit: function(e) {
+    // Prevent page from reloading on submit
     e.preventDefault();
 
+    // Grab query content from "ref" in input box
     var query = React.findDOMNode(this.refs.query).value.trim();
 
+    // Passes the query to the central DisplayBox component
+    // DisplayBox will make AJAX call and display results
     this.props.onQuerySubmit({query: query});
 
+    // Clear the input box after submit
     React.findDOMNode(this.refs.query).value = '';
   },
   render: function() {
@@ -134,6 +80,58 @@ var SearchForm = React.createClass({
   }
 });
 
+// Component that displays related results from Amazon API
+var AmazonRelatedResultsDisplay = React.createClass({
+  render: function() {
+    var resultNodes = this.props.data.amazon.map(function(result, index) {
+      return (
+        result
+      );
+    });
+    return (
+      <div className="related-results-display hidden">
+        <h3>Amazon Related Results</h3>
+        {resultNodes}
+      </div>
+    );
+  }
+});
+
+// Component that displays related results from Walmart API
+var WalmartRelatedResultsDisplay = React.createClass({
+  render: function() {
+    var resultNodes = this.props.data.walmart.map(function(result, index) {
+      return (
+        result
+      );
+    });
+    return (
+      <div className="related-results-display hidden">
+        <h3>Walmart Related Results</h3>
+        {resultNodes}
+      </div>
+    );
+  }
+});
+
+// Component that displays related results from Best Buy API
+var BestbuyRelatedResultsDisplay = React.createClass({
+  render: function() {
+    var resultNodes = this.props.data.bestBuy.map(function(result, index) {
+      return (
+        result
+      );
+    });
+    return (
+      <div className="related-results-display hidden">
+        <h3>Best Buy Related Results</h3>
+        {resultNodes}
+      </div>
+    );
+  }
+});
+
+// Home page container for the DisplayBox component
 var Home = React.createClass({
 	render: function() {
 		return (
