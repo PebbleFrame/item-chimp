@@ -1,17 +1,8 @@
 var React = require('react'),
   Router = require('react-router');
-  
-var LogoArea = React.createClass({
-  render: function() {
-    return (
-      <div className="logo-container">
-        <h1 className="logo-title"><img src="images/chimp.png" className="logo-image" />ShopChimp</h1>
-        <h3 className="logo-tagline">A Data Visualization Tool for Shoppers</h3>
-      </div>
-    );
-  }
-});
 
+// Component for the bootstrap navbar
+// React Router routes are included in here
 var Navbar = React.createClass({
   render: function() {
     return (
@@ -42,7 +33,21 @@ var Navbar = React.createClass({
     );
   }
 });
+  
+// Component for the header area underneath the navbar
+var LogoArea = React.createClass({
+  render: function() {
+    return (
+      <div className="logo-container">
+        <h1 className="logo-title"><img src="images/chimp.png" className="logo-image" />ShopChimp</h1>
+        <h3 className="logo-tagline">A Data Visualization Tool for Shoppers</h3>
+      </div>
+    );
+  }
+});
 
+// Basic structure of the app
+// This is implemented by the React Router, which recognizes the "App" variable
 var App = React.createClass({
   render: function() {
     return (
@@ -61,11 +66,15 @@ var App = React.createClass({
   }
 });
 
+// Routes for the React Router
+// Identifies the files that each route refers to
 var routes = {
   Home: require('../routes/Home'),
   About: require('../routes/About')
 };
 
+// Identifies "App" variable as the handler
+// Sets up the app for routing
 var routes = (
   <Router.Route name="app" path="/" handler={App}>
     <Router.Route name="home" path="/" handler={routes.Home}/>
@@ -74,6 +83,8 @@ var routes = (
   </Router.Route>
 );
 
+// Runs the router with proper parameters
 Router.run(routes, Router.HistoryLocation, function (Handler) {
+  // Route exists in the DOM element with ID "content"
   React.render(<Handler/>, document.getElementById('content'));
 });
