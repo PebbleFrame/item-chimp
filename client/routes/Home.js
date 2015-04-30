@@ -11,11 +11,10 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: query,
       success: function(data) {
-        console.log('success!', data);
         this.setState({data: data});
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
+        console.error('general-query', status, err.toString());
       }.bind(this)
     });
   },
@@ -23,18 +22,24 @@ var DisplayBox = React.createClass({
     return (
       <div className="displayBox">
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
-        <h2>Related Results</h2>
-        <GeneralResultsList data={this.state.data} />
+        <RelatedResultsDisplay data={this.state.data} />
       </div>
     );
   }
 });
 
-var GeneralResultsList = React.createClass({
+var RelatedResultsDisplay = React.createClass({
   render: function() {
+    var resultNodes = this.props.data.map(function(result, index) {
+      console.log(result);
+      return (
+        result
+      );
+    });
     return (
       <div>
-        <p>test</p>
+        <h2>Related Results</h2>
+        {resultNodes}
       </div>
     );
   }
