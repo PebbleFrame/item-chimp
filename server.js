@@ -26,6 +26,10 @@ app.get('*', function(req, res) {
   res.render('index.html');
 });
 
+app.get('/general-query', function(req, res) {
+  res.send('success!!!');
+});
+
 var port = process.env.PORT || 3000;
 
 app.listen(port, function() {
