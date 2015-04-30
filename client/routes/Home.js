@@ -102,13 +102,23 @@ var WalmartRelatedResultsDisplay = React.createClass({
   render: function() {
     var resultNodes = this.props.data.walmart.map(function(result, index) {
       return (
-        result
+        <WalmartIndividualResultDisplay name={result.name} />
       );
     });
     return (
       <div className="related-results-display hidden">
         <h3>Walmart Related Results</h3>
         {resultNodes}
+      </div>
+    );
+  }
+});
+
+var WalmartIndividualResultDisplay = React.createClass({
+  render: function() {
+    return (
+      <div className="walmart-individual-display">
+        <h3 className="product-name">this.props.name</h3>
       </div>
     );
   }
