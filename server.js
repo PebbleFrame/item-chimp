@@ -26,8 +26,12 @@ app.get('*', function(req, res) {
   res.render('index.html');
 });
 
-app.get('/general-query', function(req, res) {
-  res.send('success!!!');
+app.post('/general-query', function(req, res) {
+  res.send([
+    {amazon: [{amazon1: 'amazon1'}, {amazon2: 'amazon2'}]},
+    {walmart: [{walmart1: 'walmart1'}, {walmart2: 'walmart2'}]},
+    {bestBuy: [{bestBuy1: 'bestBuy1'}, {bestBuy2: 'bestBuy2'}]}
+  ]);
 });
 
 var port = process.env.PORT || 3000;
