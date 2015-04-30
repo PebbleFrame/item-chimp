@@ -4,6 +4,7 @@ var reactify = require('reactify');
 var nunjucks = require('nunjucks');
 var config = require('./client/config');
 
+
 var app = express();
 
 nunjucks.configure('server/templates/views', {
