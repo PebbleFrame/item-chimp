@@ -45,46 +45,4 @@ user.save().then(function(newUser) {
   console.log("User Saved")
 });
 
-
-// db.knex.schema.hasTable('clicks').then(function(exists) {
-//   if (!exists) {
-//     db.knex.schema.createTable('clicks', function (click) {
-//       click.increments('id').primary();
-//       click.integer('link_id');
-//       click.timestamps();
-//     }).then(function (table) {
-//       console.log('Created clicks Table', table);
-//     });
-//   }
-// });
-
-// /************************************************************/
-// // Add additional schema definitions below
-// /************************************************************/
-// db.knex.schema.hasTable('users').then(function(exists) {
-//   if (!exists) {
-//     db.knex.schema.createTable('users', function (user) {
-//       user.increments('id').primary();
-//       user.string('username', 20);
-//       user.string('password', 20);
-//       user.timestamps();
-//     }).then(function (table) {
-//       console.log('Created User Table', table);
-//     });
-//   }
-// });
-
-// db.knex.schema.hasTable('userUrls').then(function(exists) {
-//   if (!exists) {
-//     db.knex.schema.createTable('userUrls', function (userUrl) {
-//       userUrl.increments('id').primary();
-//       userUrl.integer('userID');
-//       userUrl.integer('urlID');
-//       userUrl.timestamps();
-//     }).then(function (table) {
-//       console.log('Created userUrls Table', table);
-//     });
-//   }
-// });
-
 module.exports = orm;
