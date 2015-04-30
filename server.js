@@ -26,26 +26,59 @@ app.get('*', function(req, res) {
   res.render('index.html');
 });
 
-app.post('/general-query-amazon', function(req, res) {
+app.post('/general-query', function(req, res) {
   res.send([
     {amazon: [{amazon1: 'amazon1'}, {amazon2: 'amazon2'}]}
   ]);
 });
 
-app.post('/general-query-walmart', function(req, res) {
+app.post('/general-query', function(req, res) {
   res.send([
-    {walmart: [{"itemId":30135922 ,"parentItemId":30135922,"name":"Apple iPod touch 32GB","msrp":249,"salePrice":229,"upc":"885909827367","categoryPath":"Electronics/iPods & MP3 Players/Apple iPods"},
-    {"itemId":21805444,"parentItemId":21805444,"name":"Apple iPod nano 16GB","msrp":145,"salePrice":145,"upc":"885909564910","categoryPath":"Electronics/iPods & MP3 Players/All MP3 Players"}]}
+    {walmart:
+      [
+        {"itemId":30135922 ,"parentItemId":30135922,"name":"Apple iPod touch 32GB","msrp":249,"salePrice":229,"upc":"885909827367","categoryPath":"Electronics/iPods & MP3 Players/Apple iPods"},
+        {"itemId":21805444,"parentItemId":21805444,"name":"Apple iPod nano 16GB","msrp":145,"salePrice":145,"upc":"885909564910","categoryPath":"Electronics/iPods & MP3 Players/All MP3 Players"}
+      ]},
+    {Amazon:
+      [
+        {"Items": {
+          "Request": {
+          "IsValid": "True",
+          "ItemLookupRequest": { "ItemId": "B00008OE6I" }
+        },
+        "Item": {
+          "ASIN": "B00008OE6I",
+          "ItemAttributes": {
+            "Manufacturer": "Canon",
+            "ProductGroup": "Photography",
+            "Title": "Canon PowerShot S400 4MP Digital Camera w/ 3x Optical Zoom"
+          }
+        }
+      }
+    }]
+    },
+    {bestbuy:
+      [
+        {"products": [
+          {
+            "name": "Apple iPad mini Wi-Fi 16GB (Space Gray), Screen Protector, Keyboard, Stylus, Audio Cable & Headphones Package",
+            "sku": 9999240600050019,
+            "salePrice": 334.99
+          },
+          {
+            "name": "Apple® - iPad Air 2 Wi-Fi + Cellular 16GB - Silver",
+            "sku": 3781019,
+            "salePrice": 499.99
+          },
+          {
+            "name": "Apple® - iPad Air 2 Wi-Fi 16GB - Gold",
+            "sku": 2881031,
+            "salePrice": 499.99
+          }
+      ] }
+    ]}
   ]);
 });
-
-app.post('/general-query-bestbuy', function(req, res) {
-  res.send([
-    {bestbuy: [{bestbuy1: 'bestbuy1'}, {bestbuy2: 'bestbuy2'}]}
-  ]);
-});
-
-
 
 var port = process.env.PORT || 3000;
 
