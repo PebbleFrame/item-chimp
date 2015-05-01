@@ -2,6 +2,9 @@ var React = require('react');
 
 // Component that displays related results from Walmart API
 var WalmartRelatedResultsDisplay = React.createClass({
+  handleWalmartReviewRequest: function(itemId) {
+    this.props.onWalmartReviewRequest(itemId);
+  },
   render: function() {
     var resultNodes = this.props.data.walmart.map(function(result, index) {
 
@@ -17,9 +20,10 @@ var WalmartRelatedResultsDisplay = React.createClass({
           customerRating={result.customerRating}
           numReviews={result.numReviews}
           customerRatingImage={result.customerRatingImage}
-          itemId={result.itemId} />
+          itemId={result.itemId} 
+          onWalmartReviewRequest={this.handleWalmartReviewRequest} />
       );
-    });
+    }.bind(this));
     return (
       <div className="related-results-display hidden">
         <h3>Walmart Related Results</h3>
@@ -31,9 +35,12 @@ var WalmartRelatedResultsDisplay = React.createClass({
 
 // Component that displays individual results for Walmart
 var WalmartIndividualResultDisplay = React.createClass({
+  handleWalmartReviewRequest: function() {
+    this.props.onWalmartReviewRequest({itemId: this.props.itemId});
+  },  
   render: function() {
     return (
-      <div className="individual-display">
+      <div className="individual-display" onClick={this.handleWalmartReviewRequest}>
         <h5 className="product-name">
           {this.props.name}
         </h5>
@@ -59,6 +66,18 @@ var WalmartIndividualResultDisplay = React.createClass({
   }
 });
 
+var WalmartReviewsDisplay = React.createClass ({
+  render: function() {
+    return (
+      <div className="walmart-reviews-display hidden">
+        Walmart Reviews
+      </div>
+    );
+  }
+});
+
 module.exports.WalmartRelatedResultsDisplay = WalmartRelatedResultsDisplay;
 
 module.exports.WalmartIndividualResultDisplay = WalmartIndividualResultDisplay;
+
+module.exports.WalmartReviewsDisplay = WalmartReviewsDisplay;

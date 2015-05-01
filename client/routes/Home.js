@@ -3,6 +3,7 @@ var React = require('react');
 var WalmartComponents = require('./Home-Walmart-Components');
 var WalmartRelatedResultsDisplay = WalmartComponents.WalmartRelatedResultsDisplay;
 var WalmartIndividualResultDisplay = WalmartComponents.WalmartIndividualResultDisplay;
+var WalmartReviewsDisplay = WalmartComponents.WalmartReviewsDisplay;
 
 var AmazonComponents = require('./Home-Amazon-Components');
 var AmazonRelatedResultsDisplay = AmazonComponents.AmazonRelatedResultsDisplay;
@@ -19,7 +20,8 @@ var DisplayBox = React.createClass({
     return {
       amazon: {amazon: []},
       walmart: {walmart: []},
-      bestbuy: {bestbuy: []},      
+      bestbuy: {bestbuy: []},
+      walmartReviews: {walmartReviews: []}     
     };
   },
 
@@ -40,6 +42,22 @@ var DisplayBox = React.createClass({
           amazon: data[1],
           bestbuy: data[2]
         });
+
+        $('.query-form-container img').addClass('hidden');
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('general-query', status, err.toString());
+      }.bind(this)
+    });
+  },
+  handleWalmartReviewRequest: function(itemId) {
+    $.ajax({
+      url: 'get-walmart-reviews',
+      dataType: 'json',
+      type: 'POST',
+      data: itemId,
+      success: function(data) {
+        this.setState({walmartReviews: data});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('general-query', status, err.toString());
@@ -52,8 +70,12 @@ var DisplayBox = React.createClass({
         
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
 
+        <WalmartReviewsDisplay />
+
         <AmazonRelatedResultsDisplay data={this.state.amazon} />
-        <WalmartRelatedResultsDisplay data={this.state.walmart} />
+        <WalmartRelatedResultsDisplay 
+          data={this.state.walmart}
+          onWalmartReviewRequest={this.handleWalmartReviewRequest} />
         <BestbuyRelatedResultsDisplay data={this.state.bestbuy} />
 
       </div>
@@ -66,6 +88,8 @@ var SearchForm = React.createClass({
   handleSubmit: function(e) {
     // Prevent page from reloading on submit
     e.preventDefault();
+
+    $('.query-form-container img').removeClass('hidden');
 
     // Grab query content from "ref" in input box
     var query = React.findDOMNode(this.refs.query).value.trim();
@@ -87,6 +111,7 @@ var SearchForm = React.createClass({
 
           <center><button className="btn btn-primary">Submit</button></center>
         </form>
+        <img src="images/spiffygif_46x46.gif" className="hidden" />
       </div>
     );
   }
