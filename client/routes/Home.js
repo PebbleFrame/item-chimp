@@ -55,8 +55,8 @@ var DisplayBox = React.createClass({
   handleWalmartReviewRequest: function(itemId, name, image) {
 
     this.setState({
-      reviewedItemName: name,
-      reviewedItemImage: image
+      walmartReviewedItemName: name,
+      walmartReviewedItemImage: image
     });
 
     $.ajax({
@@ -81,8 +81,8 @@ var DisplayBox = React.createClass({
   handleBestbuyReviewRequest: function(sku, name, image) {
 
     this.setState({
-      walmartReviewedItemName: name,
-      walmartReviewedItemImage: image
+      bestbuyReviewedItemName: name,
+      bestbuyReviewedItemImage: image
     });
 
     $.ajax({
@@ -92,8 +92,6 @@ var DisplayBox = React.createClass({
       data: sku,
       success: function(data) {
         $('.bestbuy-reviews-display').removeClass('hidden');
-
-        console.log(data);
 
         var bestbuyReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
 
@@ -113,14 +111,17 @@ var DisplayBox = React.createClass({
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
 
         <D3Chart />
-        <WalmartReviewsDisplay 
-          data={this.state.walmartReviews}
-          name={this.state.walmartReviewedItemName}
-          image={this.state.walmartReviewedItemImage} />
-        <BestbuyReviewsDisplay 
-          data={this.state.bestbuyReviews}
-          name={this.state.bestbuyReviewedItemName}
-          image={this.state.bestbuyReviewedItemImage} />
+
+        <div>
+          <WalmartReviewsDisplay 
+            data={this.state.walmartReviews}
+            name={this.state.walmartReviewedItemName}
+            image={this.state.walmartReviewedItemImage} />
+          <BestbuyReviewsDisplay 
+            data={this.state.bestbuyReviews}
+            name={this.state.bestbuyReviewedItemName}
+            image={this.state.bestbuyReviewedItemImage} />
+        </div>
 
         <AmazonRelatedResultsDisplay data={this.state.amazon} />
         <WalmartRelatedResultsDisplay 
