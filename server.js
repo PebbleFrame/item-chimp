@@ -60,7 +60,6 @@ app.post('/general-query', function(req, res) {
           var WalmartResultsToSend = walmartBody.items;
 
 
-          // 'http://api.remix.bestbuy.com/v1/products(search=game)?show=name,sku,salePrice&format=json&apiKey=n34qnnunjqcb9387gthg8625'
 
           request({
               url: 'http://api.remix.bestbuy.com/v1/products(search=' + query + ')?show=name,sku,salePrice&format=json&apiKey=n34qnnunjqcb9387gthg8625',
