@@ -16,7 +16,8 @@ var WalmartRelatedResultsDisplay = React.createClass({
           thumbnailImage={result.thumbnailImage}
           customerRating={result.customerRating}
           numReviews={result.numReviews}
-          customerRatingImage={result.customerRatingImage} />
+          customerRatingImage={result.customerRatingImage}
+          itemId={result.itemId} />
       );
     });
     return (
@@ -41,7 +42,7 @@ var WalmartIndividualResultDisplay = React.createClass({
           ${this.props.salePrice}
         </div>
         <div>
-          UPC: ${this.props.salePrice}
+          UPC: ${this.props.upc}
         </div>
         <div>
           Description: {this.props.description}

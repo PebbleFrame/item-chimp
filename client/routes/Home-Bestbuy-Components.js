@@ -4,8 +4,20 @@ var React = require('react');
 var BestbuyRelatedResultsDisplay = React.createClass({
   render: function() {
     var resultNodes = this.props.data.bestbuy.map(function(result, index) {
+      
+      result.shortDescription = result.shortDescription || 'n/a';
+      result.customerReviewAverage = result.customerReviewAverage || 'n/a';
+      result.customerReviewCount = result.customerReviewCount || 'No';      
+
       return (
-        <BestbuyIndividualResultDisplay name={result.name} />
+        <BestbuyIndividualResultDisplay 
+          name={result.name}
+          salePrice={result.salePrice}
+          upc={result.upc}
+          customerReviewAverage={result.customerReviewAverage}
+          customerReviewCount={result.customerReviewCount}
+          shortDescription={result.shortDescription}
+          image={result.image} />
       );
     });
     return (
@@ -25,6 +37,22 @@ var BestbuyIndividualResultDisplay = React.createClass({
         <h5 className="product-name">
           {this.props.name}
         </h5>
+        <img src={this.props.image} />
+        <div>
+          ${this.props.salePrice}
+        </div>
+        <div>
+          UPC: ${this.props.upc}
+        </div>
+        <div>
+          Description: {this.props.shortDescription}
+        </div>
+        <div>
+          Rating: {this.props.customerReviewAverage}
+        </div>
+        <div>
+          {this.props.customerReviewCount} reviews
+        </div>
       </div>
     );
   }
