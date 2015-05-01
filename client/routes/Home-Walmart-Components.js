@@ -2,6 +2,22 @@ var React = require('react');
 
 // Component that displays related results from Walmart API
 var WalmartRelatedResultsDisplay = React.createClass({
+  handleReviewRequest: function() {
+    console.log('got review request!!!!!!!!')
+
+    // $.ajax({
+    //   url: 'get-walmart-reviews',
+    //   dataType: 'json'
+    //   type: 'POST',
+    //   data: {itemId: this.props.itemId},
+    //   success: function(data) {
+    //     this.props.onReviewRequest({reviews: reviews});
+    //   }.bind(this),
+    //   error: function(xhr, status, err) {
+    //     console.error('general-query', status, err.toString());
+    //   }.bind(this)
+    // });
+  },
   render: function() {
     var resultNodes = this.props.data.walmart.map(function(result, index) {
 
@@ -17,9 +33,10 @@ var WalmartRelatedResultsDisplay = React.createClass({
           customerRating={result.customerRating}
           numReviews={result.numReviews}
           customerRatingImage={result.customerRatingImage}
-          itemId={result.itemId} />
+          itemId={result.itemId} 
+          onReviewRequest={this.handleReviewRequest} />
       );
-    });
+    }.bind(this));
     return (
       <div className="related-results-display hidden">
         <h3>Walmart Related Results</h3>
@@ -31,9 +48,12 @@ var WalmartRelatedResultsDisplay = React.createClass({
 
 // Component that displays individual results for Walmart
 var WalmartIndividualResultDisplay = React.createClass({
+  handleReviewRequest: function() {
+    this.props.onReviewRequest({itemId: this.props.itemId});
+  },  
   render: function() {
     return (
-      <div className="individual-display">
+      <div className="individual-display" onClick={this.handleReviewRequest}>
         <h5 className="product-name">
           {this.props.name}
         </h5>
@@ -54,6 +74,16 @@ var WalmartIndividualResultDisplay = React.createClass({
           {this.props.numReviews} reviews
         </div>
         <img src={this.props.customerRatingImage} />
+      </div>
+    );
+  }
+});
+
+var WalmartReviewsDisplay = React.createClass ({
+  render: function() {
+    return (
+      <div>
+
       </div>
     );
   }
