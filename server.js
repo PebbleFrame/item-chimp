@@ -40,7 +40,7 @@ var opHelper = new OperationHelper({
 app.post('/general-query', function(req, res) {
 
   var query = req.body.query;
-  
+
   opHelper.execute('ItemSearch', {
     'SearchIndex': 'Books',
     'Keywords': query,
@@ -49,10 +49,10 @@ app.post('/general-query', function(req, res) {
     // console.log(results.ItemSearchResponse.Items[0].Item);
 
     var AmazonResultsToSend = results.ItemSearchResponse.Items[0].Item;
-    
+
     request({
-      url: 'http://api.walmartlabs.com/v1/search?query=' + query + '&format=json&apiKey=va35uc9pw8cje38csxx7csk8',
-      json: true
+        url: 'http://api.walmartlabs.com/v1/search?query=' + query + '&format=json&apiKey=va35uc9pw8cje38csxx7csk8',
+        json: true
       }, function (error, response, walmartBody) {
         if (!error && response.statusCode == 200) {
           // console.log(body.items);
@@ -63,8 +63,8 @@ app.post('/general-query', function(req, res) {
           // 'http://api.remix.bestbuy.com/v1/products(search=game)?show=name,sku,salePrice&format=json&apiKey=n34qnnunjqcb9387gthg8625'
 
           request({
-            url: 'http://api.remix.bestbuy.com/v1/products(search=' + query + ')?show=name,sku,salePrice&format=json&apiKey=n34qnnunjqcb9387gthg8625',
-            json: true
+              url: 'http://api.remix.bestbuy.com/v1/products(search=' + query + ')?show=name,sku,salePrice&format=json&apiKey=n34qnnunjqcb9387gthg8625',
+              json: true
             }, function (error, response, bestbuyBody) {
               if (!error && response.statusCode == 200) {
                 var BestbuyResultsToSend = bestbuyBody.products;
