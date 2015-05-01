@@ -1,16 +1,20 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var browserify = require('browserify-middleware');
 var reactify = require('reactify');
 var nunjucks = require('nunjucks');
 var config = require('./client/config');
 
+var OperationHelper = require('apac').OperationHelper;
+var request = require('request');
+
 var app = express();
+app.use(express.static('public'));
+app.use(bodyParser());
 
 nunjucks.configure('server/templates/views', {
   express: app
 });
-
-app.use(express.static('public'));
 
 app.get('/js/' + config.common.bundle, browserify(config.common.packages, {
   cache: true,
@@ -26,52 +30,60 @@ app.get('*', function(req, res) {
   res.render('index.html');
 });
 
+
+var opHelper = new OperationHelper({
+  awsId:     'AKIAIQ27TFDH7YXONTJQ',
+  awsSecret: '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',
+  assocId:   'bap071-20',
+  version:   '2013-08-01'});
+
 app.post('/general-query', function(req, res) {
-  res.send([
-    {walmart:
-      [
-        {"itemId":30135922 ,"parentItemId":30135922,"name":"Apple iPod touch 32GB","msrp":249,"salePrice":229,"upc":"885909827367","categoryPath":"Electronics/iPods & MP3 Players/Apple iPods"},
-        {"itemId":21805444,"parentItemId":21805444,"name":"Apple iPod nano 16GB","msrp":145,"salePrice":145,"upc":"885909564910","categoryPath":"Electronics/iPods & MP3 Players/All MP3 Players"}
-      ]},
-    {amazon:
-      [
-        {"Items": {
-          "Request": {
-          "IsValid": "True",
-          "ItemLookupRequest": { "ItemId": "B00008OE6I" }
-        },
-        "Item": {
-          "ASIN": "B00008OE6I",
-          "ItemAttributes": {
-            "Manufacturer": "Canon",
-            "ProductGroup": "Photography",
-            "Title": "Canon PowerShot S400 4MP Digital Camera w/ 3x Optical Zoom"
-          }
+
+  var query = req.body.query;
+  
+  opHelper.execute('ItemSearch', {
+    'SearchIndex': 'Books',
+    'Keywords': query,
+    'ResponseGroup': 'ItemAttributes,Offers'
+  }, function(err, results) { // you can add a third parameter for the raw xml response, "results" here are currently parsed using xml2js
+    // console.log(results.ItemSearchResponse.Items[0].Item);
+
+    var AmazonResultsToSend = results.ItemSearchResponse.Items[0].Item;
+    
+    request({
+      url: 'http://api.walmartlabs.com/v1/search?query=' + query + '&format=json&apiKey=va35uc9pw8cje38csxx7csk8',
+      json: true
+      }, function (error, response, walmartBody) {
+        if (!error && response.statusCode == 200) {
+          // console.log(body.items);
+
+          var WalmartResultsToSend = walmartBody.items;
+
+
+          // 'http://api.remix.bestbuy.com/v1/products(search=game)?show=name,sku,salePrice&format=json&apiKey=n34qnnunjqcb9387gthg8625'
+
+          request({
+            url: 'http://api.remix.bestbuy.com/v1/products(search=' + query + ')?show=name,sku,salePrice&format=json&apiKey=n34qnnunjqcb9387gthg8625',
+            json: true
+            }, function (error, response, bestbuyBody) {
+              if (!error && response.statusCode == 200) {
+                var BestbuyResultsToSend = bestbuyBody.products;
+
+                res.send([
+                  {walmart: WalmartResultsToSend},
+                  {amazon: AmazonResultsToSend},
+                  {bestbuy: BestbuyResultsToSend}
+                ]);
+              }
+            }
+          );
+
         }
       }
-    }]
-    },
-    {bestbuy:
-      [
-        {"products": [
-          {
-            "name": "Apple iPad mini Wi-Fi 16GB (Space Gray), Screen Protector, Keyboard, Stylus, Audio Cable & Headphones Package",
-            "sku": 9999240600050019,
-            "salePrice": 334.99
-          },
-          {
-            "name": "Apple® - iPad Air 2 Wi-Fi + Cellular 16GB - Silver",
-            "sku": 3781019,
-            "salePrice": 499.99
-          },
-          {
-            "name": "Apple® - iPad Air 2 Wi-Fi 16GB - Gold",
-            "sku": 2881031,
-            "salePrice": 499.99
-          }
-      ] }
-    ]}
-  ]);
+    );
+
+  });
+
 });
 
 var port = process.env.PORT || 3000;
