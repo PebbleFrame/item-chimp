@@ -100,6 +100,7 @@ app.post('/get-walmart-reviews', function(req, res) {
     }, function (error, response, walmartReviewBody) {
       if (!error && response.statusCode == 200) {
         var WalmartReviewstoSend = walmartReviewBody.reviews;
+        console.log(walmartReviewBody.reviews);
         res.send([
           {walmartReviews: WalmartReviewstoSend}
         ]);
@@ -113,9 +114,10 @@ app.post('/get-bestbuy-reviews', function(req, res) {
 // 'http://api.remix.bestbuy.com/v1/reviews(sku=1780275)?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
   request({
       url: 'http://api.remix.bestbuy.com/v1/reviews(sku=' + itemId +')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
-    }, function (error, response, bestbuyRevieBody) {
+    }, function (error, response, bestbuyReviewBody) {
       if (!error && response.statusCode == 200) {
-        var BestBuyReviewsToSend = bestbuyRevieBody.reviews;
+        var BestBuyReviewsToSend = bestbuyReviewBody.reviews;
+        console.log(bestbuyReviewBody.reviews);
         res.send([
           {bestbuyReviews: BestBuyReviewsToSend}
         ]);
