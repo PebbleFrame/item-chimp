@@ -22,6 +22,7 @@ CREATE TABLE `users` (
   `username` VARCHAR(10) NULL DEFAULT NULL,
   `password` VARCHAR(10) NULL DEFAULT NULL,
   `email` VARCHAR(30) NULL DEFAULT NULL,
+  'salt' BIGINT(12) NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 );
 

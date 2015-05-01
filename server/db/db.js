@@ -1,15 +1,17 @@
-var Bookshelf = require('bookshelf');
-var events = require('events');
-var EventEmitter = require("events").EventEmitter;
-var util = require('util');
-var Q    = require('q');
-var jwt  = require('jwt-simple');
+var Bookshelf = require('bookshelf'),
+Q        = require('q'),
+events = require('events'),
+EventEmitter = require("events").EventEmitter,
+util = require('util'),
+bcrypt   = require('bcrypt-nodejs'),
+SALT_WORK_FACTOR  = 10,
+jwt  = require('jwt-simple');
 
 
 //Create db wrapper for database to 
 function DB(){
   EventEmitter.call(this);
-};
+}
 
 util.inherits(DB, EventEmitter);
 
@@ -58,7 +60,19 @@ db.orm = require('bookshelf')(knex);
 //-------------ORM FOR USERS START-----------------/
   //Create user Model
   db.User = db.orm.Model.extend({
-     tableName:"users"
+     tableName:"users",
+     comparePasswords : function (candidatePassword) {
+      var defer = Q.defer();
+      var savedPassword = this.password;
+      bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
+        if (err) {
+          defer.reject(err);
+        } else {
+          defer.resolve(isMatch);
+        }
+      });
+      return defer.promise;
+      }
   });
 
   //Create user Collection
@@ -185,33 +199,69 @@ db.orm = require('bookshelf')(knex);
   });
 //-------------ORM FOR WATCHERS END----------------/
 
-//-------------API CONFIGURATION START-------------/
-// db.insert = function(model,obj){
-//   var obj = new this.[model](obj);
-
-// }
+//-------------USER API CONFIGURATION START-------------/
   db.findUser = function(userName){
-    db.User.findOne({username: userName})
+    db.User.where({username: userName}).fetch()
     .then(function (user) {
       if (!user) {
-        next(new Error('User does not exist'));
-      } else {
-        return user.comparePasswords(password)
-          .then(function(foundUser) {
-            if (foundUser) {
-              var token = jwt.encode(user, 'secret');
-              res.json({token: token});
-            } else {
-              return next(new Error('No user'));
-            }
-          });
+        console.log('User does not exist');
       }
-    })
-    .fail(function (error) {
-      next(error);
+      else{
+        console.log(user + "Found");
+        db.emit('userFound');
+      } 
     });
+  };
+
+  db.addUser = function(user){
+
+    db.on('foundUser',function(){
+      bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+        if (err) {
+          return console.log("Error with Salt");
+        }
+        bcrypt.hash(user.password, salt, null, function(err, hash) {
+          if (err) {
+            return console.log("Error with hash");
+          }
+          user.password = hash;
+          user.salt = salt; 
+          newUser.save().then(function(newUser) {
+            db.Users.add(newUser);
+            console.log("User Saved");
+            db.emit('userSaved');
+          });
+        });
+      });
+    });
+    db.findUser(user);
   };
 
 //-------------API CONFIGURATION START-------------/
 
 module.exports = db;
+
+
+
+
+
+
+
+  // db.findUser = function(userName){
+  //   db.User.where({username: userName}).fetch()
+  //   .then(function (user) {
+  //     if (!user) {
+  //       console.log('User does not exist'));
+  //     } else {
+  //       return user.comparePasswords(password)
+  //         .then(function(foundUser) {
+  //           if (foundUser) {
+  //             var token = jwt.encode(user, 'secret');
+  //             res.json({token: token});
+  //           } else {
+  //             console.log('No user');
+  //           }
+  //         });
+  //     }
+  //   });
+  // };
