@@ -12,9 +12,7 @@ var app = express();
 app.use(express.static('public'));
 app.use(bodyParser());
 
-//require('./server/auth-routes')(authRouter);
-//app.use('/auth', authRouter);
-//app.use('/auth', require('./server/auth-routes'));
+
 
 nunjucks.configure('server/templates/views', {
   express: app
@@ -29,6 +27,10 @@ app.use('/js', browserify('./client/scripts', {
   external: config.common.packages,
   transform: ['reactify']
 }));
+
+var authRouter = express.Router();
+app.use('/auth', authRouter);
+require('./server/auth-routes')(authRouter);
 
 app.get('*', function(req, res) {
   res.render('index.html');
