@@ -75,11 +75,10 @@ var BestbuyReviewsDisplay = React.createClass ({
       return (
         <BestbuyIndividualReviewDisplay
           title={result.title}
-          overallRating={result.overallRating}
           reviewer={result.reviewer}
-          reviewText={result.reviewText}
-          upVotes={result.upVotes}
-          downVotes={result.downVotes} />
+          comment={result.comment}
+          rating={result.rating} 
+          sku={result.sku} />
       );
     });
 
@@ -105,13 +104,10 @@ var BestbuyIndividualReviewDisplay = React.createClass({
           Reviewer: {this.props.reviewer}
         </div>
         <div>
-          Review: {this.props.reviewText}
+          Review: {this.props.comment}
         </div>
         <div>
-          Upvotes: {this.props.upVotes}
-        </div>
-        <div>
-          Downvotes: {this.props.downVotes}
+          Rating: {this.props.rating}
         </div>
       </div>
     );
