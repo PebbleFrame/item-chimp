@@ -12,6 +12,7 @@ var AmazonIndividualResultDisplay = AmazonComponents.AmazonIndividualResultDispl
 var BestbuyComponents = require('./Home-Bestbuy-Components');
 var BestbuyRelatedResultsDisplay = BestbuyComponents.BestbuyRelatedResultsDisplay;
 var BestbuyIndividualResultDisplay = BestbuyComponents.BestbuyIndividualResultDisplay;
+var BestbuyReviewsDisplay = BestbuyComponents.BestbuyReviewsDisplay;
 
 // Centralized display for all components
 var DisplayBox = React.createClass({
@@ -21,7 +22,8 @@ var DisplayBox = React.createClass({
       amazon: {amazon: []},
       walmart: {walmart: []},
       bestbuy: {bestbuy: []},
-      walmartReviews: {walmartReviews: []}     
+      walmartReviews: {walmartReviews: []},
+      bestbuyReviews: {bestbuyReviews: []}  
     };
   },
 
@@ -50,7 +52,13 @@ var DisplayBox = React.createClass({
       }.bind(this)
     });
   },
-  handleWalmartReviewRequest: function(itemId) {
+  handleWalmartReviewRequest: function(itemId, name, image) {
+
+    this.setState({
+      walmartReviewedItemName: name,
+      walmartReviewedItemImage: image
+    });
+
     $.ajax({
       url: 'get-walmart-reviews',
       dataType: 'json',
@@ -70,6 +78,32 @@ var DisplayBox = React.createClass({
       }.bind(this)
     });
   },
+  handleBestbuyReviewRequest: function(sku, name, image) {
+
+    this.setState({
+      bestbuyReviewedItemName: name,
+      bestbuyReviewedItemImage: image
+    });
+
+    $.ajax({
+      url: 'get-bestbuy-reviews',
+      dataType: 'json',
+      type: 'POST',
+      data: sku,
+      success: function(data) {
+        $('.bestbuy-reviews-display').removeClass('hidden');
+
+        var bestbuyReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
+
+        this.setState({
+          bestbuyReviews: {bestbuyReviews: bestbuyReviewsFromData}
+        });
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('get-bestbuy-reviews', status, err.toString());
+      }.bind(this)
+    });
+  },
   render: function() {
     return (
       <div className="displayBox">
@@ -77,13 +111,25 @@ var DisplayBox = React.createClass({
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
 
         <D3Chart />
-        <WalmartReviewsDisplay data={this.state.walmartReviews} />
+
+        <div>
+          <WalmartReviewsDisplay 
+            data={this.state.walmartReviews}
+            name={this.state.walmartReviewedItemName}
+            image={this.state.walmartReviewedItemImage} />
+          <BestbuyReviewsDisplay 
+            data={this.state.bestbuyReviews}
+            name={this.state.bestbuyReviewedItemName}
+            image={this.state.bestbuyReviewedItemImage} />
+        </div>
 
         <AmazonRelatedResultsDisplay data={this.state.amazon} />
         <WalmartRelatedResultsDisplay 
           data={this.state.walmart}
           onWalmartReviewRequest={this.handleWalmartReviewRequest} />
-        <BestbuyRelatedResultsDisplay data={this.state.bestbuy} />
+        <BestbuyRelatedResultsDisplay 
+          data={this.state.bestbuy}
+          onBestbuyReviewRequest={this.handleBestbuyReviewRequest} />
 
       </div>
     );
