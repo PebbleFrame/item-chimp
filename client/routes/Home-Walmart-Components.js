@@ -72,6 +72,19 @@ var WalmartIndividualResultDisplay = React.createClass({
 var WalmartReviewsDisplay = React.createClass ({
   // name, overallRating, reviewer, reviewText, title, upVotes, downVotes
   render: function() {
+    var resultNotes = this.props.data.walmartReviews.map(function(result, index) {
+      return (
+        <WalmartIndividualResultDisplay
+          title={result.title}
+          name={result.name}
+          overallRating={result.overallRating}
+          reviewer={result.reviewer}
+          reviewTest={result.reviewTest}
+          upVotes={result.upVotes}
+          downVotes={result.downVotes} />
+      );
+    });
+
     return (
       <div className="walmart-reviews-display hidden">
         Walmart Reviews
