@@ -70,10 +70,21 @@ var WalmartIndividualResultDisplay = React.createClass({
 });
 
 var WalmartReviewsDisplay = React.createClass ({
+  // name, overallRating, reviewer, reviewText, title, upVotes, downVotes
   render: function() {
     return (
       <div className="walmart-reviews-display hidden">
         Walmart Reviews
+      </div>
+    );
+  }
+});
+
+var WalmartIndividualReviewDisplay = React.createClass({
+  render: function() {
+    return (
+      <div>
+
       </div>
     );
   }
