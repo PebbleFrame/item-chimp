@@ -16,7 +16,8 @@ var WalmartRelatedResultsDisplay = React.createClass({
           thumbnailImage={result.thumbnailImage}
           customerRating={result.customerRating}
           numReviews={result.numReviews}
-          customerRatingImage={result.customerRatingImage} />
+          customerRatingImage={result.customerRatingImage}
+          itemId={result.itemId} />
       );
     });
     return (
