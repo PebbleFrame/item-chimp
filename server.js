@@ -85,6 +85,14 @@ app.post('/general-query', function(req, res) {
 
 });
 
+app.post('/specific-query', function(req, res) {
+  var bestbuySKU = req.body.sku;
+  // 'http://api.remix.bestbuy.com/v1/reviews(sku=1780275)?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
+
+  var walmartId = req.body.itemId;
+  // 'http://api.walmartlabs.com/v1/reviews/30135922?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
+});
+
 var port = process.env.PORT || 3000;
 
 app.listen(port, function() {
