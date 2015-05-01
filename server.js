@@ -4,14 +4,17 @@ var browserify = require('browserify-middleware');
 var reactify = require('reactify');
 var nunjucks = require('nunjucks');
 var config = require('./client/config');
-
+var authRouter = require('./server/auth-routes');
 var OperationHelper = require('apac').OperationHelper;
 var request = require('request');
 
 var app = express();
 app.use(express.static('public'));
 app.use(bodyParser());
-app.use('/auth', require('./server/auth-routes'));
+
+//require('./server/auth-routes')(authRouter);
+//app.use('/auth', authRouter);
+//app.use('/auth', require('./server/auth-routes'));
 
 nunjucks.configure('server/templates/views', {
   express: app
