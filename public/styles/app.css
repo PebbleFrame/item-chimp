@@ -67,11 +67,25 @@ button {
   border-radius: 7px;
 }
 
+/* ============== DASHBOARD DISPLAY ============= */
+
+.dashboard-option {
+  width: 200px;
+  padding: 8px;
+  margin: 12px 9px;
+  border: 1px solid #8E8E8E;
+  border-radius: 7px;
+  float: left;
+}
+
+.password-change-field {
+  margin-bottom: 5px;
+}
 
 /* ========== D3 =============== */
 
 .chart {
-  border: 2px solid black;
+  border: 1px solid gray;
 }
 
 .chart text {
