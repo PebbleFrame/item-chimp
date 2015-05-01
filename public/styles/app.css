@@ -53,7 +53,14 @@ button {
 
 .related-results-display {
   float: left;
-  width: 33.3333333%;
+  width: 33.33%;
+}
+
+.individual-display {
+  padding: 8px;
+  margin: 12px 9px;
+  border: 1px solid #8E8E8E;
+  border-radius: 7px;
 }
 
 

@@ -4,6 +4,7 @@ var React = require('react');
 var WalmartRelatedResultsDisplay = React.createClass({
   render: function() {
     var resultNodes = this.props.data.walmart.map(function(result, index) {
+      console.log(JSON.stringify(result));
       return (
         <WalmartIndividualResultDisplay name={result.name} />
       );
@@ -21,10 +22,10 @@ var WalmartRelatedResultsDisplay = React.createClass({
 var WalmartIndividualResultDisplay = React.createClass({
   render: function() {
     return (
-      <div className="walmart-individual-display">
-        <h4 className="product-name">
+      <div className="individual-display">
+        <h5 className="product-name">
           {this.props.name}
-        </h4>
+        </h5>
       </div>
     );
   }
