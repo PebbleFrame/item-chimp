@@ -59,8 +59,8 @@ var DisplayBox = React.createClass({
       success: function(data) {
         $('.walmart-reviews-display').removeClass('hidden');
 
-        console.log(data);
-        this.setState({walmartReviews: data});
+        console.log(data.reviews);
+        this.setState({walmartReviews: data.reviews});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('get-walmart-reviews', status, err.toString());
