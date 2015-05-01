@@ -50,7 +50,13 @@ var DisplayBox = React.createClass({
       }.bind(this)
     });
   },
-  handleWalmartReviewRequest: function(itemId) {
+  handleWalmartReviewRequest: function(itemId, name, image) {
+
+    this.setState({
+      reviewedItemName: name,
+      reviewedItemImage: image
+    });
+
     $.ajax({
       url: 'get-walmart-reviews',
       dataType: 'json',
@@ -77,7 +83,10 @@ var DisplayBox = React.createClass({
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
 
         <D3Chart />
-        <WalmartReviewsDisplay data={this.state.walmartReviews} />
+        <WalmartReviewsDisplay 
+          data={this.state.walmartReviews}
+          name={this.state.reviewedItemName}
+          image={this.state.reviewedItemImage} />
 
         <AmazonRelatedResultsDisplay data={this.state.amazon} />
         <WalmartRelatedResultsDisplay 

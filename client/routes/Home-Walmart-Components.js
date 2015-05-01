@@ -2,8 +2,8 @@ var React = require('react');
 
 // Component that displays related results from Walmart API
 var WalmartRelatedResultsDisplay = React.createClass({
-  handleWalmartReviewRequest: function(itemId) {
-    this.props.onWalmartReviewRequest(itemId);
+  handleWalmartReviewRequest: function(itemId, name, image) {
+    this.props.onWalmartReviewRequest(itemId, name, image);
   },
   render: function() {
     var resultNodes = this.props.data.walmart.map(function(result, index) {
@@ -38,7 +38,7 @@ var WalmartIndividualResultDisplay = React.createClass({
   handleWalmartReviewRequest: function() {
     $('.walmart-reviews-display').removeClass('hidden');
 
-    this.props.onWalmartReviewRequest({itemId: this.props.itemId});
+    this.props.onWalmartReviewRequest({itemId: this.props.itemId}, this.props.name, this.props.thumbnailImage);
   },  
   render: function() {
     return (
@@ -71,14 +71,14 @@ var WalmartIndividualResultDisplay = React.createClass({
 var WalmartReviewsDisplay = React.createClass ({
   // name, overallRating, reviewer, reviewText, title, upVotes, downVotes
   render: function() {
-    console.log(this.props.data)
     var resultNodes = this.props.data.walmartReviews.map(function(result, index) {
+      console.log(result);
       return (
-        <WalmartIndividualResultDisplay
+        <WalmartIndividualReviewDisplay
           title={result.title}
           overallRating={result.overallRating}
           reviewer={result.reviewer}
-          reviewTest={result.reviewText}
+          reviewText={result.reviewText}
           upVotes={result.upVotes}
           downVotes={result.downVotes} />
       );
@@ -87,6 +87,8 @@ var WalmartReviewsDisplay = React.createClass ({
     return (
       <div className="walmart-reviews-display hidden">
         <h4>Walmart Reviews</h4>
+        <h4>{this.props.name}</h4>
+        <img src={this.props.image} />
         {resultNodes}
       </div>
     );
