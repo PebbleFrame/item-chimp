@@ -66,14 +66,14 @@ button {
 
 /* ========== D3 =============== */
 
+.chart {
+  border: 2px solid black;
+}
+
 .chart text {
   fill: white;
   font: 10px sans-serif;
   text-anchor: middle;
-}
-
-.chart {
-  border: 1px solid gray;
 }
 
 .legend text {
@@ -86,4 +86,49 @@ button {
   fill: white;
   font: 14px sans-serif;
   text-anchor: start;
+}
+
+.d3-container {
+  height: 300;
+  width: 600;
+  position: relative;
+}
+
+.hoverbox {
+  border: 2px solid rgb(190,190,190);
+  border-radius: 10px;
+  background: rgb(255,255,255);
+  color: #333;
+  display: block;
+  font: 14px sans-serif;
+  left: 0px;
+  padding: 10px;
+  position: absolute;
+  text-align: left;
+  top: 0px;
+  z-index: 10;
+  opacity: 0;
+  box-sizing: border-box;
+}
+
+.hoverbox .username {
+  color: #406995;
+  font: 14px sans-serif;
+  text-anchor: start;
+  font-weight: bold;
+}
+
+.hoverbox .reviewTitle {
+  color: #888;
+  font: 14px sans-serif;
+  text-anchor: start;
+  margin-top: 5px;
+}
+
+.hoverbox .reviewText {
+  color: black;
+  font: 12px sans-serif;
+  text-anchor: start;
+  margin-top: 5px;
+  font-style: italic;
 }

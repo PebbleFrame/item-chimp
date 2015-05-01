@@ -1,4 +1,8 @@
-//var data = [4, 8, 15, 16, 23, 42];
+var storeData = [
+  {name: "Amazon", color: "steelblue"},
+  {name: "WalMart", color: "darkorange"},
+  {name: "Best Buy", color: "darkseagreen"},
+];
 
 var dataGen = function () {
   results = [];
@@ -6,20 +10,17 @@ var dataGen = function () {
     var obj = {};
     obj.numLines = Math.floor(Math.random() * 39) + 20;
     obj.stars = Math.round(Math.random() * 10)/2;
-    obj.site = Math.floor(Math.random() * 3);
-    obj.id = Math.floor(obj.stars*2);
-    obj.index = i;
+    obj.site = storeData[Math.floor(Math.random() * 3)];
+    obj.username = 'User' + i;
+    obj.reviewTitle = 'NO CATS INCLUDED';
+    obj.review = "I thought this product was crap.  It didn't come with any cats.  \
+    I require cats in all my products and I plan on writing a very angry letter to \
+    the manufacturer as a result of not having my cat needs met.";
+    obj.reviewStart = obj.review.slice(0, 110) + "...";
     results.push(obj);
   }
   return results;
 };
-
-
-var storeData = [
-  {name: "Amazon", color: "steelblue"},
-  {name: "WalMart", color: "darkorange"},
-  {name: "Best Buy", color: "darkseagreen"},
-];
 
 var data = dataGen();
 
@@ -72,7 +73,7 @@ circle.append("circle")
   .attr("cx", 0)
   .attr("cy", 0)
   .attr("r", function(d) { return d.numLines/2; })
-  .style("fill", function(d) { return storeData[d.site].color; })
+  .style("fill", function(d) { return d.site.color; })
   .style("stroke", "white")
   .style("stroke-width", 2)
   .style("stroke-opacity", 0.5);
@@ -115,20 +116,56 @@ storeLegend.append("text")
 
 var nodes = chart.selectAll("g.node");
 
-var tooltip = chart.append("g")
-  .classed("hoverbox", true)
-  .attr("transform", "translate(20,10)");
 
-tooltip.append("rect")
-  .attr("x", 50)
-  .attr("y", 50)
-  .attr("width", 80)
-  .attr("height", 25)
-  .style("fill", "gray");
+var ttOffset = 10;
+var ttWidth = 220;
+var ttHeight = 105;
+
+var tooltip = d3.select(".d3-container")
+  .append("div")
+  .style("width", ttWidth + "px")
+  .style("height", ttHeight + "px")
+  .classed("hoverbox", true);
+
+tooltip.append('div')
+  .classed("username", true);
+
+tooltip.append('div')
+  .classed("reviewTitle", true);
+
+tooltip.append('div')
+  .classed("reviewText", true);
 
 nodes.on('mouseover', function(d) {
-  //tooltip.style("display", "block");
-  console.log("numLines: " + d.numLines);
+  var mouseLoc = d3.mouse(this.parentNode);
+  if (mouseLoc[0] + ttOffset + ttWidth > width) {
+    mouseLoc[0] = mouseLoc[0] - ttOffset*2 - ttWidth;
+  }
+  if (mouseLoc[1] + ttOffset + ttHeight > height) {
+    mouseLoc[1] = mouseLoc[1] - ttOffset*2 - ttHeight;
+  }
+   tooltip
+        .style("display", "block")
+        .style("left", (mouseLoc[0]+ttOffset)+"px")
+        .style("top", (mouseLoc[1]+ttOffset)+"px")
+        .transition()
+        .duration(200)
+        .style('opacity', 1);
+  tooltip.select(".username")
+    .text(d.username + " on " + d.site.name);
+  tooltip.select(".reviewTitle")
+    .text(d.reviewTitle);
+  tooltip.select(".reviewText")
+    .text(d.reviewStart);
+});
+
+nodes.on('mouseout', function(d) {
+  tooltip.transition()
+    .duration(200)
+    .style('opacity', 0)
+    .each('end', function () {
+      tooltip.style("display", "none");
+    });
 });
 
 force.start();
@@ -138,8 +175,8 @@ force.on("tick", function(e) {
   var k = .1 * e.alpha;
 
   data.forEach(function(o,i) {
-    o.y += (foci[o.id].y - o.y) * k;
-    o.x += (foci[o.id].x - o.x) * k;
+    o.y += (foci[o.stars*2].y - o.y) * k;
+    o.x += (foci[o.stars*2].x - o.x) * k;
     chart.selectAll("g.node")
       .attr("transform", function(d) { 
         return "translate(" + d.x + "," + d.y + ")";
