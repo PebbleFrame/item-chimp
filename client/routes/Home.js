@@ -57,10 +57,12 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: itemId,
       success: function(data) {
+        $('.walmart-reviews-display').removeClass('hidden');
+
         this.setState({walmartReviews: data});
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error('general-query', status, err.toString());
+        console.error('get-walmart-reviews', status, err.toString());
       }.bind(this)
     });
   },
