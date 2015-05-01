@@ -4,19 +4,6 @@ var React = require('react');
 var WalmartRelatedResultsDisplay = React.createClass({
   handleWalmartReviewRequest: function(itemId) {
     this.props.onWalmartReviewRequest(itemId);
-
-    // $.ajax({
-    //   url: 'get-walmart-reviews',
-    //   dataType: 'json'
-    //   type: 'POST',
-    //   data: {itemId: this.props.itemId},
-    //   success: function(data) {
-    //     this.props.onWalmartReviewRequest({reviews: reviews});
-    //   }.bind(this),
-    //   error: function(xhr, status, err) {
-    //     console.error('general-query', status, err.toString());
-    //   }.bind(this)
-    // });
   },
   render: function() {
     var resultNodes = this.props.data.walmart.map(function(result, index) {
@@ -82,8 +69,8 @@ var WalmartIndividualResultDisplay = React.createClass({
 var WalmartReviewsDisplay = React.createClass ({
   render: function() {
     return (
-      <div>
-
+      <div className="walmart-reviews-display hidden">
+        Walmart Reviews
       </div>
     );
   }
@@ -92,3 +79,5 @@ var WalmartReviewsDisplay = React.createClass ({
 module.exports.WalmartRelatedResultsDisplay = WalmartRelatedResultsDisplay;
 
 module.exports.WalmartIndividualResultDisplay = WalmartIndividualResultDisplay;
+
+module.exports.WalmartReviewsDisplay = WalmartReviewsDisplay;

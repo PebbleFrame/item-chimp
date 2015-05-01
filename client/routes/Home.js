@@ -3,6 +3,7 @@ var React = require('react');
 var WalmartComponents = require('./Home-Walmart-Components');
 var WalmartRelatedResultsDisplay = WalmartComponents.WalmartRelatedResultsDisplay;
 var WalmartIndividualResultDisplay = WalmartComponents.WalmartIndividualResultDisplay;
+var WalmartReviewsDisplay = WalmartComponents.WalmartReviewsDisplay;
 
 var AmazonComponents = require('./Home-Amazon-Components');
 var AmazonRelatedResultsDisplay = AmazonComponents.AmazonRelatedResultsDisplay;
@@ -19,7 +20,8 @@ var DisplayBox = React.createClass({
     return {
       amazon: {amazon: []},
       walmart: {walmart: []},
-      bestbuy: {bestbuy: []},      
+      bestbuy: {bestbuy: []},
+      walmartReviews: {walmartReviews: []}     
     };
   },
 
@@ -47,13 +49,26 @@ var DisplayBox = React.createClass({
     });
   },
   handleWalmartReviewRequest: function(itemId) {
-    console.log(itemId);
+    $.ajax({
+      url: 'get-walmart-reviews',
+      dataType: 'json',
+      type: 'POST',
+      data: itemId,
+      success: function(data) {
+        this.setState({walmartReviews: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('general-query', status, err.toString());
+      }.bind(this)
+    });
   },
   render: function() {
     return (
       <div className="displayBox">
         
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
+
+        <WalmartReviewsDisplay />
 
         <AmazonRelatedResultsDisplay data={this.state.amazon} />
         <WalmartRelatedResultsDisplay 
