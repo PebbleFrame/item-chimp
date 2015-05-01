@@ -4,8 +4,8 @@ var React = require('react');
 var AmazonRelatedResultsDisplay = React.createClass({
   render: function() {
     var resultNodes = this.props.data.amazon.map(function(result, index) {
-      console.log(result);
-      var attributes = result.Items.Item.ItemAttributes;
+      var attributes = result.ItemAttributes;
+      console.log(attributes);
       return (
         <AmazonIndividualResultDisplay name={attributes.Title} />
       );
