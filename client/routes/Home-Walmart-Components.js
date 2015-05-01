@@ -4,7 +4,6 @@ var React = require('react');
 var WalmartRelatedResultsDisplay = React.createClass({
   render: function() {
     var resultNodes = this.props.data.walmart.map(function(result, index) {
-      console.log(JSON.stringify(result));
       return (
         <WalmartIndividualResultDisplay name={result.name} />
       );
