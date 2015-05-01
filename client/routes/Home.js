@@ -71,7 +71,7 @@ var DisplayBox = React.createClass({
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
 
         <D3Chart />
-        <WalmartReviewsDisplay />
+        <WalmartReviewsDisplay data={this.state.walmartReviews} />
 
         <AmazonRelatedResultsDisplay data={this.state.amazon} />
         <WalmartRelatedResultsDisplay 
