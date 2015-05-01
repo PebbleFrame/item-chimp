@@ -42,6 +42,8 @@ var DisplayBox = React.createClass({
           amazon: data[1],
           bestbuy: data[2]
         });
+
+        $('.query-form-container img').addClass('hidden');
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('general-query', status, err.toString());
@@ -87,6 +89,8 @@ var SearchForm = React.createClass({
     // Prevent page from reloading on submit
     e.preventDefault();
 
+    $('.query-form-container img').removeClass('hidden');
+
     // Grab query content from "ref" in input box
     var query = React.findDOMNode(this.refs.query).value.trim();
 
@@ -107,6 +111,7 @@ var SearchForm = React.createClass({
 
           <center><button className="btn btn-primary">Submit</button></center>
         </form>
+        <img src="images/spiffygif_46x46.gif" className="hidden" />
       </div>
     );
   }
