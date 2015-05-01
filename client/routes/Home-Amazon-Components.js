@@ -23,10 +23,10 @@ var AmazonRelatedResultsDisplay = React.createClass({
 var AmazonIndividualResultDisplay = React.createClass({
   render: function() {
     return (
-      <div className="amazon-individual-display">
-        <h4 className="product-name">
+      <div className="individual-display">
+        <h5 className="product-name">
           {this.props.name}
-        </h4>
+        </h5>
       </div>
     );
   }

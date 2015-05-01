@@ -4,8 +4,19 @@ var React = require('react');
 var WalmartRelatedResultsDisplay = React.createClass({
   render: function() {
     var resultNodes = this.props.data.walmart.map(function(result, index) {
+
+      result.shortDescription = result.shortDescription || '';
+
       return (
-        <WalmartIndividualResultDisplay name={result.name} />
+        <WalmartIndividualResultDisplay 
+          name={result.name} 
+          salePrice={result.salePrice}
+          upc={result.upc} 
+          shortDescription={result.shortDescription}
+          thumbnailImage={result.thumbnailImage}
+          customerRating={result.customerRating}
+          numReviews={result.numReviews}
+          customerRatingImage={result.customerRatingImage} />
       );
     });
     return (
@@ -21,10 +32,27 @@ var WalmartRelatedResultsDisplay = React.createClass({
 var WalmartIndividualResultDisplay = React.createClass({
   render: function() {
     return (
-      <div className="walmart-individual-display">
-        <h4 className="product-name">
+      <div className="individual-display">
+        <h5 className="product-name">
           {this.props.name}
-        </h4>
+        </h5>
+        <img src={this.props.thumbnailImage} />
+        <div>
+          ${this.props.salePrice}
+        </div>
+        <div>
+          UPC: ${this.props.salePrice}
+        </div>
+        <div>
+          Description: {this.props.description}
+        </div>
+        <div>
+          Rating: {this.props.customerRating}
+        </div>
+        <div>
+          {this.props.numReviews} reviews
+        </div>
+        <img src={this.props.customerRatingImage} />
       </div>
     );
   }

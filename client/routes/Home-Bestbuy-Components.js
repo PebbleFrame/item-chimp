@@ -21,10 +21,10 @@ var BestbuyRelatedResultsDisplay = React.createClass({
 var BestbuyIndividualResultDisplay = React.createClass({
   render: function() {
     return (
-      <div className="bestbuy-individual-display">
-        <h4 className="product-name">
+      <div className="individual-display">
+        <h5 className="product-name">
           {this.props.name}
-        </h4>
+        </h5>
       </div>
     );
   }
