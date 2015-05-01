@@ -92,12 +92,26 @@ app.post('/general-query', function(req, res) {
 
 });
 
-app.post('/specific-query', function(req, res) {
-  var bestbuySKU = req.body.sku;
-  // 'http://api.remix.bestbuy.com/v1/reviews(sku=1780275)?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
+//var bestbuySKU = req.body.sku;
+// 'http://api.remix.bestbuy.com/v1/reviews(sku=1780275)?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
 
-  var walmartId = req.body.itemId;
+
+
+app.post('/get-walmart-reviews', function(req, res) {
+  var itemId = req.body.itemId;
+//  var itemId = 30135922
   // 'http://api.walmartlabs.com/v1/reviews/30135922?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
+  request({
+      url: 'http://api.walmartlabs.com/v1/reviews/' + itemId + '?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
+    }, function (error, response, walmartReviewBody) {
+      if (!error && response.statusCode == 200) {
+        var WalmartReviewstoSend = walmartReviewBody.reviews;
+        res.send([
+          {walmartReviews: WalmartReviewstoSend}
+        ]);
+      }
+    }
+  );
 });
 
 var port = process.env.PORT || 3000;
