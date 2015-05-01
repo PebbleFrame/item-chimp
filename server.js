@@ -69,7 +69,7 @@ app.post('/general-query', function(req, res) {
 
 
           request({
-              url: 'http://api.remix.bestbuy.com/v1/products(search=' + query + ')?show=name,sku,salePrice,customerReviewAverage,customerReviewCount,shortDescription,upc,image&format=json&apiKey=n34qnnunjqcb9387gthg8625',
+              url: 'http://api.remix.bestbuy.com/v1/products(name=' + query + '*)?show=name,sku,salePrice,customerReviewAverage,customerReviewCount,shortDescription,upc,image&format=json&apiKey=n34qnnunjqcb9387gthg8625',
               json: true
             }, function (error, response, bestbuyBody) {
               if (!error && response.statusCode == 200) {
