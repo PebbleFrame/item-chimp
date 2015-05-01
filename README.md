@@ -7,7 +7,7 @@
   - __Product Owner__: Chistina Holland
   - __Scrum Master__: Michael Cheng
   - __Development Team Members__: Jeff Peoples, Vinaya Gopisetti
-  - __Instructor: Nick Ferraro CONFLICT
+  - __Tech Mentor: Nick Ferraro is Awesome in a conflicting way
 
 ## Table of Contents
 
