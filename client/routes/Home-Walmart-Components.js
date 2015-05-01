@@ -52,7 +52,7 @@ var WalmartIndividualResultDisplay = React.createClass({
           ${this.props.salePrice}
         </div>
         <div>
-          UPC: ${this.props.upc}
+          UPC: {this.props.upc}
         </div>
         <div>
           Description: {this.props.description}
@@ -97,7 +97,9 @@ var WalmartIndividualReviewDisplay = React.createClass({
   render: function() {
     return (
       <div>
-
+        <h5>
+          {this.props.title}
+        </h5>
       </div>
     );
   }

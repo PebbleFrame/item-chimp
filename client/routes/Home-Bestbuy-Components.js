@@ -42,7 +42,7 @@ var BestbuyIndividualResultDisplay = React.createClass({
           ${this.props.salePrice}
         </div>
         <div>
-          UPC: ${this.props.upc}
+          UPC: {this.props.upc}
         </div>
         <div>
           Description: {this.props.shortDescription}
