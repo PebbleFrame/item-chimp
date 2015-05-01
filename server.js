@@ -11,6 +11,7 @@ var request = require('request');
 var app = express();
 app.use(express.static('public'));
 app.use(bodyParser());
+app.use('/auth', require('./server/auth-routes'));
 
 nunjucks.configure('server/templates/views', {
   express: app
@@ -49,6 +50,7 @@ app.post('/general-query', function(req, res) {
     // console.log(results.ItemSearchResponse.Items[0].Item);
 
     var AmazonResultsToSend = results.ItemSearchResponse.Items[0].Item;
+    console.log(AmazonResultsToSend);
 
     request({
         url: 'http://api.walmartlabs.com/v1/search?query=' + query + '&format=json&apiKey=va35uc9pw8cje38csxx7csk8',
