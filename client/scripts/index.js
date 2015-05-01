@@ -23,8 +23,8 @@ var Navbar = React.createClass({
               <li className="active home">
                 <Router.Link to="home">Home</Router.Link>
               </li>
-              <li className="about">
-                <Router.Link to="about">About</Router.Link>
+              <li className="dashboard">
+                <Router.Link to="dashboard">Dashboard</Router.Link>
               </li>
             </ul>
           </div>
@@ -70,7 +70,7 @@ var App = React.createClass({
 // Identifies the files that each route refers to
 var routes = {
   Home: require('../routes/Home'),
-  About: require('../routes/About')
+  Dashboard: require('../routes/Dashboard')
 };
 
 // Identifies "App" variable as the handler
@@ -78,7 +78,7 @@ var routes = {
 var routes = (
   <Router.Route name="app" path="/" handler={App}>
     <Router.Route name="home" path="/" handler={routes.Home}/>
-    <Router.Route name="about" path="/about" handler={routes.About}/>
+    <Router.Route name="dashboard" path="/dashboard" handler={routes.Dashboard}/>
     <Router.DefaultRoute handler={routes.Home}/>
   </Router.Route>
 );
