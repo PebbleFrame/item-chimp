@@ -14,6 +14,9 @@ var BestbuyRelatedResultsDisplay = BestbuyComponents.BestbuyRelatedResultsDispla
 var BestbuyIndividualResultDisplay = BestbuyComponents.BestbuyIndividualResultDisplay;
 var BestbuyReviewsDisplay = BestbuyComponents.BestbuyReviewsDisplay;
 
+var D3Components = require('./D3-Chart.js');
+var D3Chart = D3Components.D3Chart;
+
 // Centralized display for all components
 var DisplayBox = React.createClass({
   // Sets initial state properties to empty arrays to avoid undefined errors
@@ -110,7 +113,11 @@ var DisplayBox = React.createClass({
         
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
 
-        <D3Chart />
+        <D3Chart
+          walmartData={this.state.walmartReviews}
+          walmartName={this.state.walmartReviewedItemName}
+          bestbuyData={this.state.bestbuyReviews}
+          bestbuyName={this.state.bestbuyReviewedItemName} />
 
         <div>
           <WalmartReviewsDisplay 
@@ -170,15 +177,7 @@ var SearchForm = React.createClass({
   }
 });
 
-var D3Chart = React.createClass({
-  render: function() {
-    return (
-      <div className="d3-container">
-        <svg className="chart"></svg>
-      </div>
-    );
-  }
-});
+
 
 // Home page container for the DisplayBox component
 var Home = React.createClass({
