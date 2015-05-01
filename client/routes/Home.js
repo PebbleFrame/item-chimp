@@ -46,6 +46,9 @@ var DisplayBox = React.createClass({
       }.bind(this)
     });
   },
+  handleWalmartReviewRequest: function(itemId) {
+    console.log(itemId);
+  },
   render: function() {
     return (
       <div className="displayBox">
@@ -53,7 +56,9 @@ var DisplayBox = React.createClass({
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
 
         <AmazonRelatedResultsDisplay data={this.state.amazon} />
-        <WalmartRelatedResultsDisplay data={this.state.walmart} />
+        <WalmartRelatedResultsDisplay 
+          data={this.state.walmart}
+          onWalmartReviewRequest={this.handleWalmartReviewRequest} />
         <BestbuyRelatedResultsDisplay data={this.state.bestbuy} />
 
       </div>

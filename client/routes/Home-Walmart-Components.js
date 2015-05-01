@@ -2,8 +2,8 @@ var React = require('react');
 
 // Component that displays related results from Walmart API
 var WalmartRelatedResultsDisplay = React.createClass({
-  handleReviewRequest: function() {
-    console.log('got review request!!!!!!!!')
+  handleWalmartReviewRequest: function(itemId) {
+    this.props.onWalmartReviewRequest(itemId);
 
     // $.ajax({
     //   url: 'get-walmart-reviews',
@@ -11,7 +11,7 @@ var WalmartRelatedResultsDisplay = React.createClass({
     //   type: 'POST',
     //   data: {itemId: this.props.itemId},
     //   success: function(data) {
-    //     this.props.onReviewRequest({reviews: reviews});
+    //     this.props.onWalmartReviewRequest({reviews: reviews});
     //   }.bind(this),
     //   error: function(xhr, status, err) {
     //     console.error('general-query', status, err.toString());
@@ -34,7 +34,7 @@ var WalmartRelatedResultsDisplay = React.createClass({
           numReviews={result.numReviews}
           customerRatingImage={result.customerRatingImage}
           itemId={result.itemId} 
-          onReviewRequest={this.handleReviewRequest} />
+          onWalmartReviewRequest={this.handleWalmartReviewRequest} />
       );
     }.bind(this));
     return (
@@ -48,12 +48,12 @@ var WalmartRelatedResultsDisplay = React.createClass({
 
 // Component that displays individual results for Walmart
 var WalmartIndividualResultDisplay = React.createClass({
-  handleReviewRequest: function() {
-    this.props.onReviewRequest({itemId: this.props.itemId});
+  handleWalmartReviewRequest: function() {
+    this.props.onWalmartReviewRequest({itemId: this.props.itemId});
   },  
   render: function() {
     return (
-      <div className="individual-display" onClick={this.handleReviewRequest}>
+      <div className="individual-display" onClick={this.handleWalmartReviewRequest}>
         <h5 className="product-name">
           {this.props.name}
         </h5>
