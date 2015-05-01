@@ -1,8 +1,10 @@
 var Bookshelf = require('bookshelf');
 
-//Create orm wrapper for database to 
-var orm = {}
-orm.db = Bookshelf.initialize({
+//Create db wrapper for database to 
+var db = {}
+
+
+var knex = require('knex')({
   client: 'mysql',
   connection: {
     host: 'localhost',
@@ -12,30 +14,48 @@ orm.db = Bookshelf.initialize({
     charset: 'utf8',
   }
 });
+db.orm = require('bookshelf')(knex);
+
 
 //-------------TABLES VERIFICATION START-----------/
-  orm.db.knex.schema.hasTable('users').then(function(exists) {
-    if (!exists) {
+  db.orm.knex.schema.hasTable('users').then(function(exists) {
+    if (!exists) 
         console.log('Table users does not exist');
-    }
-    else{
-        console.log('Initializing table users');
-    }  
+  });
+
+  db.orm.knex.schema.hasTable('reviews').then(function(exists) {
+    if (!exists)
+        console.log('Table reviews does not exist');
+  });
+
+  db.orm.knex.schema.hasTable('products').then(function(exists) {
+    if (!exists) 
+        console.log('Table products does not exist');
+  });
+
+  db.orm.knex.schema.hasTable('followers').then(function(exists) {
+    if (!exists) 
+        console.log('Table followers does not exist');
+  });
+
+  db.orm.knex.schema.hasTable('watchers').then(function(exists) {
+    if (!exists) 
+        console.log('Table watchers does not exist');
   });
 //-------------TABLES VERIFICATION END-------------/
 
 //-------------ORM FOR USERS START-----------------/
   //Create user Model
-  orm.User = orm.db.Model.extend({
+  db.User = db.orm.Model.extend({
      tableName:"users"
   });
 
   //Create user Collection
-  orm.Users = new orm.db.Collection();
-  orm.Users.model = orm.User;
+  db.Users = new db.orm.Collection();
+  db.Users.model = db.User;
 
   //Create New Users --For Development Only
-  var user = new orm.User({
+  var user = new db.User({
     username: "Gilgamesh",
     password: 1,
     email: "g@gmail.com"
@@ -43,60 +63,59 @@ orm.db = Bookshelf.initialize({
 
   //Save user to the database
   user.save().then(function(newUser) {
-    orm.Users.add(newUser);
+    db.Users.add(newUser);
     console.log("User Saved")
   });
 
-  user = new orm.User({
+  user = new db.User({
     username: "Enkidu",
     password: 1,
     email: "e@gmail.com"
   });
 
   user.save().then(function(newUser) {
-    orm.Users.add(newUser);
+    db.Users.add(newUser);
     console.log("User Saved")
   });
-
 //-------------ORM FOR USERS END-------------------/
 
 //-------------ORM FOR REVIEWS START---------------/
   //Create user Model
-  orm.Review = orm.db.Model.extend({
+  db.Review = db.orm.Model.extend({
      tableName:"reviews"
   });
 
   //Create Review Collection
-  orm.Reviews = new orm.db.Collection();
-  orm.Reviews.model = orm.Review;
+  db.Reviews = new db.orm.Collection();
+  db.Reviews.model = db.Review;
 
-  //Create New Review (Template) --For Development Only
-  var review = new orm.Review({
+  //Create New Review (template) --For Development Only
+  var review = new db.Review({
     user_id: 1,
     upc: 12345678910,
     rating: 2,
     review_text: 'AWESOME'
   });
 
-  //Review Save (Template) to the database --For Development Only
+  //Review Save (template) to the database --For Development Only
   review.save().then(function(newReview) {
-    orm.Reviews.add(newReview);
+    db.Reviews.add(newReview);
     console.log("Review Saved")
   });
 //-------------ORM FOR REVIEWS END-----------------/
 
 //-------------ORM FOR PRODUCTS START--------------/
   //Create Products Model
-  orm.Product = orm.db.Model.extend({
+  db.Product = db.orm.Model.extend({
      tableName:"products"
   });
 
   //Create product Collection
-  orm.Products = new orm.db.Collection();
-  orm.Products.model = orm.Product;
+  db.Products = new db.orm.Collection();
+  db.Products.model = db.Product;
 
   //Create New Product--For Development Only
-  var product = new orm.Product({
+  var product = new db.Product({
     upc: 123456789101,
     price: 400,
     review_count: 0
@@ -104,57 +123,63 @@ orm.db = Bookshelf.initialize({
 
   //Save Product to the database--For Development Only
   product.save().then(function(newProduct) {
-    orm.Products.add(newProduct);
+    db.Products.add(newProduct);
     console.log("Product Saved")
   });
 //-------------ORM FOR PRODUCTS END----------------/
 
 //-------------ORM FOR FOLLOWERS START-------------/
   //Create Follower Model
-  orm.Follower = orm.db.Model.extend({
+  db.Follower = db.orm.Model.extend({
      tableName:"followers"
   });
 
   //Create user Collection
-  orm.Followers = new orm.db.Collection();
-  orm.Followers.model = orm.Follower;
+  db.Followers = new db.orm.Collection();
+  db.Followers.model = db.Follower;
 
   //Create New Follower--For Development Only
-  var follower = new orm.Follower({
+  var follower = new db.Follower({
     user_id: 1,
     follower_id: 2
   });
 
   //Save follower to the database--For Development Only
   follower.save().then(function(newFollower) {
-    orm.Followers.add(newFollower);
+    db.Followers.add(newFollower);
     console.log("Follower Saved")
   });
 //-------------ORM FOR FOLLOWERS END---------------/
 
 //-------------ORM FOR WATCHERS START--------------/
   //Create Watcher Model
-  orm.Watcher = orm.db.Model.extend({
+  db.Watcher = db.orm.Model.extend({
      tableName:"watchers"
   });
 
   //Create user Collection
-  orm.Watchers = new orm.db.Collection();
-  orm.Watchers.model = orm.Watcher;
+  db.Watchers = new db.orm.Collection();
+  db.Watchers.model = db.Watcher;
 
   //Create New Watcher--For Development Only
-  var watcher = new orm.Watcher({
+  var watcher = new db.Watcher({
     user_id: 1,
     product_id: 1
   });
 
   //Save watcher to the database--For Development Only
   watcher.save().then(function(newWatcher) {
-    orm.Watchers.add(newWatcher);
+    db.Watchers.add(newWatcher);
     console.log("Watcher Saved")
   });
 //-------------ORM FOR WATCHERS END----------------/
 
+//-------------API CONFIGURATION START-------------/
+db.insert = function(model,obj){
+  var obj = new this.[model](obj);
 
+}
 
-module.exports = orm;
+//-------------API CONFIGURATION START-------------/
+
+module.exports = db;
