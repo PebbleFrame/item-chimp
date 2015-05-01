@@ -5,7 +5,7 @@ var BestbuyRelatedResultsDisplay = React.createClass({
   render: function() {
     var resultNodes = this.props.data.bestbuy.map(function(result, index) {
       return (
-        <WalmartIndividualResultDisplay name={result.name} />
+        <BestbuyIndividualResultDisplay name={result.name} />
       );
     });
     return (
