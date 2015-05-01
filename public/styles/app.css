@@ -2,6 +2,21 @@ body {
   font: 300 16px/22px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+/* ================ CLEARFIX ============= */
+.clearfix:before,
+.clearfix:after {
+  content: "";
+  display: table;
+}
+ 
+.clearfix:after {
+  clear: both;
+}
+ 
+.clearfix {
+  zoom: 1; /* ie 6/7 */
+}
+
 /* ================ LOGO AREA ============= */
 
 .logo-container {
@@ -88,7 +103,7 @@ button {
 /* ============== DASHBOARD DISPLAY ============= */
 
 .dashboard-option {
-  width: 200px;
+  width: 250px;
   padding: 8px;
   margin: 12px 9px;
   border: 1px solid #8E8E8E;
@@ -98,6 +113,40 @@ button {
 
 .password-change-field {
   margin-bottom: 5px;
+}
+.contact-change {
+  margin-bottom: 5px;
+}
+
+a.unfollow:link, a.unfollow:visited {
+  font-size: 12px;
+  background-color: #952C2A;
+  color: white;
+  margin-left: 5px;
+  border: 0px;
+  border-radius: 5px;
+  padding: 4px;
+}
+
+a.unfollow:hover, a.unfollow:active {
+  color: white;
+  background-color: #D93F3C;
+  text-decoration: none;
+}
+
+a.follow:link, a.follow:visited {
+  font-size: 12px;
+  background-color: #406995;
+  color: white;
+  margin-left: 5px;
+  border: 0px;
+  border-radius: 5px;
+  padding: 4px;
+}
+a.follow:hover, a.follow:active {
+  color: white;
+  background-color: #5186BE;
+  text-decoration: none;
 }
 
 /* ========== D3 =============== */
