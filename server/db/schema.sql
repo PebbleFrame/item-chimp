@@ -35,7 +35,7 @@ DROP TABLE IF EXISTS `reviews`;
 CREATE TABLE `reviews` (
   `review_id` INTEGER(12) NULL AUTO_INCREMENT DEFAULT NULL,
   `user_id` INTEGER(10) NULL DEFAULT NULL,
-  `upc` INTEGER(12) NULL DEFAULT NULL,
+  `upc` BIGINT(12) NULL DEFAULT NULL,
   `rating` INTEGER(3) NULL DEFAULT NULL,
   `review_text` VARCHAR(500) NULL DEFAULT NULL,
   PRIMARY KEY (`review_id`)
@@ -46,25 +46,25 @@ CREATE TABLE `reviews` (
 -- 
 -- ---
 
-DROP TABLE IF EXISTS `following`;
+DROP TABLE IF EXISTS `followers`;
     
-CREATE TABLE `following` (
+CREATE TABLE `followers` (
   `user_id` INTEGER(10) NULL AUTO_INCREMENT DEFAULT NULL,
   `follower_id` INTEGER(10) NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`, `follower_id`)
 );
 
 -- ---
--- Table 'watching'
+-- Table 'watchers'
 -- 
 -- ---
 
-DROP TABLE IF EXISTS `watching`;
+DROP TABLE IF EXISTS `watchers`;
     
-CREATE TABLE `watching` (
+CREATE TABLE `watchers` (
   `user_id` INTEGER(10) NULL AUTO_INCREMENT DEFAULT NULL,
-  `upc` INTEGER(12) NULL DEFAULT NULL,
-  PRIMARY KEY (`user_id`, `upc`)
+  `product_id` BIGINT(12) NULL DEFAULT NULL,
+  PRIMARY KEY (`user_id`, `product_id`)
 );
 
 -- ---
@@ -72,13 +72,14 @@ CREATE TABLE `watching` (
 -- 
 -- ---
 
-DROP TABLE IF EXISTS `product`;
+DROP TABLE IF EXISTS `products`;
     
-CREATE TABLE `product` (
-  `upc` INTEGER(12) NULL AUTO_INCREMENT DEFAULT NULL,
+CREATE TABLE `products` (
+  `product_id` BIGINT(12) NULL AUTO_INCREMENT DEFAULT NULL,
+  `upc` BIGINT(12) NULL DEFAULT NULL,
   `price` INTEGER(5) NULL DEFAULT NULL,
-  `review_ count` INTEGER(4) NULL DEFAULT NULL,
-  PRIMARY KEY (`upc`)
+  `review_count` INTEGER(4) NULL DEFAULT 0,
+  PRIMARY KEY (`product_id`, `upc`)
 );
 
 -- ---
@@ -86,10 +87,10 @@ CREATE TABLE `product` (
 -- ---
 
 ALTER TABLE `reviews` ADD FOREIGN KEY (user_id) REFERENCES `users` (`user_id`);
-ALTER TABLE `following` ADD FOREIGN KEY (user_id) REFERENCES `users` (`user_id`);
-ALTER TABLE `following` ADD FOREIGN KEY (follower_id) REFERENCES `users` (`user_id`);
-ALTER TABLE `watching` ADD FOREIGN KEY (user_id) REFERENCES `users` (`user_id`);
-ALTER TABLE `watching` ADD FOREIGN KEY (upc) REFERENCES `product` (`upc`);
+ALTER TABLE `followers` ADD FOREIGN KEY (user_id) REFERENCES `users` (`user_id`);
+ALTER TABLE `followers` ADD FOREIGN KEY (follower_id) REFERENCES `users` (`user_id`);
+ALTER TABLE `watchers` ADD FOREIGN KEY (user_id) REFERENCES `users` (`user_id`);
+ALTER TABLE `watchers` ADD FOREIGN KEY (product_id) REFERENCES `products` (`product_id`);
 
 -- ---
 -- Table Properties
