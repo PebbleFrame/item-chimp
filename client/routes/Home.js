@@ -70,6 +70,7 @@ var DisplayBox = React.createClass({
         
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
 
+        <D3Chart />
         <WalmartReviewsDisplay />
 
         <AmazonRelatedResultsDisplay data={this.state.amazon} />
@@ -112,6 +113,16 @@ var SearchForm = React.createClass({
           <center><button className="btn btn-primary">Submit</button></center>
         </form>
         <img src="images/spiffygif_46x46.gif" className="hidden" />
+      </div>
+    );
+  }
+});
+
+var D3Chart = React.createClass({
+  render: function() {
+    return (
+      <div className="d3-container">
+        <svg className="chart"></svg>
       </div>
     );
   }
