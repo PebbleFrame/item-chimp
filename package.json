@@ -18,6 +18,7 @@
   "homepage": "https://github.com/PebbleFrame/shopagator",
   "dependencies": {
     "bookshelf": "^0.7.9",
+    "apac": "^1.0.0",
     "browserify-middleware": "^5.0.2",
     "express": "^4.12.3",
     "jquery": "^2.1.4",
