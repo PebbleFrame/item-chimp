@@ -113,6 +113,24 @@ storeLegend.append("text")
   .attr("dy", "0.35em")
   .text(function(d) { return d.name; } );
 
+var nodes = chart.selectAll("g.node");
+
+var tooltip = chart.append("g")
+  .classed("hoverbox", true)
+  .attr("transform", "translate(20,10)");
+
+tooltip.append("rect")
+  .attr("x", 50)
+  .attr("y", 50)
+  .attr("width", 80)
+  .attr("height", 25)
+  .style("fill", "gray");
+
+nodes.on('mouseover', function(d) {
+  //tooltip.style("display", "block");
+  console.log("numLines: " + d.numLines);
+});
+
 force.start();
 
 
