@@ -1,40 +1,14 @@
-// ------ DUMMY DATA ---------
-
-var storeData = [
-  {name: "Amazon", color: "steelblue"},
-  {name: "WalMart", color: "darkorange"},
-  {name: "Best Buy", color: "darkseagreen"},
-];
-
-var dataGen = function () {
-  results = [];
-  for (var i = 0; i < 20; i++) {
-    var obj = {};
-    obj.numLines = Math.floor(Math.random() * 39) + 20;
-    obj.stars = Math.round(Math.random() * 10)/2;
-    obj.site = storeData[Math.floor(Math.random() * 3)];
-    obj.username = 'User' + i;
-    obj.reviewTitle = 'NO CATS INCLUDED';
-    obj.review = "I thought this product was crap.  It didn't come with any cats.  \
-    I require cats in all my products and I plan on writing a very angry letter to \
-    the manufacturer as a result of not having my cat needs met.";
-    obj.reviewStart = obj.review.slice(0, 110) + "...";
-    results.push(obj);
-  }
-  return results;
-};
-
-// ---------------------------------
-
-
-
 
 // ------ CONFIG DATA ---------
 
 var d3Engine = {};
 
 
-d3Engine.data = dataGen();
+var prodKey = [
+  {name: "Amazon", color: "steelblue"},
+  {name: "WalMart", color: "darkorange"},
+  {name: "Best Buy", color: "darkseagreen"},
+];
 
 d3Engine.legendData = ['0 stars', '1 star', '3 stars', '4 stars', '5 stars'];
 
@@ -70,9 +44,33 @@ d3Engine.foci = fociGen(11, d3Engine.x);
 // ---------------------------------
 
 
+// ------ PREP DATA RECEIVED FROM OUTSIDE ---------
+d3Engine.populateWMData = function (rawData, prodNum) {
+  var results = [];
+  for (var i = 0; i < rawData.length; i++) {
+    var obj = {};
+    obj.reviewLength = rawData[i].reviewText.length;
+    obj.dotSize = obj.reviewLength/50 + 20;
+    obj.stars = +rawData[i].overallRating.rating;
+    obj.prodKey = prodKey[prodNum];
+    obj.username = rawData[i].reviewer;
+    obj.reviewTitle = rawData[i].title.slice(0,24) + "..."
+    obj.review = rawData[i].reviewText;
+    obj.reviewStart = obj.review.slice(0, 110) + "...";
+    results.push(obj);
+  }
+  return results;
+};
+// ---------------------------------
+
+
 // ------ CHART COMPONENTS ---------
 
-d3Engine.create = function (el, props, state) {
+d3Engine.create = function (el, wmData, state) {
+
+  d3Engine.data = [];
+  d3Engine.data = d3Engine.data.concat(d3Engine.populateWMData(wmData,0));
+
   this.chart = d3.select(".chart")
     .attr("width", d3Engine.width)
     .attr("height", d3Engine.height);
@@ -82,14 +80,14 @@ d3Engine.create = function (el, props, state) {
     .enter().append("g")
       .classed("node", true)
       .attr("transform", function(d, i) { 
-        return "translate(" + (d3Engine.x(d.stars)+ d.numLines) + ", 50)";
+        return "translate(" + (d3Engine.x(d.stars)+ d.dotSize) + ", 50)";
       });
 
   circle.append("circle")
     .attr("cx", 0)
     .attr("cy", 0)
-    .attr("r", function(d) { return d.numLines/2; })
-    .style("fill", function(d) { return d.site.color; })
+    .attr("r", function(d) { return d.dotSize/2; })
+    .style("fill", function(d) { return d.prodKey.color; })
     .style("stroke", "white")
     .style("stroke-width", 2)
     .style("stroke-opacity", 0.5);
@@ -112,7 +110,7 @@ d3Engine.create = function (el, props, state) {
     .text(function(d) {return d});
 
   var storeLegend = this.chart.selectAll("g.storeLegend")
-    .data(storeData)
+    .data(prodKey)
     .enter().append("g")
     .classed("storeLegend", true)
     .attr("transform", "translate(20,10)");
@@ -134,7 +132,6 @@ d3Engine.create = function (el, props, state) {
   forceInit();
 };
 
-//d3Engine.create();
 
 
 // ---------------------------------
@@ -176,7 +173,7 @@ function tooltipSetup() {
           .duration(200)
           .style('opacity', 1);
     tooltip.select(".username")
-      .text(d.username + " on " + d.site.name);
+      .text(d.username + " on " + d.prodKey.name);
     tooltip.select(".reviewTitle")
       .text(d.reviewTitle);
     tooltip.select(".reviewText")
@@ -203,7 +200,7 @@ function forceInit() {
     .gravity(0)
     .links([])
     .nodes(d3Engine.data)
-    .charge(function(d) { return d.numLines * -1.5; })
+    .charge(function(d) { return d.dotSize * -1.5; })
     .size([d3Engine.width, d3Engine.height]);
 
   force.start();
