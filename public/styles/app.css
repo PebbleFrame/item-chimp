@@ -174,9 +174,11 @@ a.follow:hover, a.follow:active {
 }
 
 .d3-container {
-  height: 300;
-  width: 600;
+  height: 300px;
+  width: 600px;
   position: relative;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hoverbox {
