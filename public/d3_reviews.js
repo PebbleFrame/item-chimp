@@ -1,3 +1,5 @@
+// ------ DUMMY DATA ---------
+
 var storeData = [
   {name: "Amazon", color: "steelblue"},
   {name: "WalMart", color: "darkorange"},
@@ -22,20 +24,32 @@ var dataGen = function () {
   return results;
 };
 
+// ---------------------------------
+
+
+
+
+// ------ CONFIG DATA ---------
+
 var data = dataGen();
 
 var legendData = ['0 stars', '1 star', '3 stars', '4 stars', '5 stars'];
 
-var width = 600,
-  height = 300,
-  yOffset = 50;
+// chart vars
+var width = 600;
+var height = 300;
 
+// tooltip vars
+var ttOffset = 10;
+var ttWidth = 220;
+var ttHeight = 105;
 
 // x based on star rating
 var x = d3.scale.linear()
           .domain([0, 6])
           .range([0, width]);
 
+// narrower range for foci (don't want foci at edge)
 var fociX = d3.scale.linear()
           .domain([0, 6])
           .range([100, width-50]);
@@ -50,12 +64,10 @@ var fociGen = function (numFoci, x) {
 
 var foci = fociGen(11, x);
 
-var force = d3.layout.force()
-  .gravity(0)
-  .links([])
-  .nodes(data)
-  .charge(function(d) { return d.numLines * -1.5; })
-  .size([width, height]);
+// ---------------------------------
+
+
+// ------ CHART COMPONENTS ---------
 
 var chart = d3.select(".chart")
   .attr("width", width)
@@ -66,7 +78,7 @@ var circle = chart.selectAll("g.node")
   .enter().append("g")
     .classed("node", true)
     .attr("transform", function(d, i) { 
-      return "translate(" + (x(d.stars)+ d.numLines) + "," + yOffset + ")";
+      return "translate(" + (x(d.stars)+ d.numLines) + ", 50)";
     });
 
 circle.append("circle")
@@ -114,12 +126,11 @@ storeLegend.append("text")
   .attr("dy", "0.35em")
   .text(function(d) { return d.name; } );
 
-var nodes = chart.selectAll("g.node");
+// ---------------------------------
 
 
-var ttOffset = 10;
-var ttWidth = 220;
-var ttHeight = 105;
+// ------ TOOLTIP DEF ---------
+
 
 var tooltip = d3.select(".d3-container")
   .append("div")
@@ -135,6 +146,13 @@ tooltip.append('div')
 
 tooltip.append('div')
   .classed("reviewText", true);
+
+// ---------------------------------
+
+
+// ------ TOOLTIP HOVER BEHAVIOR ---------
+
+var nodes = chart.selectAll("g.node");
 
 nodes.on('mouseover', function(d) {
   var mouseLoc = d3.mouse(this.parentNode);
@@ -168,8 +186,19 @@ nodes.on('mouseout', function(d) {
     });
 });
 
-force.start();
+// ---------------------------------
 
+
+// ------ FORCE DEFINITION AND START---------
+
+var force = d3.layout.force()
+  .gravity(0)
+  .links([])
+  .nodes(data)
+  .charge(function(d) { return d.numLines * -1.5; })
+  .size([width, height]);
+
+force.start();
 
 force.on("tick", function(e) {
   var k = .1 * e.alpha;
@@ -183,3 +212,5 @@ force.on("tick", function(e) {
       });
   });
 });
+
+// ---------------------------------
