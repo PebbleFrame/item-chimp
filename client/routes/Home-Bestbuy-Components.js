@@ -83,7 +83,7 @@ var BestbuyReviewsDisplay = React.createClass ({
     });
 
     return (
-      <div className="bestbuy-reviews-display hidden">
+      <div className="bestbuy-reviews-display">
         <h4>Best Buy Reviews</h4>
         <h4>{this.props.name}</h4>
         <img src={this.props.image} />

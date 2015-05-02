@@ -83,8 +83,11 @@ var DisplayBox = React.createClass({
       // itemId is used to make a request for Walmart reviews
       data: itemId,
       success: function(data) {
+        // Remove the general results display to display reviews
+        $('.related-results-display-container').fadeOut();
+
         // Display the reviews-display only after an item is clicked on
-        $('.walmart-reviews-display').removeClass('hidden');
+        $('.reviews-display-container').removeClass('hidden');
         $('.d3-container').removeClass('hidden');
 
         // Get the reviews array from the response data
@@ -155,15 +158,17 @@ var DisplayBox = React.createClass({
           bestbuyName={this.state.bestbuyReviewedItemName}
           ref="d3chart" />
 
-        <div className="reviews-display-container">
-          <WalmartReviewsDisplay 
-            data={this.state.walmartReviews}
-            name={this.state.walmartReviewedItemName}
-            image={this.state.walmartReviewedItemImage} />
-          <BestbuyReviewsDisplay 
-            data={this.state.bestbuyReviews}
-            name={this.state.bestbuyReviewedItemName}
-            image={this.state.bestbuyReviewedItemImage} />
+        <div className="reviews-display-container hidden">
+          <div className="reviews-display-section">
+            <WalmartReviewsDisplay 
+              data={this.state.walmartReviews}
+              name={this.state.walmartReviewedItemName}
+              image={this.state.walmartReviewedItemImage} />
+            <BestbuyReviewsDisplay 
+              data={this.state.bestbuyReviews}
+              name={this.state.bestbuyReviewedItemName}
+              image={this.state.bestbuyReviewedItemImage} />
+          </div>
         </div>
 
         <div className="related-results-display-container">
