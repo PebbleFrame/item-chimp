@@ -22,6 +22,9 @@ var DisplayBox = React.createClass({
   // Sets initial state properties to empty arrays to avoid undefined errors
   getInitialState: function() {
     return {
+      // We set the initial state to the format {'API name': [Array of results]}
+      // to help organize the results we get back from the server, since the
+      // general-query request returns results from three different APIs
       amazon: {amazon: []},
       walmart: {walmart: []},
       bestbuy: {bestbuy: []},
@@ -42,36 +45,51 @@ var DisplayBox = React.createClass({
         $('.related-results-display').removeClass('hidden');
 
         // Set the state to contain data for each separate API
+        // data[0] --> {walmart: [Array of Walmart results]}
+        // data[1] --> {amazon: [Array of Amazon results]}
+        // data[2] --> {bestbuy: [Array of Best Buy results]}
         this.setState({
           walmart: data[0],
           amazon: data[1],
           bestbuy: data[2]
         });
 
+        // Hide the spinner after all API requests have been completed
         $('.query-form-container img').addClass('hidden');
+
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('general-query', status, err.toString());
       }.bind(this)
     });
   },
+
+  // Final handler for Walmart review request
+  // This call is the result of calls bubbling up from the individual Walmart results
   handleWalmartReviewRequest: function(itemId, name, image) {
 
+    // Sets the product name and image for the product clicked on (Revews Display)
+    // These are passed up from WalmartIndividualResultDisplay
     this.setState({
       walmartReviewedItemName: name,
       walmartReviewedItemImage: image
     });
 
+    // Makes a specific API call to get reviews for the product clicked on
     $.ajax({
       url: 'get-walmart-reviews',
       dataType: 'json',
       type: 'POST',
+      // itemId is used to make a request for Walmart reviews
       data: itemId,
       success: function(data) {
+        // Display the reviews-display only after an item is clicked on
         $('.walmart-reviews-display').removeClass('hidden');
 
+        // Get the reviews array from the response data
         var walmartReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
 
+        // Set the walmartReviews state in the same format as the 'general-query' states
         this.setState({
           walmartReviews: {walmartReviews: walmartReviewsFromData}
         });
