@@ -87,7 +87,7 @@ button {
   width: 48%;
   padding: 8px;
   margin: 9px 6px;
-  border: 1px solid #8E8E8E;
+  /*border: 1px solid #8E8E8E;*/
   border-radius: 7px;
 }
 
@@ -96,6 +96,11 @@ button {
   width: 48%;
   padding: 8px;
   margin: 9px 6px;
+  border: 1px solid #8E8E8E;
+  border-radius: 7px;
+}
+
+.individual-review-display {
   border: 1px solid #8E8E8E;
   border-radius: 7px;
 }

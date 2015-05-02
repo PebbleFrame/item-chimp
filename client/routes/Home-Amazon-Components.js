@@ -12,7 +12,7 @@ var AmazonRelatedResultsDisplay = React.createClass({
       );
     });
     return (
-      <div className="related-results-display hidden">
+      <div className="amazon-related-results-display hidden">
         <h3>Amazon Related Results</h3>
         {resultNodes}
       </div>

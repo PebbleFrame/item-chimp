@@ -84,7 +84,7 @@ var DisplayBox = React.createClass({
       data: itemId,
       success: function(data) {
         // Display the reviews-display only after an item is clicked on
-        $('.walmart-reviews-display').removeClass('hidden');
+        $('.reviews-display-container').removeClass('hidden');
         $('.d3-container').removeClass('hidden');
 
         // Get the reviews array from the response data
@@ -155,7 +155,7 @@ var DisplayBox = React.createClass({
           bestbuyName={this.state.bestbuyReviewedItemName}
           ref="d3chart" />
 
-        <div className="reviews-display-container">
+        <div className="reviews-display-container hidden">
           <WalmartReviewsDisplay 
             data={this.state.walmartReviews}
             name={this.state.walmartReviewedItemName}
