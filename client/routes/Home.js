@@ -17,7 +17,7 @@ var BestbuyReviewsDisplay = BestbuyComponents.BestbuyReviewsDisplay;
 var D3Components = require('./D3-Chart.js');
 var D3Chart = D3Components.D3Chart;
 
-// Centralized display for all components
+// Centralized display for all components on the Home page
 var DisplayBox = React.createClass({
   // Sets initial state properties to empty arrays to avoid undefined errors
   getInitialState: function() {
@@ -99,23 +99,33 @@ var DisplayBox = React.createClass({
       }.bind(this)
     });
   },
+
+  // Final handler for Best Buy review request
+  // This call is the result of calls bubbling up from the individual Best Buy results
   handleBestbuyReviewRequest: function(sku, name, image) {
 
+    // Final handler for Walmart review request
+    // This call is the result of calls bubbling up from the individual Walmart results
     this.setState({
       bestbuyReviewedItemName: name,
       bestbuyReviewedItemImage: image
     });
 
+    // Makes a specific API call to get reviews for the product clicked on
     $.ajax({
       url: 'get-bestbuy-reviews',
       dataType: 'json',
       type: 'POST',
+      // sku is used to make a request for Best Buy reviews
       data: sku,
       success: function(data) {
+        // Display the reviews-display only after an item is clicked on
         $('.bestbuy-reviews-display').removeClass('hidden');
 
+        // Get the reviews array from the response data
         var bestbuyReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
 
+        // Set the walmartReviews state in the same format as the 'general-query' states
         this.setState({
           bestbuyReviews: {bestbuyReviews: bestbuyReviewsFromData}
         });
@@ -126,6 +136,10 @@ var DisplayBox = React.createClass({
     });
   },
   render: function() {
+    // Not sure how to comment (if we can) in the JSX React syntax below,
+    // which compiles to JavaScript with "Reactify" (in server.js)
+    // Attributes are "props" which can be accessed by the component
+    // Many "props" are set as the "state", which is set based on data received from API calls
     return (
       <div className="displayBox">
         
@@ -161,12 +175,13 @@ var DisplayBox = React.createClass({
   }
 });
 
-// Component for the query-submit form
+// Component for the query-submit form (general, not reviews)
 var SearchForm = React.createClass({
   handleSubmit: function(e) {
     // Prevent page from reloading on submit
     e.preventDefault();
 
+    // Show the spinner when a query is submitted
     $('.query-form-container img').removeClass('hidden');
 
     // Grab query content from "ref" in input box
@@ -194,8 +209,6 @@ var SearchForm = React.createClass({
     );
   }
 });
-
-
 
 // Home page container for the DisplayBox component
 var Home = React.createClass({
