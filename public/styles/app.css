@@ -83,17 +83,11 @@ button {
 }
 
 .walmart-reviews-display {
-  float: left;
-  width: 48%;
   padding: 8px;
   margin: 9px 6px;
-  /*border: 1px solid #8E8E8E;*/
-  border-radius: 7px;
 }
 
 .bestbuy-reviews-display {
-  float: right;
-  width: 48%;
   padding: 8px;
   margin: 9px 6px;
   border: 1px solid #8E8E8E;
@@ -103,6 +97,10 @@ button {
 .individual-review-display {
   border: 1px solid #8E8E8E;
   border-radius: 7px;
+}
+
+.reviews-display-section {
+  width: 50%;
 }
 
 /* ============== DASHBOARD DISPLAY ============= */
