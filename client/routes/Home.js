@@ -85,6 +85,7 @@ var DisplayBox = React.createClass({
       success: function(data) {
         // Display the reviews-display only after an item is clicked on
         $('.walmart-reviews-display').removeClass('hidden');
+        $('.d3-container').removeClass('hidden');
 
         // Get the reviews array from the response data
         var walmartReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
@@ -93,6 +94,8 @@ var DisplayBox = React.createClass({
         this.setState({
           walmartReviews: {walmartReviews: walmartReviewsFromData}
         });
+        
+        this.refs.d3chart.startEngine();
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('get-walmart-reviews', status, err.toString());
@@ -149,7 +152,8 @@ var DisplayBox = React.createClass({
           walmartData={this.state.walmartReviews}
           walmartName={this.state.walmartReviewedItemName}
           bestbuyData={this.state.bestbuyReviews}
-          bestbuyName={this.state.bestbuyReviewedItemName} />
+          bestbuyName={this.state.bestbuyReviewedItemName}
+          ref="d3chart" />
 
         <div className="reviews-display-container">
           <WalmartReviewsDisplay 
