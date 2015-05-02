@@ -53,6 +53,15 @@ npm install
 bower install
 ```
 
+To set up the MySql database:
+
+```
+mysql.server start
+mysql -u root < server/db/schema.sql
+```
+
+`schema.sql` will build the necessary database for the app.
+
 ### Getting started
 
 To start the app, simply use
