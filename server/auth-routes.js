@@ -1,3 +1,8 @@
+var authController = require('./authController.js');
+
 module.exports = function(app) {
-  console.log('route file for jeff set up')
+  app.post('/signup', authController.signup);
+  app.post('/login', authController.login);
+  app.post('/logout', authController.logout);
+  app.get('/loggedin', authController.checkAuth);
 };
