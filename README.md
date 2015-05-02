@@ -20,15 +20,22 @@
 
 ## Usage
 
-> Browse products from Amazon, Walmart, and Best Buy. See visualizations for reviews and prices. Make an informed decision.
+> This app is built with React.js on the front-end and Node.js/Express on the back-end. There are three major parts of this app:
+
+1. Front-end: React.js - React allows each part of the UI to be broken into modular components. These components can be inserted into other components easily to maintain an organized separation of concerns. The various components for the React front-end are found in the `client` folder.
+
+2. Back-end: Node.js/Express Framework - The Express framework provides middleware to make working with Node much simpler.
+
+3. Database: MySql (Bookshelf ORM) - MySql, a relational database, is used to store user and review data. The schema and models for our MySql database can be found in `server/db`. 
+
+*Note about Browserify*
+
+> Browserify is used to allow the `require` statement to be used on browser code. It recursively analyzes all the `require` calls in theh app andn builds a bundle that is served up to the browser in a single `<script>` tag. It is standard practice to use something like Browserify (or Webpack) with React.js.
 
 ## Requirements
 
 - Node 0.10.x
-- Redis 2.6.x
-- Postgresql 9.1.x
-- etc
-- etc
+- MySql
 
 ## Development
 
@@ -41,6 +48,14 @@ sudo npm install -g bower
 npm install
 bower install
 ```
+
+### Getting started
+
+To start the app, simply use
+
+`node server.js`
+
+from the root directory.
 
 ### Roadmap
 
