@@ -17,11 +17,14 @@ var BestbuyReviewsDisplay = BestbuyComponents.BestbuyReviewsDisplay;
 var D3Components = require('./D3-Chart.js');
 var D3Chart = D3Components.D3Chart;
 
-// Centralized display for all components
+// Centralized display for all components on the Home page
 var DisplayBox = React.createClass({
   // Sets initial state properties to empty arrays to avoid undefined errors
   getInitialState: function() {
     return {
+      // We set the initial state to the format {'API name': [Array of results]}
+      // to help organize the results we get back from the server, since the
+      // general-query request returns results from three different APIs
       amazon: {amazon: []},
       walmart: {walmart: []},
       bestbuy: {bestbuy: []},
@@ -42,36 +45,51 @@ var DisplayBox = React.createClass({
         $('.related-results-display').removeClass('hidden');
 
         // Set the state to contain data for each separate API
+        // data[0] --> {walmart: [Array of Walmart results]}
+        // data[1] --> {amazon: [Array of Amazon results]}
+        // data[2] --> {bestbuy: [Array of Best Buy results]}
         this.setState({
           walmart: data[0],
           amazon: data[1],
           bestbuy: data[2]
         });
 
+        // Hide the spinner after all API requests have been completed
         $('.query-form-container img').addClass('hidden');
+
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('general-query', status, err.toString());
       }.bind(this)
     });
   },
+
+  // Final handler for Walmart review request
+  // This call is the result of calls bubbling up from the individual Walmart results
   handleWalmartReviewRequest: function(itemId, name, image) {
 
+    // Sets the product name and image for the product clicked on (Revews Display)
+    // These are passed up from WalmartIndividualResultDisplay
     this.setState({
       walmartReviewedItemName: name,
       walmartReviewedItemImage: image
     });
 
+    // Makes a specific API call to get reviews for the product clicked on
     $.ajax({
       url: 'get-walmart-reviews',
       dataType: 'json',
       type: 'POST',
+      // itemId is used to make a request for Walmart reviews
       data: itemId,
       success: function(data) {
+        // Display the reviews-display only after an item is clicked on
         $('.walmart-reviews-display').removeClass('hidden');
 
+        // Get the reviews array from the response data
         var walmartReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
 
+        // Set the walmartReviews state in the same format as the 'general-query' states
         this.setState({
           walmartReviews: {walmartReviews: walmartReviewsFromData}
         });
@@ -81,23 +99,33 @@ var DisplayBox = React.createClass({
       }.bind(this)
     });
   },
+
+  // Final handler for Best Buy review request
+  // This call is the result of calls bubbling up from the individual Best Buy results
   handleBestbuyReviewRequest: function(sku, name, image) {
 
+    // Final handler for Walmart review request
+    // This call is the result of calls bubbling up from the individual Walmart results
     this.setState({
       bestbuyReviewedItemName: name,
       bestbuyReviewedItemImage: image
     });
 
+    // Makes a specific API call to get reviews for the product clicked on
     $.ajax({
       url: 'get-bestbuy-reviews',
       dataType: 'json',
       type: 'POST',
+      // sku is used to make a request for Best Buy reviews
       data: sku,
       success: function(data) {
+        // Display the reviews-display only after an item is clicked on
         $('.bestbuy-reviews-display').removeClass('hidden');
 
+        // Get the reviews array from the response data
         var bestbuyReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
 
+        // Set the walmartReviews state in the same format as the 'general-query' states
         this.setState({
           bestbuyReviews: {bestbuyReviews: bestbuyReviewsFromData}
         });
@@ -108,6 +136,10 @@ var DisplayBox = React.createClass({
     });
   },
   render: function() {
+    // Not sure how to comment (if we can) in the JSX React syntax below,
+    // which compiles to JavaScript with "Reactify" (in server.js)
+    // Attributes are "props" which can be accessed by the component
+    // Many "props" are set as the "state", which is set based on data received from API calls
     return (
       <div className="displayBox">
         
@@ -119,7 +151,7 @@ var DisplayBox = React.createClass({
           bestbuyData={this.state.bestbuyReviews}
           bestbuyName={this.state.bestbuyReviewedItemName} />
 
-        <div>
+        <div className="reviews-display-container">
           <WalmartReviewsDisplay 
             data={this.state.walmartReviews}
             name={this.state.walmartReviewedItemName}
@@ -130,25 +162,28 @@ var DisplayBox = React.createClass({
             image={this.state.bestbuyReviewedItemImage} />
         </div>
 
-        <AmazonRelatedResultsDisplay data={this.state.amazon} />
-        <WalmartRelatedResultsDisplay 
-          data={this.state.walmart}
-          onWalmartReviewRequest={this.handleWalmartReviewRequest} />
-        <BestbuyRelatedResultsDisplay 
-          data={this.state.bestbuy}
-          onBestbuyReviewRequest={this.handleBestbuyReviewRequest} />
+        <div className="related-results-display-container">
+          <WalmartRelatedResultsDisplay 
+            data={this.state.walmart}
+            onWalmartReviewRequest={this.handleWalmartReviewRequest} />
+          <BestbuyRelatedResultsDisplay 
+            data={this.state.bestbuy}
+            onBestbuyReviewRequest={this.handleBestbuyReviewRequest} />
+          <AmazonRelatedResultsDisplay data={this.state.amazon} />
+        </div>
 
       </div>
     );
   }
 });
 
-// Component for the query-submit form
+// Component for the query-submit form (general, not reviews)
 var SearchForm = React.createClass({
   handleSubmit: function(e) {
     // Prevent page from reloading on submit
     e.preventDefault();
 
+    // Show the spinner when a query is submitted
     $('.query-form-container img').removeClass('hidden');
 
     // Grab query content from "ref" in input box
@@ -176,8 +211,6 @@ var SearchForm = React.createClass({
     );
   }
 });
-
-
 
 // Home page container for the DisplayBox component
 var Home = React.createClass({
