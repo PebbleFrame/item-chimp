@@ -32,6 +32,8 @@
 
 > Browserify is used to allow the `require` statement to be used on browser code. It recursively analyzes all the `require` calls in theh app andn builds a bundle that is served up to the browser in a single `<script>` tag. It is standard practice to use something like Browserify (or Webpack) with React.js.
 
+> The reason it may take a while for the app to initially load after making a change is because the browser code is being compiled by `browserify` and `reactify` into one `<script>` tag.
+
 ## Requirements
 
 - Node 0.10.x
