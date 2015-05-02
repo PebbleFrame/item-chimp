@@ -1,5 +1,4 @@
 var Bookshelf = require('bookshelf'),
-Q        = require('q'),
 events = require('events'),
 EventEmitter = require("events").EventEmitter,
 util = require('util'),
@@ -8,7 +7,7 @@ SALT_WORK_FACTOR  = 10,
 jwt  = require('jwt-simple');
 
 
-//Create db wrapper for database to 
+//Create wrapper for database, includes event emitter
 function DB(){
   EventEmitter.call(this);
 }
@@ -97,6 +96,7 @@ db.orm = require('bookshelf')(knex);
     password: 1,
     email: "e@gmail.com"
   });
+  console.log(user)
 
   user.save().then(function(newUser) {
     db.Users.add(newUser);
@@ -204,64 +204,62 @@ db.orm = require('bookshelf')(knex);
     db.User.where({username: userName}).fetch()
     .then(function (user) {
       if (!user) {
-        console.log('User does not exist');
+        user = undefined;
+        console.log("User"+userName+"Does Not Exist")
+        db.emit("foundUser", user)
       }
       else{
         console.log(user + "Found");
-        db.emit('userFound');
+        db.emit("foundUser", user);
       } 
     });
   };
 
   db.addUser = function(user){
-
-    db.on('foundUser',function(){
-      bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-        if (err) {
-          return console.log("Error with Salt");
-        }
-        bcrypt.hash(user.password, salt, null, function(err, hash) {
+    //Is listening for finduser() event
+    db.on('foundUser',function(found){
+      //If the user is not in the database, a user will be added after
+      //there password is salted and hashed
+      //they will then be sent to get logged in
+      if(!found){
+        bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
           if (err) {
-            return console.log("Error with hash");
+            return console.log("Error with Salt");
           }
-          user.password = hash;
-          user.salt = salt; 
-          newUser.save().then(function(newUser) {
-            db.Users.add(newUser);
-            console.log("User Saved");
-            db.emit('userSaved');
+          bcrypt.hash(user.password, salt, null, function(err, hash) {
+            if (err) {
+              return console.log("Error with hash");
+            }
+            user.password = hash;
+            user.salt = salt;
+            console.log(user);
+            var newUser = new db.User(user);  
+            newUser.save().then(function(newUser) {
+              db.Users.add(newUser);
+              console.log("User Saved");
+              db.emit('addedUser', newUser);
+              db.login(user);
+            });
           });
         });
-      });
+      }
+      else{
+        console.log('User already exists');
+        db.emit("addedUser", null);
+      }
     });
-    db.findUser(user);
+    console.log("User: " + user.username)
+    //Before adding user, checks to see if the user is already in database
+    db.findUser(user.username);
   };
 
-//-------------API CONFIGURATION START-------------/
+  db.login = function(user){
+    console.log("Logging In")
+  };
+
+
+
+//-------------API CONFIGURATION END-------------/
 
 module.exports = db;
 
-
-
-
-
-
-
-  // db.findUser = function(userName){
-  //   db.User.where({username: userName}).fetch()
-  //   .then(function (user) {
-  //     if (!user) {
-  //       console.log('User does not exist'));
-  //     } else {
-  //       return user.comparePasswords(password)
-  //         .then(function(foundUser) {
-  //           if (foundUser) {
-  //             var token = jwt.encode(user, 'secret');
-  //             res.json({token: token});
-  //           } else {
-  //             console.log('No user');
-  //           }
-  //         });
-  //     }
-  //   });
-  // };
