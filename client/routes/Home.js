@@ -151,7 +151,7 @@ var DisplayBox = React.createClass({
           bestbuyData={this.state.bestbuyReviews}
           bestbuyName={this.state.bestbuyReviewedItemName} />
 
-        <div>
+        <div className="reviews-display-container">
           <WalmartReviewsDisplay 
             data={this.state.walmartReviews}
             name={this.state.walmartReviewedItemName}
@@ -162,13 +162,15 @@ var DisplayBox = React.createClass({
             image={this.state.bestbuyReviewedItemImage} />
         </div>
 
-        <AmazonRelatedResultsDisplay data={this.state.amazon} />
-        <WalmartRelatedResultsDisplay 
-          data={this.state.walmart}
-          onWalmartReviewRequest={this.handleWalmartReviewRequest} />
-        <BestbuyRelatedResultsDisplay 
-          data={this.state.bestbuy}
-          onBestbuyReviewRequest={this.handleBestbuyReviewRequest} />
+        <div className="related-results-display-container">
+          <WalmartRelatedResultsDisplay 
+            data={this.state.walmart}
+            onWalmartReviewRequest={this.handleWalmartReviewRequest} />
+          <BestbuyRelatedResultsDisplay 
+            data={this.state.bestbuy}
+            onBestbuyReviewRequest={this.handleBestbuyReviewRequest} />
+          <AmazonRelatedResultsDisplay data={this.state.amazon} />
+        </div>
 
       </div>
     );
