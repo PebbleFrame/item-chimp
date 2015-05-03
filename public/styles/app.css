@@ -105,8 +105,24 @@ button {
 }
 
 .choose-another-product-section {
-  display: inline-block;
+  float: right;
+  text-align: left;
+  margin-left: 6px;
   width: 35%;
+}
+
+.choose-another-product-individual-display {
+  font-size: 11px;
+  line-height: 12px;
+  margin-top: 4px;
+  padding: 6px;
+  border: 1px solid #8E8E8E;
+  border-radius: 3px;
+}
+
+.choose-another-product-individual-display img {
+  float: left;
+  height: 50px;
 }
 
 /* ============== DASHBOARD DISPLAY ============= */

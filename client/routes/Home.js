@@ -244,7 +244,8 @@ var ChooseAnotherProductSection = React.createClass({
   render: function() {
     var resultNodes = this.props.walmartData.walmart.map(function(result, index) {
       return (
-        <div>
+        <div className="choose-another-product-individual-display">
+          <img src={result.thumbnailImage} />
           <strong>Product: </strong>{result.name}
         </div>
       );
