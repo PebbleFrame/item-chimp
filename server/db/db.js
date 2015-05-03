@@ -1,32 +1,34 @@
-var Bookshelf = require('bookshelf'),
-events = require('events'),
-EventEmitter = require("events").EventEmitter,
-util = require('util'),
-bcrypt   = require('bcrypt-nodejs'),
-SALT_WORK_FACTOR  = 10,
-jwt  = require('jwt-simple');
-
-
-//Create wrapper for database, includes event emitter
-function DB(){
-  EventEmitter.call(this);
-}
-
-util.inherits(DB, EventEmitter);
-
-var db = new DB();
-
-var knex = require('knex')({
-  client: 'mysql',
-  connection: {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'pebble',
-    charset: 'utf8',
+//DECLARE GLOBAL VARIABLES ---START
+  var 
+  Bookshelf = require('bookshelf'),
+  events = require('events'),
+  EventEmitter = require("events").EventEmitter,
+  util = require('util'),
+  bcrypt   = require('bcrypt-nodejs'),
+  SALT_WORK_FACTOR  = 10,
+  jwt  = require('jwt-simple');
+//DECLARE GLOBAL VARIABLES ---END
+//Create DataBase wrapper, includes event emitter --- START
+  function DB(){
+    EventEmitter.call(this);
   }
-});
-db.orm = require('bookshelf')(knex);
+
+  util.inherits(DB, EventEmitter);
+
+  var db = new DB();
+
+  var knex = require('knex')({
+    client: 'mysql',
+    connection: {
+      host: 'localhost',
+      user: 'root',
+      password: '',
+      database: 'pebble',
+      charset: 'utf8',
+    }
+  });
+  db.orm = require('bookshelf')(knex);
+//Create DataBase wrapper, includes event emitter -- END
 
 
 //-------------TABLES VERIFICATION START-----------/
@@ -163,17 +165,17 @@ db.orm = require('bookshelf')(knex);
   db.Followers = new db.orm.Collection();
   db.Followers.model = db.Follower;
 
-  //Create New Follower--For Development Only
-  var follower = new db.Follower({
-    user_id: 1,
-    follower_id: 2
-  });
+  // //Create New Follower--For Development Only
+  // var follower = new db.Follower({
+  //   user_id: 1,
+  //   follower_id: 2
+  // });
 
-  //Save follower to the database--For Development Only
-  follower.save().then(function(newFollower) {
-    db.Followers.add(newFollower);
-    console.log("Follower Saved")
-  });
+  // //Save follower to the database--For Development Only
+  // follower.save().then(function(newFollower) {
+  //   db.Followers.add(newFollower);
+  //   console.log("Follower Saved")
+  // });
 //-------------ORM FOR FOLLOWERS END---------------/
 
 //-------------ORM FOR WATCHERS START--------------/
@@ -187,19 +189,19 @@ db.orm = require('bookshelf')(knex);
   db.Watchers.model = db.Watcher;
 
   //Create New Watcher--For Development Only
-  var watcher = new db.Watcher({
-    user_id: 1,
-    product_id: 1
-  });
+  // var watcher = new db.Watcher({
+  //   user_id: 1,
+  //   product_id: 1
+  // });
 
-  //Save watcher to the database--For Development Only
-  watcher.save().then(function(newWatcher) {
-    db.Watchers.add(newWatcher);
-    console.log("Watcher Saved")
-  });
+  // //Save watcher to the database--For Development Only
+  // watcher.save().then(function(newWatcher) {
+  //   db.Watchers.add(newWatcher);
+  //   console.log("Watcher Saved")
+  // });
 //-------------ORM FOR WATCHERS END----------------/
 
-//-------------USER API CONFIGURATION START-------------/
+//-------------USER API CONFIGURATION START--------/
   db.findUser = function(userName){
     db.User.where({username: userName}).fetch()
     .then(function (user) {
@@ -256,10 +258,7 @@ db.orm = require('bookshelf')(knex);
   db.login = function(user){
     console.log("Logging In")
   };
-
-
-
-//-------------API CONFIGURATION END-------------/
+//-------------API CONFIGURATION END---------------/
 
 module.exports = db;
 
