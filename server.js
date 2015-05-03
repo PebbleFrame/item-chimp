@@ -104,7 +104,6 @@ app.post('/get-walmart-reviews', function(req, res) {
     }, function (error, response, walmartReviewBody) {
       if (!error && response.statusCode == 200) {
         var WalmartReviewstoSend = walmartReviewBody;
-        console.log(walmartReviewBody);
         res.send([
           {walmartReviews: WalmartReviewstoSend}
         ]);
