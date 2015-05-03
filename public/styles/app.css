@@ -87,6 +87,10 @@ button {
   margin: 9px 6px;
 }
 
+.walmart-reviews-display img {
+  float: left;
+}
+
 .bestbuy-reviews-display {
   padding: 8px;
   margin: 9px 6px;
@@ -95,12 +99,49 @@ button {
 }
 
 .individual-review-display {
+  padding: 5px;
+  margin: 5px;
   border: 1px solid #8E8E8E;
   border-radius: 7px;
 }
 
 .reviews-display-section {
-  width: 50%;
+  display: inline-block;
+  font-size: 14px;
+  width: 60%;
+}
+
+.choose-another-product-section {
+  float: right;
+  text-align: left;
+  margin-left: 6px;
+  width: 35%;
+}
+
+.choose-another-product-section h5,h6 {
+  text-align: center;
+}
+
+.choose-another-product-individual-display {
+  font-size: 11px;
+  line-height: 12px;
+  margin-top: 4px;
+  padding: 6px;
+  border: 1px solid #8E8E8E;
+  border-radius: 3px;
+}
+
+.choose-another-product-individual-display img {
+  float: left;
+  height: 50px;
+}
+
+.upvotes {
+  color: green;
+}
+
+.downvotes {
+  color: red;
 }
 
 /* ============== DASHBOARD DISPLAY ============= */

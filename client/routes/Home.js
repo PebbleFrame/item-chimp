@@ -142,8 +142,6 @@ var DisplayBox = React.createClass({
     });
   },
   render: function() {
-    // Not sure how to comment (if we can) in the JSX React syntax below,
-    // which compiles to JavaScript with "Reactify" (in server.js)
     // Attributes are "props" which can be accessed by the component
     // Many "props" are set as the "state", which is set based on data received from API calls
     return (
@@ -159,16 +157,20 @@ var DisplayBox = React.createClass({
           ref="d3chart" />
 
         <div className="reviews-display-container hidden">
-          <div className="reviews-display-section">
-            <WalmartReviewsDisplay 
-              data={this.state.walmartReviews}
-              name={this.state.walmartReviewedItemName}
-              image={this.state.walmartReviewedItemImage} />
-            <BestbuyReviewsDisplay 
-              data={this.state.bestbuyReviews}
-              name={this.state.bestbuyReviewedItemName}
-              image={this.state.bestbuyReviewedItemImage} />
-          </div>
+
+          <ReviewsDisplaySection
+            walmartReviews={this.state.walmartReviews}
+            walmartReviewedItemName={this.state.walmartReviewedItemName}
+            walmartReviewedItemImage={this.state.walmartReviewedItemImage}
+
+            bestbuyReviews={this.state.bestbuyReviews}
+            bestbuyReviewedItemName={this.state.bestbuyReviewedItemName}
+            bestbuyReviewedItemImage={this.state.bestbuyReviewedItemImage} />
+
+            <ChooseAnotherProductSection
+              walmartData={this.state.walmart}
+              bestbuyData={this.state.bestbuy} />
+
         </div>
 
         <div className="related-results-display-container">
@@ -216,6 +218,55 @@ var SearchForm = React.createClass({
           <center><button className="btn btn-primary">Submit</button></center>
         </form>
         <img src="images/spiffygif_46x46.gif" className="hidden" />
+      </div>
+    );
+  }
+});
+
+var ReviewsDisplaySection = React.createClass({
+  render: function() {
+    return (
+      <div className="reviews-display-section">
+        <WalmartReviewsDisplay 
+          data={this.props.walmartReviews}
+          name={this.props.walmartReviewedItemName}
+          image={this.props.walmartReviewedItemImage} />
+        <BestbuyReviewsDisplay 
+          data={this.props.bestbuyReviews}
+          name={this.props.bestbuyReviewedItemName}
+          image={this.props.bestbuyReviewedItemImage} />
+      </div>
+    );
+  }
+});
+
+var ChooseAnotherProductSection = React.createClass({
+  render: function() {
+    return (
+      <div className="choose-another-product-section">
+        <h5>Choose another product to compare</h5>
+
+        <ChooseAnotherProductSectionWalmart
+          walmartData={this.props.walmartData} />
+      </div>
+    );
+  }
+});
+
+var ChooseAnotherProductSectionWalmart = React.createClass({
+  render: function() {
+    var resultNodes = this.props.walmartData.walmart.map(function(result, index) {
+      return (
+        <div className="choose-another-product-individual-display">
+          <img src={result.thumbnailImage} />
+          <strong>Product: </strong>{result.name}
+        </div>
+      );
+    });
+    return (
+      <div>
+        <h6>Walmart</h6>
+        {resultNodes}
       </div>
     );
   }
