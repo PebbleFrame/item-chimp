@@ -142,8 +142,6 @@ var DisplayBox = React.createClass({
     });
   },
   render: function() {
-    // Not sure how to comment (if we can) in the JSX React syntax below,
-    // which compiles to JavaScript with "Reactify" (in server.js)
     // Attributes are "props" which can be accessed by the component
     // Many "props" are set as the "state", which is set based on data received from API calls
     return (
@@ -168,6 +166,10 @@ var DisplayBox = React.createClass({
             bestbuyReviews={this.state.bestbuyReviews}
             bestbuyReviewedItemName={this.state.bestbuyReviewedItemName}
             bestbuyReviewedItemImage={this.state.bestbuyReviewedItemImage} />
+
+            <ChooseAnotherProductSection
+              walmartData={this.state.walmart}
+              bestbuyData={this.state.bestbuy} />
 
         </div>
 
@@ -233,6 +235,16 @@ var ReviewsDisplaySection = React.createClass({
           data={this.props.bestbuyReviews}
           name={this.props.bestbuyReviewedItemName}
           image={this.props.bestbuyReviewedItemImage} />
+      </div>
+    );
+  }
+});
+
+var ChooseAnotherProductSection = React.createClass({
+  render: function() {
+    return (
+      <div className="choose-another-product-section">
+
       </div>
     );
   }
