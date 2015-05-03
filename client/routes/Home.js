@@ -159,16 +159,16 @@ var DisplayBox = React.createClass({
           ref="d3chart" />
 
         <div className="reviews-display-container hidden">
-          <div className="reviews-display-section">
-            <WalmartReviewsDisplay 
-              data={this.state.walmartReviews}
-              name={this.state.walmartReviewedItemName}
-              image={this.state.walmartReviewedItemImage} />
-            <BestbuyReviewsDisplay 
-              data={this.state.bestbuyReviews}
-              name={this.state.bestbuyReviewedItemName}
-              image={this.state.bestbuyReviewedItemImage} />
-          </div>
+
+          <ReviewsDisplaySection
+            walmartReviews={this.state.walmartReviews}
+            walmartReviewedItemName={this.state.walmartReviewedItemName}
+            walmartReviewedItemImage={this.state.walmartReviewedItemImage}
+
+            bestbuyReviews={this.state.bestbuyReviews}
+            bestbuyReviewedItemName={this.state.bestbuyReviewedItemName}
+            bestbuyReviewedItemImage={this.state.bestbuyReviewedItemImage} />
+
         </div>
 
         <div className="related-results-display-container">
@@ -216,6 +216,23 @@ var SearchForm = React.createClass({
           <center><button className="btn btn-primary">Submit</button></center>
         </form>
         <img src="images/spiffygif_46x46.gif" className="hidden" />
+      </div>
+    );
+  }
+});
+
+var ReviewsDisplaySection = React.createClass({
+  render: function() {
+    return (
+      <div className="reviews-display-section">
+        <WalmartReviewsDisplay 
+          data={this.props.walmartReviews}
+          name={this.props.walmartReviewedItemName}
+          image={this.props.walmartReviewedItemImage} />
+        <BestbuyReviewsDisplay 
+          data={this.props.bestbuyReviews}
+          name={this.props.bestbuyReviewedItemName}
+          image={this.props.bestbuyReviewedItemImage} />
       </div>
     );
   }
