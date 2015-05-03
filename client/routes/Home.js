@@ -242,9 +242,17 @@ var ReviewsDisplaySection = React.createClass({
 
 var ChooseAnotherProductSection = React.createClass({
   render: function() {
+    var resultNodes = this.props.walmartData.walmart.map(function(result, index) {
+      return (
+        <div>
+          <strong>Product: </strong>{result.name}
+        </div>
+      );
+    });
     return (
       <div className="choose-another-product-section">
-
+        <h5>Choose another product to compare</h5>
+        {resultNodes}
       </div>
     );
   }

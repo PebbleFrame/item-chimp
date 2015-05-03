@@ -100,7 +100,13 @@ button {
 }
 
 .reviews-display-section {
-  width: 50%;
+  display: inline-block;
+  width: 60%;
+}
+
+.choose-another-product-section {
+  display: inline-block;
+  width: 35%;
 }
 
 /* ============== DASHBOARD DISPLAY ============= */
