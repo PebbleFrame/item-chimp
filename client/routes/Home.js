@@ -242,6 +242,19 @@ var ReviewsDisplaySection = React.createClass({
 
 var ChooseAnotherProductSection = React.createClass({
   render: function() {
+    return (
+      <div className="choose-another-product-section">
+        <h5>Choose another product to compare</h5>
+
+        <ChooseAnotherProductSectionWalmart
+          walmartData={this.props.walmartData} />
+      </div>
+    );
+  }
+});
+
+var ChooseAnotherProductSectionWalmart = React.createClass({
+  render: function() {
     var resultNodes = this.props.walmartData.walmart.map(function(result, index) {
       return (
         <div className="choose-another-product-individual-display">
@@ -251,8 +264,8 @@ var ChooseAnotherProductSection = React.createClass({
       );
     });
     return (
-      <div className="choose-another-product-section">
-        <h5>Choose another product to compare</h5>
+      <div>
+        <h6>Walmart</h6>
         {resultNodes}
       </div>
     );

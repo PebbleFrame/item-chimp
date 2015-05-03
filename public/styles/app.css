@@ -118,6 +118,10 @@ button {
   width: 35%;
 }
 
+.choose-another-product-section h5,h6 {
+  text-align: center;
+}
+
 .choose-another-product-individual-display {
   font-size: 11px;
   line-height: 12px;
