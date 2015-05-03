@@ -87,6 +87,10 @@ button {
   margin: 9px 6px;
 }
 
+.walmart-reviews-display img {
+  float: left;
+}
+
 .bestbuy-reviews-display {
   padding: 8px;
   margin: 9px 6px;
@@ -101,6 +105,7 @@ button {
 
 .reviews-display-section {
   display: inline-block;
+  font-size: 15px;
   width: 60%;
 }
 

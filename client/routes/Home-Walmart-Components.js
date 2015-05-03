@@ -85,8 +85,8 @@ var WalmartReviewsDisplay = React.createClass ({
     return (
       <div className="walmart-reviews-display">
         <h4>Walmart Reviews</h4>
-        <strong>Product: </strong>{this.props.name}
         <img src={this.props.image} />
+        <strong>Product: </strong>{this.props.name}
         <hr />
         {resultNodes}
       </div>
