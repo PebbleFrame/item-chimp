@@ -248,6 +248,8 @@ var ChooseAnotherProductSection = React.createClass({
 
         <ChooseAnotherProductSectionWalmart
           walmartData={this.props.walmartData} />
+        <ChooseAnotherProductSectionBestbuy
+          bestbuyData={this.props.bestbuyData} />
       </div>
     );
   }
@@ -266,6 +268,25 @@ var ChooseAnotherProductSectionWalmart = React.createClass({
     return (
       <div>
         <h6>Walmart</h6>
+        {resultNodes}
+      </div>
+    );
+  }
+});
+
+var ChooseAnotherProductSectionBestbuy = React.createClass({
+  render: function() {
+    var resultNodes = this.props.bestbuyData.bestbuy.map(function(result, index) {
+      return (
+        <div className="choose-another-product-individual-display">
+          <img src={result.image} />
+          <strong>Product: </strong>{result.name}
+        </div>
+      );
+    });
+    return (
+      <div>
+        <h6>Best Buy</h6>
         {resultNodes}
       </div>
     );
