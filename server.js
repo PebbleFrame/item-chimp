@@ -43,54 +43,58 @@ var opHelper = new OperationHelper({
   assocId:   'bap071-20',
   version:   '2013-08-01'});
 
-app.post('/general-query', function(req, res) {
+var AmazonResultsToSend = "";
+var WalmartResultsToSend = "";
+var BestbuyResultsToSend = "";
 
+var amazonGeneralQuery = function(req, res,next){
   var query = req.body.query;
-
   opHelper.execute('ItemSearch', {
-    'SearchIndex': 'All',
-    'Keywords': query,
-    'ResponseGroup': 'ItemAttributes,Reviews,Images,ItemIds'
-  }, function(err, results) { // you can add a third parameter for the raw xml response, "results" here are currently parsed using xml2js
-    // console.log(results.ItemSearchResponse.Items[0].Item);
-
-    var AmazonResultsToSend = results.ItemSearchResponse.Items[0].Item;
-    console.log(AmazonResultsToSend);
-
-    request({
-        url: 'http://api.walmartlabs.com/v1/search?query=' + query + '&format=json&apiKey=va35uc9pw8cje38csxx7csk8',
-        json: true
-      }, function (error, response, walmartBody) {
-        if (!error && response.statusCode == 200) {
-          // console.log(body.items);
-
-          var WalmartResultsToSend = walmartBody.items;
-
-
-
-          request({
-              url: 'http://api.remix.bestbuy.com/v1/products(name=' + query + '*)?show=name,sku,salePrice,customerReviewAverage,customerReviewCount,shortDescription,upc,image&sort=bestSellingRank&format=json&apiKey=n34qnnunjqcb9387gthg8625',
-              json: true
-            }, function (error, response, bestbuyBody) {
-              if (!error && response.statusCode == 200) {
-                var BestbuyResultsToSend = bestbuyBody.products;
-
-                res.send([
-                  {walmart: WalmartResultsToSend},
-                  {amazon: AmazonResultsToSend},
-                  {bestbuy: BestbuyResultsToSend}
-                ]);
-              }
-            }
-          );
-
-        }
-      }
-    );
-
+  'SearchIndex': 'All',
+  'Keywords': query,
+  'ResponseGroup': 'ItemAttributes,Reviews,Images,ItemIds'
+  }, function(err, results) {
+  AmazonResultsToSend = results.ItemSearchResponse.Items[0].Item;
+  next();
   });
+}
 
+var walmartGeneralQuery = function(req, res,next){
+  var query = req.body.query;
+  request({
+    url: 'http://api.walmartlabs.com/v1/search?query=' + query + '&format=json&apiKey=va35uc9pw8cje38csxx7csk8',
+    json: true
+  },function (error, response, walmartBody) {
+    if (!error && response.statusCode == 200) {
+      WalmartResultsToSend = walmartBody.items;
+     next();
+    }
+  });
+}
+
+var bestbuyGeneralQuery =  function(req, res,next) {
+  var query = req.body.query;
+  request({
+    url: 'http://api.remix.bestbuy.com/v1/products(name=' + query + '*)?show=name,sku,salePrice,customerReviewAverage,customerReviewCount,shortDescription,upc,image&sort=bestSellingRank&format=json&apiKey=n34qnnunjqcb9387gthg8625',
+    json: true
+  }, function (error, response, bestbuyBody) {
+    if (!error && response.statusCode == 200) {
+      BestbuyResultsToSend = bestbuyBody.products;
+      next();
+    }
+  });
+}
+
+app.post('/general-query', [amazonGeneralQuery,walmartGeneralQuery,bestbuyGeneralQuery], function(req, res,next) {
+  next();
+}, function (req, res) {
+  res.send([
+    {walmart: WalmartResultsToSend},
+    {amazon: AmazonResultsToSend},
+    {bestbuy: BestbuyResultsToSend}
+  ]);
 });
+
 
 app.post('/get-walmart-reviews', function(req, res) {
   var itemId = req.body.itemId;
