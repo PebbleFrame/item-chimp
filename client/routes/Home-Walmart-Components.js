@@ -102,16 +102,13 @@ var WalmartIndividualReviewDisplay = React.createClass({
           {this.props.title}
         </h5>
         <div>
-          Reviewer: {this.props.reviewer}
+          <strong>Reviewer:</strong> {this.props.reviewer}
         </div>
         <div>
-          Review: {this.props.reviewText}
+          <strong>Review:</strong> {this.props.reviewText}
         </div>
         <div>
-          Upvotes: {this.props.upVotes}
-        </div>
-        <div>
-          Downvotes: {this.props.downVotes}
+          <span className="upvotes">+{this.props.upVotes}</span> | <span className="downvotes">-{this.props.downVotes}</span>
         </div>
       </div>
     );

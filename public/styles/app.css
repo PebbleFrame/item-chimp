@@ -99,13 +99,15 @@ button {
 }
 
 .individual-review-display {
+  padding: 5px;
+  margin: 5px;
   border: 1px solid #8E8E8E;
   border-radius: 7px;
 }
 
 .reviews-display-section {
   display: inline-block;
-  font-size: 15px;
+  font-size: 14px;
   width: 60%;
 }
 
@@ -128,6 +130,14 @@ button {
 .choose-another-product-individual-display img {
   float: left;
   height: 50px;
+}
+
+.upvotes {
+  color: green;
+}
+
+.downvotes {
+  color: red;
 }
 
 /* ============== DASHBOARD DISPLAY ============= */
