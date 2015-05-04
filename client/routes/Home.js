@@ -14,8 +14,10 @@ var BestbuyRelatedResultsDisplay = BestbuyComponents.BestbuyRelatedResultsDispla
 var BestbuyIndividualResultDisplay = BestbuyComponents.BestbuyIndividualResultDisplay;
 var BestbuyReviewsDisplay = BestbuyComponents.BestbuyReviewsDisplay;
 
-var D3Components = require('./D3-Chart.js');
+var D3Components = require('./D3-Chart');
 var D3Chart = D3Components.D3Chart;
+
+var D3PriceChart = require('./D3-Price-Chart');
 
 // Centralized display for all components on the Home page
 var DisplayBox = React.createClass({
@@ -192,7 +194,8 @@ var DisplayBox = React.createClass({
         </div>
 
         <D3PriceChart
-          walmartRelatedResults={this.state.walmart} />
+          walmartRelatedResults={this.state.walmart}
+          bestbuyRelatedResults={this.state.bestbuy} />
 
         <div className="related-results-display-container">
 
