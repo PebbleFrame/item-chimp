@@ -3,16 +3,17 @@
 
 var d3Engine = {};
 
-
+// colors key
 var prodKey = [
   {name: "Amazon", color: "steelblue"},
   {name: "WalMart", color: "darkorange"},
   {name: "Best Buy", color: "darkseagreen"},
 ];
 
+// Data for stars legend at bottom
 d3Engine.legendData = ['0 stars', '1 star', '3 stars', '4 stars', '5 stars'];
 
-// chart vars
+// overall chart vars
 d3Engine.width = 600;
 d3Engine.height = 300;
 
@@ -21,16 +22,17 @@ d3Engine.ttOffset = 10;
 d3Engine.ttWidth = 220;
 d3Engine.ttHeight = 105;
 
-// x based on star rating
+// x scale based on star rating
 d3Engine.x = d3.scale.linear()
           .domain([0, 6])
           .range([0, d3Engine.width]);
 
-// narrower range for foci (don't want foci at edge)
+// another scale, narrower range for foci (don't want foci at edge)
 d3Engine.fociX = d3.scale.linear()
           .domain([0, 6])
           .range([100, d3Engine.width-50]);
 
+// Create foci (1 per 0.5 star spaced out horizontally across chart)
 var fociGen = function (numFoci, x) {
   var results = [];
   for (var i = 0; i < numFoci; i++) {
