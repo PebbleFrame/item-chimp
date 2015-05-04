@@ -65,7 +65,7 @@ body {
   margin: 0 auto;
 }
 
-button {
+.query-form button {
   margin-top: 7px;
 }
 
@@ -73,10 +73,17 @@ button {
 
 .related-results-display-container {
   display: none;
+  margin-top: 47px;
 }
 
 .reviews-display-container {
   display: none;
+  margin-top: 55px;
+}
+
+.reviews-display-container button {
+  font-size: 10px;
+  padding: 2px 4px;
 }
 
 .related-results-display {
@@ -92,8 +99,10 @@ button {
 }
 
 .walmart-reviews-display {
-  padding: 8px;
-  margin: 9px 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 
 .walmart-reviews-display img {
@@ -235,6 +244,7 @@ a.follow:hover, a.follow:active {
   position: relative;
   margin-left: auto;
   margin-right: auto;
+  padding-left: 25px;
 }
 
 .hoverbox {

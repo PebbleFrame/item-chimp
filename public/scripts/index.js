@@ -42,7 +42,9 @@ var D3Chart = React.createClass({displayName: "D3Chart",
   render: function() {
     return (
       React.createElement("div", {className: "d3-container"}, 
-        React.createElement("svg", {className: "chart"})
+        React.createElement("hr", null), 
+        React.createElement("svg", {className: "chart"}), 
+        React.createElement("hr", null)
       )
     );
   }
@@ -630,6 +632,10 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
       }.bind(this)
     });
   },
+  showResultsHideReviews: function() {
+    $('.reviews-display-container').fadeOut();
+    $('.related-results-display-container').delay(500).fadeIn();
+  },
   render: function() {
     // Attributes are "props" which can be accessed by the component
     // Many "props" are set as the "state", which is set based on data received from API calls
@@ -645,7 +651,10 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
           bestbuyName: this.state.bestbuyReviewedItemName, 
           ref: "d3chart"}), 
 
+
         React.createElement("div", {className: "reviews-display-container"}, 
+
+          React.createElement("div", null, React.createElement("button", {className: "btn btn-info", onClick: this.showResultsHideReviews}, "Back to Results")), 
 
           React.createElement(ReviewsDisplaySection, {
             walmartReviews: this.state.walmartReviews, 
@@ -663,6 +672,7 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
         ), 
 
         React.createElement("div", {className: "related-results-display-container"}, 
+
           React.createElement(WalmartRelatedResultsDisplay, {
             data: this.state.walmart, 
             onWalmartReviewRequest: this.handleWalmartReviewRequest}), 

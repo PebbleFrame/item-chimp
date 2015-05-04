@@ -41,7 +41,9 @@ var D3Chart = React.createClass({
   render: function() {
     return (
       <div className="d3-container">
+        <hr />
         <svg className="chart"></svg>
+        <hr />
       </div>
     );
   }

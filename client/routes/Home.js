@@ -153,6 +153,10 @@ var DisplayBox = React.createClass({
       }.bind(this)
     });
   },
+  showResultsHideReviews: function() {
+    $('.reviews-display-container').fadeOut();
+    $('.related-results-display-container').delay(500).fadeIn();
+  },
   render: function() {
     // Attributes are "props" which can be accessed by the component
     // Many "props" are set as the "state", which is set based on data received from API calls
@@ -168,7 +172,10 @@ var DisplayBox = React.createClass({
           bestbuyName={this.state.bestbuyReviewedItemName}
           ref="d3chart" />
 
+
         <div className="reviews-display-container">
+
+          <div><button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results</button></div>
 
           <ReviewsDisplaySection
             walmartReviews={this.state.walmartReviews}
@@ -186,6 +193,7 @@ var DisplayBox = React.createClass({
         </div>
 
         <div className="related-results-display-container">
+
           <WalmartRelatedResultsDisplay 
             data={this.state.walmart}
             onWalmartReviewRequest={this.handleWalmartReviewRequest} />
