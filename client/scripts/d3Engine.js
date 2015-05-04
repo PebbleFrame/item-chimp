@@ -3,20 +3,17 @@
 
 var d3Engine = {};
 
-d3Engine.initValues = function () {
+d3Engine.initValues = function (width, height) {
   // colors key
-  d3Engine.prodKey = [
-    {name: "Amazon", color: "steelblue"},
-    {name: "WalMart", color: "darkorange"},
-    {name: "Best Buy", color: "darkseagreen"},
-  ];
+  d3Engine.colors = ["steelblue", "darkorange", "darkseagreen"];
+  d3Engine.prodKey = [];
 
   // Data for stars legend at bottom
   d3Engine.legendData = ['0 stars', '1 star', '3 stars', '4 stars', '5 stars'];
 
   // overall chart vars
-  d3Engine.width = 600;
-  d3Engine.height = 300;
+  d3Engine.width = width || 600;
+  d3Engine.height = height || 300;
 
   // tooltip vars
   d3Engine.ttOffset = 10;
@@ -65,18 +62,42 @@ d3Engine.populateWMData = function (rawData, prodNum) {
   }
   return results;
 };
+
+d3Engine.populateBBData = function (rawData, prodNum) {
+  var results = [];
+  for (var i = 0; i < rawData.length; i++) {
+    var obj = {};
+    obj.reviewLength = rawData[i].comment.length;
+    obj.dotSize = obj.reviewLength/50 + 20;
+    obj.stars = +rawData[i].rating;
+    obj.prodKey = d3Engine.prodKey[prodNum];
+    obj.username = rawData[i].reviewer.name;
+    obj.reviewTitle = rawData[i].title.slice(0,24) + "..."
+    obj.review = rawData[i].comment;
+    obj.reviewStart = obj.review.slice(0, 110) + "...";
+    results.push(obj);
+  }
+  return results;
+};
 // ---------------------------------
 
 
 // ------ MAIN CHART CREATION FUNCTION ---------
 
-d3Engine.create = function (el, wmData, state) {
+d3Engine.create = function (el, width, height, products) {
 
-  d3Engine.initValues();
+  d3Engine.initValues(width, height);
 
   // populate chart with review data
   d3Engine.data = [];
-  d3Engine.data = d3Engine.data.concat(d3Engine.populateWMData(wmData,0));
+  for (var i = 0; i < products.length; i++) {
+    d3Engine.prodKey[i] = {name: products[i].name, color: d3Engine.colors[i], source: products[i].source};
+    if (products[i].source === 'Walmart') {
+      d3Engine.data = d3Engine.data.concat(d3Engine.populateWMData(products[i].reviews,i));
+    } else if (products[i].source === 'Best Buy') {
+      d3Engine.data = d3Engine.data.concat(d3Engine.populateBBData(products[i].reviews,i));
+    }
+  }
 
   // chart overall dimensions
   this.chart = d3.select(".chart")
@@ -109,6 +130,7 @@ d3Engine.create = function (el, wmData, state) {
     .attr("dy", ".35em")
     .text(function(d) {return d.stars;});
 
+  // Bottom legend (# of stars)
   var legend = this.chart.selectAll("g.legend")
     .data(d3Engine.legendData)
     .enter().append("g")
@@ -120,24 +142,31 @@ d3Engine.create = function (el, wmData, state) {
     .attr("y", 0)
     .text(function(d) {return d});
 
-  var storeLegend = this.chart.selectAll("g.storeLegend")
+  // Product legend
+  var productLegend = this.chart.selectAll("g.productLegend")
     .data(d3Engine.prodKey)
     .enter().append("g")
-    .classed("storeLegend", true)
+    .classed("productLegend", true)
     .attr("transform", "translate(20,10)");
 
-  storeLegend.append("rect")
-    .attr("x", function (d,i) { return i*100; })
-    .attr("y", 5)
-    .attr("width", 80)
+  productLegend.append("rect")
+    .attr("x", 0)
+    .attr("y", function(d,i) { return i*25; })
+    .attr("width", 25)
     .attr("height", 25)
     .style("fill", function (d) { return d.color; });
 
-  storeLegend.append("text")
-    .attr("x", function (d,i) { return i*100 + 5; })
-    .attr("y", 18)
+  productLegend.append("text")
+    .attr("x", 35)
+    .attr("y", function (d,i) { return i*25 + 13; })
     .attr("dy", "0.35em")
-    .text(function(d) { return d.name; } );
+    .text(function(d) { 
+      if (d.name.length > 40) {
+        return d.name.slice(0,40) + "..." + " at " + d.source;
+      } else {
+        return d.name + " at " + d.source;
+      }
+    });
 
   tooltipSetup();
   forceInit();
