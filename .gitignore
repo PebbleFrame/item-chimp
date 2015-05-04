@@ -35,4 +35,4 @@ public/lib
 testServer.js
 
 # Compiled index.js file
-public/scripts/index.js
+public/scripts
