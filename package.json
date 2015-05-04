@@ -23,7 +23,6 @@
     "bookshelf": "^0.7.9",
     "browserify-middleware": "^5.0.2",
     "express": "^4.12.3",
-    "grunt-concurrent": "^1.0.0",
     "jquery": "^2.1.4",
     "jwt-simple": "^0.3.0",
     "knex": "^0.7.6",
@@ -38,6 +37,7 @@
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.8.0",
+    "grunt-concurrent": "^1.0.0",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-react": "^0.12.2",
