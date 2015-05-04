@@ -98,7 +98,6 @@
     password: 1,
     email: "e@gmail.com"
   });
-  console.log(user)
 
   user.save().then(function(newUser) {
     db.Users.add(newUser);
@@ -203,6 +202,7 @@
 
 //-------------USER API CONFIGURATION START--------/
   db.findUser = function(userName){
+    console.log("Hello" + userName)
     db.User.where({username: userName}).fetch()
     .then(function (user) {
       if (!user) {
@@ -239,15 +239,14 @@
             newUser.save().then(function(newUser) {
               db.Users.add(newUser);
               console.log("User Saved");
-              db.emit('addedUser', newUser);
-              db.login(user);
+              var token = jwt.encode(user.username, 'secret');
+              db.emit("userAdded", token);
             });
           });
         });
       }
       else{
         console.log('User already exists');
-        db.emit("addedUser", null);
       }
     });
     console.log("User: " + user.username)
@@ -255,10 +254,51 @@
     db.findUser(user.username);
   };
 
-  db.login = function(user){
-    console.log("Logging In")
+  db.login = function(candidate){
+    console.log("Logging In");
+    db.on("foundUser", function(user){
+      var candidatePassword = candidate.password;
+      var savedPassword = user.password;
+      bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
+          if (isMatch) {
+            var token = jwt.encode(user.username, 'secret');
+            res.json({token: token});
+          } 
+          else {
+            console.log("Incorrect Password");
+            res.send(false);
+           }
+        });
+    });
+    console.log(candidate);
+    db.findUser(candidate.username);
   };
+
+
+
 //-------------API CONFIGURATION END---------------/
 
 module.exports = db;
 
+
+
+
+
+//       user.comparePasswords(user.password)
+//         .then(function(match) {
+//           if (match) {
+//             var token = jwt.encode(user.username, 'secret');
+//             res.json({token: token});
+//           } 
+//           else {
+//               console.log("Incorrect Password");
+//              res.json
+//            }
+//         });
+
+
+
+// bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
+  
+
+//   });
