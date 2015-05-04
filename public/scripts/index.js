@@ -1434,7 +1434,7 @@ var LogoArea = React.createClass({displayName: "LogoArea",
     );
   }
 });
- 
+
 // Basic structure of the app
 // This is implemented by the React Router, which recognizes the "App" variable
 var App = React.createClass({displayName: "App",
