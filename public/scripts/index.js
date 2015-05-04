@@ -570,7 +570,8 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
           // amazon: data[2],
         });
 
-        // ********** COMMENT OUT LATER *******
+        // initialize d3 price chart
+        // params are (width, height)
         this.refs.d3PriceChart.startEngine(500, 275);
 
         // Hide the spinner after all API requests have been completed
