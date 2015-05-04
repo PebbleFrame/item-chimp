@@ -222,8 +222,8 @@ a.follow:hover, a.follow:active {
   text-anchor: middle;
 }
 
-.storeLegend text {
-  fill: white;
+.productLegend text {
+  fill: gray;
   font: 14px sans-serif;
   text-anchor: start;
 }

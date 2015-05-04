@@ -3,45 +3,44 @@
 
 var d3Engine = {};
 
-// colors key
-var prodKey = [
-  {name: "Amazon", color: "steelblue"},
-  {name: "WalMart", color: "darkorange"},
-  {name: "Best Buy", color: "darkseagreen"},
-];
+d3Engine.initValues = function (width, height) {
+  // colors key
+  d3Engine.colors = ["steelblue", "darkorange", "darkseagreen"];
+  d3Engine.prodKey = [];
 
-// Data for stars legend at bottom
-d3Engine.legendData = ['0 stars', '1 star', '3 stars', '4 stars', '5 stars'];
+  // Data for stars legend at bottom
+  d3Engine.legendData = ['0 stars', '1 star', '3 stars', '4 stars', '5 stars'];
 
-// overall chart vars
-d3Engine.width = 600;
-d3Engine.height = 300;
+  // overall chart vars
+  d3Engine.width = width || 600;
+  d3Engine.height = height || 300;
 
-// tooltip vars
-d3Engine.ttOffset = 10;
-d3Engine.ttWidth = 220;
-d3Engine.ttHeight = 105;
+  // tooltip vars
+  d3Engine.ttOffset = 10;
+  d3Engine.ttWidth = 220;
+  d3Engine.ttHeight = 105;
 
-// x scale based on star rating
-d3Engine.x = d3.scale.linear()
-          .domain([0, 6])
-          .range([0, d3Engine.width]);
+  // x scale based on star rating
+  d3Engine.x = d3.scale.linear()
+            .domain([0, 6])
+            .range([0, d3Engine.width]);
 
-// another scale, narrower range for foci (don't want foci at edge)
-d3Engine.fociX = d3.scale.linear()
-          .domain([0, 6])
-          .range([100, d3Engine.width-50]);
+  // another scale, narrower range for foci (don't want foci at edge)
+  d3Engine.fociX = d3.scale.linear()
+            .domain([0, 6])
+            .range([100, d3Engine.width-50]);
 
-// Create foci (1 per 0.5 star spaced out horizontally across chart)
-var fociGen = function (numFoci, x) {
-  var results = [];
-  for (var i = 0; i < numFoci; i++) {
-    results.push({x: d3Engine.fociX(i+1)/2, y: 150});
-  }
-  return results;
+  // Create foci (1 per 0.5 star spaced out horizontally across chart)
+  var fociGen = function (numFoci, x) {
+    var results = [];
+    for (var i = 0; i < numFoci; i++) {
+      results.push({x: d3Engine.fociX(i+1)/2, y: 150});
+    }
+    return results;
+  };
+
+  d3Engine.foci = fociGen(11, d3Engine.x);
 };
-
-d3Engine.foci = fociGen(11, d3Engine.x);
 
 // ---------------------------------
 
@@ -54,7 +53,7 @@ d3Engine.populateWMData = function (rawData, prodNum) {
     obj.reviewLength = rawData[i].reviewText.length;
     obj.dotSize = obj.reviewLength/50 + 20;
     obj.stars = +rawData[i].overallRating.rating;
-    obj.prodKey = prodKey[prodNum];
+    obj.prodKey = d3Engine.prodKey[prodNum];
     obj.username = rawData[i].reviewer;
     obj.reviewTitle = rawData[i].title.slice(0,24) + "..."
     obj.review = rawData[i].reviewText;
@@ -63,20 +62,49 @@ d3Engine.populateWMData = function (rawData, prodNum) {
   }
   return results;
 };
+
+d3Engine.populateBBData = function (rawData, prodNum) {
+  var results = [];
+  for (var i = 0; i < rawData.length; i++) {
+    var obj = {};
+    obj.reviewLength = rawData[i].comment.length;
+    obj.dotSize = obj.reviewLength/50 + 20;
+    obj.stars = +rawData[i].rating;
+    obj.prodKey = d3Engine.prodKey[prodNum];
+    obj.username = rawData[i].reviewer.name;
+    obj.reviewTitle = rawData[i].title.slice(0,24) + "..."
+    obj.review = rawData[i].comment;
+    obj.reviewStart = obj.review.slice(0, 110) + "...";
+    results.push(obj);
+  }
+  return results;
+};
 // ---------------------------------
 
 
-// ------ CHART COMPONENTS ---------
+// ------ MAIN CHART CREATION FUNCTION ---------
 
-d3Engine.create = function (el, wmData, state) {
+d3Engine.create = function (el, width, height, products) {
 
+  d3Engine.initValues(width, height);
+
+  // populate chart with review data
   d3Engine.data = [];
-  d3Engine.data = d3Engine.data.concat(d3Engine.populateWMData(wmData,0));
+  for (var i = 0; i < products.length; i++) {
+    d3Engine.prodKey[i] = {name: products[i].name, color: d3Engine.colors[i], source: products[i].source};
+    if (products[i].source === 'Walmart') {
+      d3Engine.data = d3Engine.data.concat(d3Engine.populateWMData(products[i].reviews,i));
+    } else if (products[i].source === 'Best Buy') {
+      d3Engine.data = d3Engine.data.concat(d3Engine.populateBBData(products[i].reviews,i));
+    }
+  }
 
+  // chart overall dimensions
   this.chart = d3.select(".chart")
     .attr("width", d3Engine.width)
     .attr("height", d3Engine.height);
 
+  // create a "g" element for every review (will contain a circle and a text obj)
   var circle = this.chart.selectAll("g.node")
       .data(d3Engine.data)
     .enter().append("g")
@@ -85,6 +113,7 @@ d3Engine.create = function (el, wmData, state) {
         return "translate(" + (d3Engine.x(d.stars)+ d.dotSize) + ", 50)";
       });
 
+  // create a circle element for every g element
   circle.append("circle")
     .attr("cx", 0)
     .attr("cy", 0)
@@ -94,12 +123,14 @@ d3Engine.create = function (el, wmData, state) {
     .style("stroke-width", 2)
     .style("stroke-opacity", 0.5);
 
+  // create a text element for every g
   circle.append("text")
     .attr("x", 0)
     .attr("y", 0)
     .attr("dy", ".35em")
     .text(function(d) {return d.stars;});
 
+  // Bottom legend (# of stars)
   var legend = this.chart.selectAll("g.legend")
     .data(d3Engine.legendData)
     .enter().append("g")
@@ -111,31 +142,35 @@ d3Engine.create = function (el, wmData, state) {
     .attr("y", 0)
     .text(function(d) {return d});
 
-  var storeLegend = this.chart.selectAll("g.storeLegend")
-    .data(prodKey)
+  // Product legend
+  var productLegend = this.chart.selectAll("g.productLegend")
+    .data(d3Engine.prodKey)
     .enter().append("g")
-    .classed("storeLegend", true)
+    .classed("productLegend", true)
     .attr("transform", "translate(20,10)");
 
-  storeLegend.append("rect")
-    .attr("x", function (d,i) { return i*100; })
-    .attr("y", 5)
-    .attr("width", 80)
+  productLegend.append("rect")
+    .attr("x", 0)
+    .attr("y", function(d,i) { return i*25; })
+    .attr("width", 25)
     .attr("height", 25)
     .style("fill", function (d) { return d.color; });
 
-  storeLegend.append("text")
-    .attr("x", function (d,i) { return i*100 + 5; })
-    .attr("y", 18)
+  productLegend.append("text")
+    .attr("x", 35)
+    .attr("y", function (d,i) { return i*25 + 13; })
     .attr("dy", "0.35em")
-    .text(function(d) { return d.name; } );
+    .text(function(d) { 
+      if (d.name.length > 40) {
+        return d.name.slice(0,40) + "..." + " at " + d.source;
+      } else {
+        return d.name + " at " + d.source;
+      }
+    });
 
   tooltipSetup();
   forceInit();
 };
-
-
-
 // ---------------------------------
 
 

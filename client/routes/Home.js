@@ -99,7 +99,10 @@ var DisplayBox = React.createClass({
           walmartReviews: {walmartReviews: walmartReviewsFromData}
         });
         
-        this.refs.d3chart.startEngine();
+        // initialize d3 chart
+        // params are (width, height)
+        this.refs.d3chart.startEngine(500, 275);
+
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('get-walmart-reviews', status, err.toString());
@@ -126,6 +129,11 @@ var DisplayBox = React.createClass({
       // sku is used to make a request for Best Buy reviews
       data: sku,
       success: function(data) {
+        $('.related-results-display-container').fadeOut();
+
+        // Display the reviews-display only after an item is clicked on
+        $('.reviews-display-container').fadeIn();
+        $('.d3-container').fadeIn();
 
         // Get the reviews array from the response data
         var bestbuyReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
@@ -134,6 +142,11 @@ var DisplayBox = React.createClass({
         this.setState({
           bestbuyReviews: {bestbuyReviews: bestbuyReviewsFromData}
         });
+        
+        // initialize d3 chart
+        // params are (width, height)
+        this.refs.d3chart.startEngine(500, 275);
+
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('get-bestbuy-reviews', status, err.toString());
