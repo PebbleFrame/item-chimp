@@ -42,7 +42,7 @@ var DisplayBox = React.createClass({
       data: query,
       success: function(data) {
         // Show Related Results after user submits query
-        $('.related-results-display').removeClass('hidden');
+        $('.related-results-display-container').fadeIn();
 
         // Set the state to contain data for each separate API
         // data[0] --> {walmart: [Array of Walmart results]}
@@ -56,7 +56,7 @@ var DisplayBox = React.createClass({
         });
 
         // Hide the spinner after all API requests have been completed
-        $('.query-form-container img').addClass('hidden');
+        $('.query-form-container img').hide();
 
       }.bind(this),
       error: function(xhr, status, err) {
@@ -88,8 +88,8 @@ var DisplayBox = React.createClass({
         $('.related-results-display-container').fadeOut();
 
         // Display the reviews-display only after an item is clicked on
-        $('.reviews-display-container').removeClass('hidden');
-        $('.d3-container').removeClass('hidden');
+        $('.reviews-display-container').fadeIn();
+        $('.d3-container').fadeIn();
 
         // Get the reviews array from the response data
         var walmartReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
@@ -126,8 +126,6 @@ var DisplayBox = React.createClass({
       // sku is used to make a request for Best Buy reviews
       data: sku,
       success: function(data) {
-        // Display the reviews-display only after an item is clicked on
-        $('.bestbuy-reviews-display').removeClass('hidden');
 
         // Get the reviews array from the response data
         var bestbuyReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
@@ -157,7 +155,7 @@ var DisplayBox = React.createClass({
           bestbuyName={this.state.bestbuyReviewedItemName}
           ref="d3chart" />
 
-        <div className="reviews-display-container hidden">
+        <div className="reviews-display-container">
 
           <ReviewsDisplaySection
             walmartReviews={this.state.walmartReviews}
@@ -196,7 +194,12 @@ var SearchForm = React.createClass({
     e.preventDefault();
 
     // Show the spinner when a query is submitted
-    $('.query-form-container img').removeClass('hidden');
+    $('.query-form-container img').show();
+
+    // Hide containers
+    $('.d3-container').fadeOut();
+    $('.related-results-display-container').fadeOut();
+    $('.reviews-display-container').fadeOut();
 
     // Grab query content from "ref" in input box
     var query = React.findDOMNode(this.refs.query).value.trim();
@@ -218,7 +221,7 @@ var SearchForm = React.createClass({
 
           <center><button className="btn btn-primary">Submit</button></center>
         </form>
-        <img src="images/spiffygif_46x46.gif" className="hidden" />
+        <img src="images/spiffygif_46x46.gif" />
       </div>
     );
   }
