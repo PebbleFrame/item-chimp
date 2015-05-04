@@ -66,17 +66,20 @@ d3Engine.populateWMData = function (rawData, prodNum) {
 // ---------------------------------
 
 
-// ------ CHART COMPONENTS ---------
+// ------ MAIN CHART CREATION FUNCTION ---------
 
 d3Engine.create = function (el, wmData, state) {
 
+  // populate chart with review data
   d3Engine.data = [];
   d3Engine.data = d3Engine.data.concat(d3Engine.populateWMData(wmData,0));
 
+  // chart overall dimensions
   this.chart = d3.select(".chart")
     .attr("width", d3Engine.width)
     .attr("height", d3Engine.height);
 
+  // create a "g" element for every review (will contain a circle and a text obj)
   var circle = this.chart.selectAll("g.node")
       .data(d3Engine.data)
     .enter().append("g")
@@ -85,6 +88,7 @@ d3Engine.create = function (el, wmData, state) {
         return "translate(" + (d3Engine.x(d.stars)+ d.dotSize) + ", 50)";
       });
 
+  // create a circle element for every g element
   circle.append("circle")
     .attr("cx", 0)
     .attr("cy", 0)
@@ -94,6 +98,7 @@ d3Engine.create = function (el, wmData, state) {
     .style("stroke-width", 2)
     .style("stroke-opacity", 0.5);
 
+  // create a text element for every g
   circle.append("text")
     .attr("x", 0)
     .attr("y", 0)
