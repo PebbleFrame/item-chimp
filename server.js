@@ -2,7 +2,6 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var reactify = require('reactify');
 var nunjucks = require('nunjucks');
-// var config = require('./client/config');
 var authRouter = require('./server/auth-routes');
 var OperationHelper = require('apac').OperationHelper;
 var request = require('request');
@@ -69,6 +68,7 @@ app.post('/get-walmart-reviews', function(req, res) {
     }, function (error, response, walmartReviewBody) {
       if (!error && response.statusCode == 200) {
         var WalmartReviewstoSend = walmartReviewBody;
+        console.log(WalmartReviewstoSend);
         res.send([
           {walmartReviews: WalmartReviewstoSend}
         ]);
