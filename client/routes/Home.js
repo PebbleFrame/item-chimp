@@ -180,7 +180,7 @@ var DisplayBox = React.createClass({
           <BestbuyRelatedResultsDisplay 
             data={this.state.bestbuy}
             onBestbuyReviewRequest={this.handleBestbuyReviewRequest} />
-          <AmazonRelatedResultsDisplay data={this.state.amazon} />
+          {/* <AmazonRelatedResultsDisplay data={this.state.amazon} /> */}
         </div>
 
       </div>
