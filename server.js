@@ -37,17 +37,17 @@ app.get('*', function(req, res) {
 });
 
 
-var opHelper = new OperationHelper({
+/*var opHelper = new OperationHelper({
   awsId:     'AKIAIQ27TFDH7YXONTJQ',
   awsSecret: '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',
   assocId:   'bap071-20',
-  version:   '2013-08-01'});
+  version:   '2013-08-01'});*/
 
-var AmazonResultsToSend = "";
+//var AmazonResultsToSend = "";
 var WalmartResultsToSend = "";
 var BestbuyResultsToSend = "";
 
-var amazonGeneralQuery = function(req, res,next){
+/*var amazonGeneralQuery = function(req, res,next){
   var query = req.body.query;
   opHelper.execute('ItemSearch', {
   'SearchIndex': 'All',
@@ -57,7 +57,7 @@ var amazonGeneralQuery = function(req, res,next){
   AmazonResultsToSend = results.ItemSearchResponse.Items[0].Item;
   next();
   });
-}
+}*/
 
 var walmartGeneralQuery = function(req, res,next){
   var query = req.body.query;
@@ -85,13 +85,12 @@ var bestbuyGeneralQuery =  function(req, res,next) {
   });
 }
 
-app.post('/general-query', [amazonGeneralQuery,walmartGeneralQuery,bestbuyGeneralQuery], function(req, res,next) {
+app.post('/general-query', [walmartGeneralQuery,bestbuyGeneralQuery], function(req, res,next) {
   next();
 }, function (req, res) {
   res.send([
-    {walmart: WalmartResultsToSend},
-    {amazon: AmazonResultsToSend},
-    {bestbuy: BestbuyResultsToSend}
+  {walmart: WalmartResultsToSend},
+  {bestbuy: BestbuyResultsToSend}
   ]);
 });
 
@@ -120,7 +119,6 @@ app.post('/get-bestbuy-reviews', function(req, res) {
     }, function (error, response, bestbuyReviewBody) {
       if (!error && response.statusCode == 200) {
         var BestBuyReviewsToSend = bestbuyReviewBody;
-     //   console.log(bestbuyReviewBody);
         res.send([
           {bestbuyReviews: BestBuyReviewsToSend}
         ]);
