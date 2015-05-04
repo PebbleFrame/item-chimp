@@ -23,6 +23,7 @@
     "bookshelf": "^0.7.9",
     "browserify-middleware": "^5.0.2",
     "express": "^4.12.3",
+    "grunt-concurrent": "^1.0.0",
     "jquery": "^2.1.4",
     "jwt-simple": "^0.3.0",
     "knex": "^0.7.6",

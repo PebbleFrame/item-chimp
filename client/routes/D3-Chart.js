@@ -1,5 +1,5 @@
 var React = require('react');
-var d3Engine = require('../../public/d3_reviews.js');
+var d3Engine = require('../scripts/d3Engine.js');
 
 var D3Chart = React.createClass({
   startEngine: function() {
