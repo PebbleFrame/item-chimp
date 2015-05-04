@@ -9,7 +9,7 @@ var D3Chart = React.createClass({displayName: "D3Chart",
   },
   render: function() {
     return (
-      React.createElement("div", {className: "d3-container hidden"}, 
+      React.createElement("div", {className: "d3-container"}, 
         React.createElement("svg", {className: "chart"})
       )
     );
@@ -225,7 +225,7 @@ var BestbuyRelatedResultsDisplay = React.createClass({displayName: "BestbuyRelat
       );
     }.bind(this));
     return (
-      React.createElement("div", {className: "related-results-display hidden"}, 
+      React.createElement("div", {className: "related-results-display"}, 
         React.createElement("h3", null, "Best Buy Related Results"), 
         resultNodes
       )
@@ -346,7 +346,7 @@ var WalmartRelatedResultsDisplay = React.createClass({displayName: "WalmartRelat
       );
     }.bind(this));
     return (
-      React.createElement("div", {className: "related-results-display hidden"}, 
+      React.createElement("div", {className: "related-results-display"}, 
         React.createElement("h3", null, "Walmart Related Results"), 
         resultNodes
       )
@@ -487,7 +487,7 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
       data: query,
       success: function(data) {
         // Show Related Results after user submits query
-        $('.related-results-display').removeClass('hidden');
+        $('.related-results-display-container').fadeIn();
 
         // Set the state to contain data for each separate API
         // data[0] --> {walmart: [Array of Walmart results]}
@@ -501,7 +501,7 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
         });
 
         // Hide the spinner after all API requests have been completed
-        $('.query-form-container img').addClass('hidden');
+        $('.query-form-container img').hide();
 
       }.bind(this),
       error: function(xhr, status, err) {
@@ -533,8 +533,8 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
         $('.related-results-display-container').fadeOut();
 
         // Display the reviews-display only after an item is clicked on
-        $('.reviews-display-container').removeClass('hidden');
-        $('.d3-container').removeClass('hidden');
+        $('.reviews-display-container').fadeIn();
+        $('.d3-container').fadeIn();
 
         // Get the reviews array from the response data
         var walmartReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
@@ -571,8 +571,6 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
       // sku is used to make a request for Best Buy reviews
       data: sku,
       success: function(data) {
-        // Display the reviews-display only after an item is clicked on
-        $('.bestbuy-reviews-display').removeClass('hidden');
 
         // Get the reviews array from the response data
         var bestbuyReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
@@ -602,7 +600,7 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
           bestbuyName: this.state.bestbuyReviewedItemName, 
           ref: "d3chart"}), 
 
-        React.createElement("div", {className: "reviews-display-container hidden"}, 
+        React.createElement("div", {className: "reviews-display-container"}, 
 
           React.createElement(ReviewsDisplaySection, {
             walmartReviews: this.state.walmartReviews, 
@@ -641,7 +639,12 @@ var SearchForm = React.createClass({displayName: "SearchForm",
     e.preventDefault();
 
     // Show the spinner when a query is submitted
-    $('.query-form-container img').removeClass('hidden');
+    $('.query-form-container img').show();
+
+    // Hide containers
+    $('.d3-container').fadeOut();
+    $('.related-results-display-container').fadeOut();
+    $('.reviews-display-container').fadeOut();
 
     // Grab query content from "ref" in input box
     var query = React.findDOMNode(this.refs.query).value.trim();
@@ -663,7 +666,7 @@ var SearchForm = React.createClass({displayName: "SearchForm",
 
           React.createElement("center", null, React.createElement("button", {className: "btn btn-primary"}, "Submit"))
         ), 
-        React.createElement("img", {src: "images/spiffygif_46x46.gif", className: "hidden"})
+        React.createElement("img", {src: "images/spiffygif_46x46.gif"})
       )
     );
   }

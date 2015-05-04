@@ -45,6 +45,7 @@ body {
 }
 
 .query-form-container img {
+  display: none;
   margin-top: 20px;
 }
 
@@ -69,6 +70,14 @@ button {
 }
 
 /* ============== HOME PAGE RESULTS DISPLAY ============= */
+
+.related-results-display-container {
+  display: none;
+}
+
+.reviews-display-container {
+  display: none;
+}
 
 .related-results-display {
   float: left;
@@ -220,6 +229,7 @@ a.follow:hover, a.follow:active {
 }
 
 .d3-container {
+  display: none;
   height: 300px;
   width: 600px;
   position: relative;

@@ -26,7 +26,7 @@ var BestbuyRelatedResultsDisplay = React.createClass({
       );
     }.bind(this));
     return (
-      <div className="related-results-display hidden">
+      <div className="related-results-display">
         <h3>Best Buy Related Results</h3>
         {resultNodes}
       </div>
