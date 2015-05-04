@@ -172,7 +172,6 @@ var DisplayBox = React.createClass({
           bestbuyName={this.state.bestbuyReviewedItemName}
           ref="d3chart" />
 
-
         <div className="reviews-display-container">
 
           <div><button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results</button></div>
@@ -192,6 +191,9 @@ var DisplayBox = React.createClass({
 
         </div>
 
+        <D3PriceChart
+          walmartRelatedResults={this.state.walmart} />
+
         <div className="related-results-display-container">
 
           <WalmartRelatedResultsDisplay 
@@ -200,7 +202,8 @@ var DisplayBox = React.createClass({
           <BestbuyRelatedResultsDisplay 
             data={this.state.bestbuy}
             onBestbuyReviewRequest={this.handleBestbuyReviewRequest} />
-          {/* <AmazonRelatedResultsDisplay data={this.state.amazon} /> */}
+          {/* Taken out because API key could not be in public repo 
+          <AmazonRelatedResultsDisplay data={this.state.amazon} /> */}
         </div>
 
       </div>
