@@ -1,6 +1,5 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var browserify = require('browserify-middleware');
 var reactify = require('reactify');
 var nunjucks = require('nunjucks');
 var config = require('./client/config');
@@ -18,7 +17,7 @@ nunjucks.configure('server/templates/views', {
   express: app
 });
 
-app.get('/js/' + config.common.bundle, browserify(config.common.packages, {
+/*app.get('/js/' + config.common.bundle, browserify(config.common.packages, {
   cache: true,
   precompile: true
 }));
@@ -27,7 +26,7 @@ app.use('/js', browserify('./client/scripts', {
   external: config.common.packages,
   transform: ['reactify']
 }));
-
+*/
 var authRouter = express.Router();
 app.use('/auth', authRouter);
 require('./server/auth-routes')(authRouter);
@@ -95,6 +94,8 @@ app.post('/general-query', [walmartGeneralQuery,bestbuyGeneralQuery], function(r
 });
 
 
+
+
 app.post('/get-walmart-reviews', function(req, res) {
   var itemId = req.body.itemId;
   // 'http://api.walmartlabs.com/v1/reviews/30135922?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
@@ -110,6 +111,7 @@ app.post('/get-walmart-reviews', function(req, res) {
     }
   );
 });
+
 
 app.post('/get-bestbuy-reviews', function(req, res) {
   var itemId = req.body.sku;
