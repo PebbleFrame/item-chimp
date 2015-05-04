@@ -100,7 +100,7 @@ d3PriceEngine.create = function (el, width, height, products) {
   }
 
   // chart overall dimensions
-  this.chart = d3.select(".chart")
+  this.chart = d3.select(".price-chart")
     .attr("width", d3PriceEngine.width)
     .attr("height", d3PriceEngine.height);
 
