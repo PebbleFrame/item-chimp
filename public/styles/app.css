@@ -65,19 +65,25 @@ body {
   margin: 0 auto;
 }
 
-button {
+.query-form button {
   margin-top: 7px;
 }
 
 /* ============== HOME PAGE RESULTS DISPLAY ============= */
 
+/* MAJOR CONTAINERS */
+
 .related-results-display-container {
   display: none;
+  margin-top: 47px;
 }
 
 .reviews-display-container {
   display: none;
+  margin-top: 55px;
 }
+
+/* RELATED RESULTS CONTAINER */
 
 .related-results-display {
   float: left;
@@ -89,11 +95,32 @@ button {
   margin: 12px 9px;
   border: 1px solid #8E8E8E;
   border-radius: 7px;
+  cursor: pointer;
+}
+
+.individual-display:hover {
+  background: #F8F8F8;
+}
+
+/* REVIEWS CONTAINER */
+
+/* REVIEWS CONTAINER - REVIEWS SECTION */
+.reviews-display-section {
+  display: inline-block;
+  font-size: 14px;
+  width: 60%;
+}
+
+.reviews-display-container button {
+  font-size: 10px;
+  padding: 2px 4px;
 }
 
 .walmart-reviews-display {
-  padding: 8px;
-  margin: 9px 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 
 .walmart-reviews-display img {
@@ -114,11 +141,15 @@ button {
   border-radius: 7px;
 }
 
-.reviews-display-section {
-  display: inline-block;
-  font-size: 14px;
-  width: 60%;
+.upvotes {
+  color: green;
 }
+
+.downvotes {
+  color: red;
+}
+
+/* REVIEWS CONTAINER - CHOOSE ANOTHER PRODUCT SECTIOn */
 
 .choose-another-product-section {
   float: right;
@@ -139,20 +170,17 @@ button {
   padding: 6px;
   border: 1px solid #8E8E8E;
   border-radius: 3px;
+  cursor: pointer;
+}
+
+.choose-another-product-individual-display:hover {
+  background: #F8F8F8;
 }
 
 .choose-another-product-individual-display img {
   float: left;
   height: 50px;
   margin-top: 2px;
-}
-
-.upvotes {
-  color: green;
-}
-
-.downvotes {
-  color: red;
 }
 
 /* ============== DASHBOARD DISPLAY ============= */
@@ -235,6 +263,7 @@ a.follow:hover, a.follow:active {
   position: relative;
   margin-left: auto;
   margin-right: auto;
+  padding-left: 25px;
 }
 
 .hoverbox {
