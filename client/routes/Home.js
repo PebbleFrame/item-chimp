@@ -50,8 +50,9 @@ var DisplayBox = React.createClass({
         // data[2] --> {bestbuy: [Array of Best Buy results]}
         this.setState({
           walmart: data[0],
-          amazon: data[1],
-          bestbuy: data[2]
+          bestbuy: data[1],
+          // We removed Amazon because they do not allow keys to be in our public repo
+          // amazon: data[2],
         });
 
         // Hide the spinner after all API requests have been completed
@@ -180,7 +181,7 @@ var DisplayBox = React.createClass({
           <BestbuyRelatedResultsDisplay 
             data={this.state.bestbuy}
             onBestbuyReviewRequest={this.handleBestbuyReviewRequest} />
-          <AmazonRelatedResultsDisplay data={this.state.amazon} />
+          {/* <AmazonRelatedResultsDisplay data={this.state.amazon} /> */}
         </div>
 
       </div>
