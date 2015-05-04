@@ -57,6 +57,10 @@ var DisplayBox = React.createClass({
           // amazon: data[2],
         });
 
+        // initialize d3 price chart
+        // params are (width, height)
+        this.refs.d3PriceChart.startEngine(500, 275);
+
         // Hide the spinner after all API requests have been completed
         $('.query-form-container img').hide();
 
@@ -195,7 +199,8 @@ var DisplayBox = React.createClass({
 
         <D3PriceChart
           walmartRelatedResults={this.state.walmart}
-          bestbuyRelatedResults={this.state.bestbuy} />
+          bestbuyRelatedResults={this.state.bestbuy}
+          ref="d3PriceChart" />
 
         <div className="related-results-display-container">
 

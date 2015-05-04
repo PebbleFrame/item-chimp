@@ -266,6 +266,10 @@ a.follow:hover, a.follow:active {
   padding-left: 25px;
 }
 
+.d3-price-container {
+  display: none;
+}
+
 .hoverbox {
   border: 2px solid rgb(190,190,190);
   border-radius: 10px;
