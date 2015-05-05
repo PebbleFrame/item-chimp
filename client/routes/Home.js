@@ -46,6 +46,8 @@ var DisplayBox = React.createClass({
       success: function(data) {
         // Show Related Results after user submits query
         $('.related-results-display-container').fadeIn();
+        $('.logo-container').slideUp();
+        $('.query-form').find('input').attr('placeholder', 'Search again');
 
         // Show D3 price chart
         $('.d3-price-container').show();
@@ -157,7 +159,7 @@ var DisplayBox = React.createClass({
         
         // initialize d3 chart
         // params are (width, height)
-        this.refs.d3chart.startEngine(500, 275, reviewSetsArray);
+        this.refs.d3chart.startEngine(500, 225, reviewSetsArray);
 
       }.bind(this),
       error: function(xhr, status, err) {
