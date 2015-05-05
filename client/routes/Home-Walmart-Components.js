@@ -2,8 +2,8 @@ var React = require('react');
 
 // Component that displays related results from Walmart API
 var WalmartRelatedResultsDisplay = React.createClass({
-  handleWalmartReviewRequest: function(upc, name, image) {
-    this.props.onWalmartReviewRequest(upc, name, image);
+  handleReviewRequest: function(itemId, name, image) {
+    this.props.onReviewRequest(itemId, name, image);
   },
   render: function() {
     var resultNodes = this.props.data.results.map(function(result, index) {
@@ -22,7 +22,7 @@ var WalmartRelatedResultsDisplay = React.createClass({
           numReviews={result.numReviews}
           customerRatingImage={result.customerRatingImage}
           itemId={result.itemId} 
-          onWalmartReviewRequest={this.handleWalmartReviewRequest} />
+          onReviewRequest={this.handleReviewRequest} />
       );
     }.bind(this));
     return (
@@ -36,13 +36,13 @@ var WalmartRelatedResultsDisplay = React.createClass({
 
 // Component that displays individual results for Walmart
 var WalmartIndividualResultDisplay = React.createClass({
-  handleWalmartReviewRequest: function() {
+  handleReviewRequest: function() {
     $('.walmart-reviews-display').removeClass('hidden');
-    this.props.onWalmartReviewRequest({upc: this.props.upc}, this.props.name, this.props.thumbnailImage);
+    this.props.onReviewRequest({itemId: this.props.itemId}, this.props.name, this.props.thumbnailImage);
   },  
   render: function() {
     return (
-      <div className="individual-display" onClick={this.handleWalmartReviewRequest}>
+      <div className="individual-display" onClick={this.handleReviewRequest}>
         <h5 className="product-name">
           {this.props.name}
         </h5>
@@ -63,6 +63,55 @@ var WalmartIndividualResultDisplay = React.createClass({
           {this.props.numReviews} reviews
         </div>
         <img src={this.props.customerRatingImage} />
+      </div>
+    );
+  }
+});
+
+var ReviewsDisplay = React.createClass ({
+  render: function() {
+    var resultNodes;
+
+    if (this.props.data.source === 'Walmart') {
+      resultNodes = this.props.data.Reviews.map(function(result, index) {
+        return (
+          <WalmartIndividualReviewDisplay
+            key={'walmartReview' + index}
+            title={result.title}
+            overallRating={result.overallRating}
+            reviewer={result.reviewer}
+            reviewText={result.reviewText}
+            upVotes={result.upVotes}
+            downVotes={result.downVotes} />
+        );
+      });
+    } else if (this.props.data.source === 'Best Buy') {
+      resultNodes = this.props.data.Reviews.map(function(result, index) {
+        return (
+          <BestbuyIndividualReviewDisplay
+            key={'bestbuyResult' + index}
+            title={result.title}
+            reviewer={result.reviewer}
+            comment={result.comment}
+            rating={result.rating} 
+            sku={result.sku} />
+        );
+      });
+    }
+
+    return (
+      <div className="walmart-reviews-display hidden">
+          <h4>{this.props.data.source} Reviews</h4>
+        <div className="row">
+          <div className="product-image-review"><img src={this.props.image} /></div>
+          <div className="product-name-review">
+            <div><strong>Product: </strong>{this.props.name}</div>
+            <div><strong>Average Rating: </strong>{this.props.data.AverageRating}</div>
+            <div><strong>Total Reviews: </strong>{this.props.data.ReviewCount}</div>
+          </div>
+        </div>
+        <hr />
+        {resultNodes}
       </div>
     );
   }
@@ -121,6 +170,30 @@ var WalmartIndividualReviewDisplay = React.createClass({
     );
   }
 });
+
+
+var BestbuyIndividualReviewDisplay = React.createClass({
+  render: function() {
+    return (
+      <div className="individual-review-display">
+        <h5>
+          {this.props.title}
+        </h5>
+        <div>
+          <strong>Reviewer:</strong> {this.props.reviewer}
+        </div>
+        <div>
+          <strong>Review:</strong> {this.props.comment}
+        </div>
+        <div>
+          Rating: {this.props.rating}
+        </div>
+      </div>
+    );
+  }
+});
+
+module.exports.ReviewsDisplay = ReviewsDisplay;
 
 module.exports.WalmartRelatedResultsDisplay = WalmartRelatedResultsDisplay;
 

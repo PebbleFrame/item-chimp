@@ -4,6 +4,7 @@ var WalmartComponents = require('./Home-Walmart-Components');
 var WalmartRelatedResultsDisplay = WalmartComponents.WalmartRelatedResultsDisplay;
 var WalmartIndividualResultDisplay = WalmartComponents.WalmartIndividualResultDisplay;
 var WalmartReviewsDisplay = WalmartComponents.WalmartReviewsDisplay;
+var ReviewsDisplay = WalmartComponents.ReviewsDisplay;
 
 var AmazonComponents = require('./Home-Amazon-Components');
 var AmazonRelatedResultsDisplay = AmazonComponents.AmazonRelatedResultsDisplay;
@@ -13,6 +14,7 @@ var BestbuyComponents = require('./Home-Bestbuy-Components');
 var BestbuyRelatedResultsDisplay = BestbuyComponents.BestbuyRelatedResultsDisplay;
 var BestbuyIndividualResultDisplay = BestbuyComponents.BestbuyIndividualResultDisplay;
 var BestbuyReviewsDisplay = BestbuyComponents.BestbuyReviewsDisplay;
+
 
 var D3Components = require('./D3-Chart');
 var D3Chart = D3Components.D3Chart;
@@ -30,6 +32,7 @@ var DisplayBox = React.createClass({
       amazon: {results: []},
       walmart: {results: []},
       bestbuy: {results: []},
+      allReviews: {reviewSets: []},
       walmartReviews: {Reviews: []},
       bestbuyReviews: {Reviews: []}  
     };
@@ -77,6 +80,81 @@ var DisplayBox = React.createClass({
     });
   },
 
+  // Final handler for reviews request
+  // This call is the result of calls bubbling up from the individual review results
+  handleReviewRequest: function(itemId, name, image, reviewAverage, reviewCount) {
+
+    // Sets the product name and image for the product clicked on (Revews Display)
+    // These are passed up from WalmartIndividualResultDisplay
+    this.setState({
+      ReviewedItemName: name,
+      ReviewedItemImage: image
+    });
+
+    console.log('in home.js handleReviewRequest');
+
+    console.log(itemId);
+
+    // Makes a specific API call to get reviews for the product clicked on
+    $.ajax({
+      url: 'get-walmart-reviews',
+      dataType: 'json',
+      type: 'POST',
+      // itemId is used to make a request for Walmart reviews
+      data: itemId,
+      success: function(data) {
+
+        console.log(data);
+        // Remove the general results display to display reviews
+        $('.related-results-display-container').fadeOut();
+
+        // Display the reviews-display only after an item is clicked on
+        $('.reviews-display-container').fadeIn();
+        $('.d3-container').fadeIn();
+
+        // Create array of review sets to show
+        var reviewSetsArray = [];
+
+        if (data[0].walmartReviews) {
+        // Get the reviews array from the response data
+          var ReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
+          var AverageRating = JSON.parse(data[0].walmartReviews).reviewStatistics.averageOverallRating;
+          var ReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
+          reviewSetsArray.push({
+            source: 'Walmart',
+            Reviews: ReviewsFromData,
+            AverageRating: AverageRating,
+            ReviewCount: ReviewCount
+            });
+          } else if (data[0].bestbuyReviews) {
+        // Get the reviews array from the response data
+          var ReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
+          var AverageRating = JSON.parse(data[0].walmartReviews).reviewStatistics.averageOverallRating;
+          var ReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
+          reviewSetsArray.push({
+            source: 'Best Buy',
+            Reviews: ReviewsFromData,
+            AverageRating: 0,
+            ReviewCount: 0
+            });
+          }
+        
+        // Set the walmartReviews state in the same format as the 'general-query' states
+        this.setState({
+          allReviews: { reviewSets: reviewSetsArray }
+        });
+        
+        // initialize d3 chart
+        // params are (width, height)
+        this.refs.d3chart.startEngine(500, 275);
+
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('get-walmart-reviews', status, err.toString());
+      }.bind(this)
+    });
+  },
+
   // Final handler for Walmart review request
   // This call is the result of calls bubbling up from the individual Walmart results
   handleWalmartReviewRequest: function(upc, name, image) {
@@ -116,7 +194,7 @@ var DisplayBox = React.createClass({
             ReviewCount: walmartReviewCount
           }
         });
-        
+
         // initialize d3 chart
         // params are (width, height)
         this.refs.d3chart.startEngine(500, 275);
@@ -197,6 +275,7 @@ var DisplayBox = React.createClass({
           <div><button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results</button></div>
 
           <ReviewsDisplaySection
+            allReviews={this.state.allReviews}
             walmartReviews={this.state.walmartReviews}
             walmartReviewedItemName={this.state.walmartReviewedItemName}
             walmartReviewedItemImage={this.state.walmartReviewedItemImage}
@@ -221,10 +300,10 @@ var DisplayBox = React.createClass({
 
           <WalmartRelatedResultsDisplay 
             data={this.state.walmart}
-            onWalmartReviewRequest={this.handleWalmartReviewRequest} />
+            onReviewRequest={this.handleReviewRequest} />
           <BestbuyRelatedResultsDisplay 
             data={this.state.bestbuy}
-            onBestbuyReviewRequest={this.handleBestbuyReviewRequest} />
+            onReviewRequest={this.handleReviewRequest} />
           {/* Taken out because API key could not be in public repo 
           <AmazonRelatedResultsDisplay data={this.state.amazon} /> */}
         </div>
@@ -278,7 +357,8 @@ var ReviewsDisplaySection = React.createClass({
   render: function() {
     return (
       <div className="reviews-display-section">
-        <WalmartReviewsDisplay 
+        <ReviewsDisplay 
+          source={this.props.store}
           data={this.props.walmartReviews}
           name={this.props.walmartReviewedItemName}
           image={this.props.walmartReviewedItemImage} />
