@@ -88,6 +88,9 @@ module.exports = React.createClass({displayName: "exports",
   render: function() {
     return (
       React.createElement("div", {className: "d3-price-container"}, 
+        React.createElement("div", {className: "d3-price-chart-query"}, 
+        "Results for ", React.createElement("strong", null, this.props.query)
+        ), 
         React.createElement("svg", {className: "price-chart"})
       )
     );
@@ -447,7 +450,6 @@ var WalmartRelatedResultsDisplay = React.createClass({displayName: "WalmartRelat
 // Component that displays individual results for Walmart
 var WalmartIndividualResultDisplay = React.createClass({displayName: "WalmartIndividualResultDisplay",
   handleReviewRequest: function() {
-    $('.walmart-reviews-display').removeClass('hidden');
     this.props.onReviewRequest({itemId: this.props.itemId}, 'Walmart', this.props.name, this.props.thumbnailImage);
   },  
   render: function() {
@@ -596,10 +598,11 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
 
         // Remove the general results display to display reviews
         $('.related-results-display-container').fadeOut();
+        $('.d3-price-container').fadeOut();
 
         // Display the reviews-display only after an item is clicked on
-        $('.reviews-display-container').fadeIn();
-        $('.d3-container').fadeIn();
+        $('.reviews-display-container').delay(500).fadeIn();
+        $('.d3-container').delay(500).fadeIn();
 
         // Create array of review sets to show
         var reviewSetsArray = [];
@@ -653,6 +656,9 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
 
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
+    $('.d3-container').fadeOut();
+    this.refs.d3PriceChart.startEngine(500, 275);
+    $('.d3-price-container').delay(500).fadeIn();
     $('.related-results-display-container').delay(500).fadeIn();
   },
 
@@ -1107,55 +1113,59 @@ module.exports = d3Engine;
 },{}],9:[function(require,module,exports){
 module.exports = function(pricesArray, query) {
 
-  var width = 500,
-      height = 275;
+  // Set the size of the D3 price chart
+  var width = 500;
+  var height = 275;
 
+  // Used to color bubbles
+  // i & 1 --> two colors, i & 2 --> three colors, etc.
   var fill = d3.scale.category10();
 
-  var nodes = d3.range(100).map(function(i) {
-    return {index: i};
-  });
-
+  // Used to find the minimum and maximum price for d3.scale.linear
   var pricesOnlyArray = pricesArray.map(function(item) {
     return item.salePrice;
   });
 
+  // Find the minimum and maximum price for all products listed in the query results
   var min = d3.min(pricesOnlyArray);
   var max = d3.max(pricesOnlyArray);
 
+  // Scale for circle radii. Size ranges from 15px to 45px
   var radiusScale = d3.scale.linear()
                             .domain([min, max])
                             .range([15, 45]);
 
+  // Scale for font-size in circles. Size ranges from 7px to 20px
   var textScale = d3.scale.linear()
                           .domain([min, max])
                           .range([7, 20]);
 
+  // Initializes D3 "force", which provides animation for the bubbles
   var force = d3.layout.force()
       .nodes(pricesArray)
       .size([width, height])
+      // "charge" is how strong the attraction between bubbles are
+      // We use radiusScale for greater repulsion for larger bubbles
       .charge(function(d) { return radiusScale(d.salePrice) * -3.5; })
       .on("tick", tick)
       .start();
 
+  // Select the SVG element in the ".d3-price-container"
   var svg = d3.select(".price-chart")
       .attr("width", width)
       .attr("height", height);
 
-  var stores = svg.selectAll("g.stores")
+  // Appends "Walmart" and "Best Buy" key to the chart
+  // Text color represents the bubbles the store is associated with
+  var storesLegend = svg.selectAll("g.stores")
       .data(['Walmart', 'Best Buy'])
       .enter().append("text")
-      .attr("x", "390")
+      .attr("x", "400")
       .attr("y", function(d,i) { return (i+1) * 30; })
       .attr("font-size", "17px")
+      .attr("font-weight", "bold")
       .attr("fill", function(d,i) { return fill(i & 1); })
       .text(function(d) { return d; });
-
-  svg.append("text")
-    .attr("x", "30")
-    .attr("y", "30")
-    .attr("font-size", "17px")
-    .text("Prices for " + query);
 
   var node = svg.selectAll("g.node")
       .data(pricesArray)

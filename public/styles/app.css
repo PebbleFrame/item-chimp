@@ -293,6 +293,7 @@ a.follow:hover, a.follow:active {
   position: relative;
   width: 500px;
   margin: 0 auto;
+  margin-top: 15px;
   border: 1px solid #8E8E8E;
   border-radius: 10px;
 }

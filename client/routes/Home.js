@@ -110,10 +110,11 @@ var DisplayBox = React.createClass({
 
         // Remove the general results display to display reviews
         $('.related-results-display-container').fadeOut();
+        $('.d3-price-container').fadeOut();
 
         // Display the reviews-display only after an item is clicked on
-        $('.reviews-display-container').fadeIn();
-        $('.d3-container').fadeIn();
+        $('.reviews-display-container').delay(500).fadeIn();
+        $('.d3-container').delay(500).fadeIn();
 
         // Create array of review sets to show
         var reviewSetsArray = [];
@@ -167,6 +168,9 @@ var DisplayBox = React.createClass({
 
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
+    $('.d3-container').fadeOut();
+    this.refs.d3PriceChart.startEngine(500, 275);
+    $('.d3-price-container').delay(500).fadeIn();
     $('.related-results-display-container').delay(500).fadeIn();
   },
 
