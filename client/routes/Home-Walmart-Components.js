@@ -2,8 +2,8 @@ var React = require('react');
 
 // Component that displays related results from Walmart API
 var WalmartRelatedResultsDisplay = React.createClass({
-  handleWalmartReviewRequest: function(itemId, name, image) {
-    this.props.onWalmartReviewRequest(itemId, name, image);
+  handleWalmartReviewRequest: function(upc, name, image) {
+    this.props.onWalmartReviewRequest(upc, name, image);
   },
   render: function() {
     var resultNodes = this.props.data.results.map(function(result, index) {
@@ -38,7 +38,7 @@ var WalmartRelatedResultsDisplay = React.createClass({
 var WalmartIndividualResultDisplay = React.createClass({
   handleWalmartReviewRequest: function() {
     $('.walmart-reviews-display').removeClass('hidden');
-    this.props.onWalmartReviewRequest({itemId: this.props.itemId}, this.props.name, this.props.thumbnailImage);
+    this.props.onWalmartReviewRequest({upc: this.props.upc}, this.props.name, this.props.thumbnailImage);
   },  
   render: function() {
     return (

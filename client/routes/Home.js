@@ -79,7 +79,7 @@ var DisplayBox = React.createClass({
 
   // Final handler for Walmart review request
   // This call is the result of calls bubbling up from the individual Walmart results
-  handleWalmartReviewRequest: function(itemId, name, image) {
+  handleWalmartReviewRequest: function(upc, name, image) {
 
     // Sets the product name and image for the product clicked on (Revews Display)
     // These are passed up from WalmartIndividualResultDisplay
@@ -93,8 +93,8 @@ var DisplayBox = React.createClass({
       url: 'get-walmart-reviews',
       dataType: 'json',
       type: 'POST',
-      // itemId is used to make a request for Walmart reviews
-      data: itemId,
+      // upc is used to make a request for Walmart reviews
+      data: upc,
       success: function(data) {
         // Remove the general results display to display reviews
         $('.related-results-display-container').fadeOut();
