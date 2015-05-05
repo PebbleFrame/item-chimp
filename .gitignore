@@ -34,5 +34,5 @@ public/lib
 # Server changes for Auth and Database
 testServer.js
 
-# Compiled index.js file
+# Compiled index.js file public/scripts/index.js
 public/scripts/index.js
