@@ -73,7 +73,6 @@ var ReviewsDisplay = React.createClass ({
     var resultNodes;
 
     if (this.props.source === 'Walmart') {
-      console.log('Walmart results');
       resultNodes = this.props.data.map(function(result, index) {
         return (
           <WalmartIndividualReviewDisplay
@@ -87,13 +86,12 @@ var ReviewsDisplay = React.createClass ({
         );
       });
     } else if (this.props.source === 'Best Buy') {
-      console.log('BB results');
       resultNodes = this.props.data.map(function(result, index) {
         return (
           <BestbuyIndividualReviewDisplay
             key={'bestbuyResult' + index}
             title={result.title}
-            reviewer={result.reviewer}
+            reviewer={result.reviewer[0].name}
             comment={result.comment}
             rating={result.rating} 
             sku={result.sku} />
@@ -102,14 +100,14 @@ var ReviewsDisplay = React.createClass ({
     }
 
     return (
-      <div className="walmart-reviews-display">
+      <div className="reviews-display">
           <h4>{this.props.source} Reviews</h4>
         <div className="row">
           <div className="product-image-review"><img src={this.props.image} /></div>
           <div className="product-name-review">
             <div><strong>Product: </strong>{this.props.name}</div>
-            <div><strong>Average Rating: </strong>{this.props.data.AverageRating}</div>
-            <div><strong>Total Reviews: </strong>{this.props.data.ReviewCount}</div>
+            <div><strong>Average Rating: </strong>{this.props.AverageRating}</div>
+            <div><strong>Total Reviews: </strong>{this.props.ReviewCount}</div>
           </div>
         </div>
         <hr />

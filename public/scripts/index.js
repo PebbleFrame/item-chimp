@@ -479,7 +479,6 @@ var ReviewsDisplay = React.createClass ({displayName: "ReviewsDisplay",
     var resultNodes;
 
     if (this.props.source === 'Walmart') {
-      console.log('Walmart results');
       resultNodes = this.props.data.map(function(result, index) {
         return (
           React.createElement(WalmartIndividualReviewDisplay, {
@@ -493,13 +492,12 @@ var ReviewsDisplay = React.createClass ({displayName: "ReviewsDisplay",
         );
       });
     } else if (this.props.source === 'Best Buy') {
-      console.log('BB results');
       resultNodes = this.props.data.map(function(result, index) {
         return (
           React.createElement(BestbuyIndividualReviewDisplay, {
             key: 'bestbuyResult' + index, 
             title: result.title, 
-            reviewer: result.reviewer, 
+            reviewer: result.reviewer[0].name, 
             comment: result.comment, 
             rating: result.rating, 
             sku: result.sku})
@@ -508,14 +506,14 @@ var ReviewsDisplay = React.createClass ({displayName: "ReviewsDisplay",
     }
 
     return (
-      React.createElement("div", {className: "walmart-reviews-display"}, 
+      React.createElement("div", {className: "reviews-display"}, 
           React.createElement("h4", null, this.props.source, " Reviews"), 
         React.createElement("div", {className: "row"}, 
           React.createElement("div", {className: "product-image-review"}, React.createElement("img", {src: this.props.image})), 
           React.createElement("div", {className: "product-name-review"}, 
             React.createElement("div", null, React.createElement("strong", null, "Product: "), this.props.name), 
-            React.createElement("div", null, React.createElement("strong", null, "Average Rating: "), this.props.data.AverageRating), 
-            React.createElement("div", null, React.createElement("strong", null, "Total Reviews: "), this.props.data.ReviewCount)
+            React.createElement("div", null, React.createElement("strong", null, "Average Rating: "), this.props.AverageRating), 
+            React.createElement("div", null, React.createElement("strong", null, "Total Reviews: "), this.props.ReviewCount)
           )
         ), 
         React.createElement("hr", null), 
@@ -722,7 +720,6 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
         // Create array of review sets to show
         var reviewSetsArray = [];
 
-        console.log(data);
 
         if (data[0].walmartReviews) {
         // Get the reviews array from the response data
@@ -737,21 +734,23 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
             AverageRating: AverageRating,
             ReviewCount: ReviewCount
             });
-          } else if (data[0].bestbuyReviews) {
+        }
+        if (data[0].bestbuyReviews) {
         // Get the reviews array from the response data
-          var ReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
-          var AverageRating = JSON.parse(data[0].walmartReviews).reviewStatistics.averageOverallRating;
-          var ReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
+          var ReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
+          // Can't get average rating directly from review API call, strangely enough
+          // Have to get it from a product API call.
+          // Find a way to save this in the course of the query.
+          var ReviewCount = JSON.parse(data[0].bestbuyReviews).total;
           reviewSetsArray.push({
             source: 'Best Buy',
             name: name,
             image: image,
             Reviews: ReviewsFromData,
-            AverageRating: 0,
-            ReviewCount: 0
+            AverageRating: "?",
+            ReviewCount: ReviewCount
             });
           }
-        
         // Set the walmartReviews state in the same format as the 'general-query' states
         this.setState({
           allReviews: { reviewSets: reviewSetsArray }
@@ -975,7 +974,9 @@ var ReviewsDisplaySection = React.createClass({displayName: "ReviewsDisplaySecti
           source: set.source, 
           data: set.Reviews, 
           name: set.name, 
-          image: set.image})
+          image: set.image, 
+          AverageRating: set.AverageRating, 
+          ReviewCount: set.ReviewCount})
         );
     });
     return (

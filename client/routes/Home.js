@@ -110,7 +110,6 @@ var DisplayBox = React.createClass({
         // Create array of review sets to show
         var reviewSetsArray = [];
 
-        console.log(data);
 
         if (data[0].walmartReviews) {
         // Get the reviews array from the response data
@@ -125,21 +124,23 @@ var DisplayBox = React.createClass({
             AverageRating: AverageRating,
             ReviewCount: ReviewCount
             });
-          } else if (data[0].bestbuyReviews) {
+        }
+        if (data[0].bestbuyReviews) {
         // Get the reviews array from the response data
-          var ReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
-          var AverageRating = JSON.parse(data[0].walmartReviews).reviewStatistics.averageOverallRating;
-          var ReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
+          var ReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
+          // Can't get average rating directly from review API call, strangely enough
+          // Have to get it from a product API call.
+          // Find a way to save this in the course of the query.
+          var ReviewCount = JSON.parse(data[0].bestbuyReviews).total;
           reviewSetsArray.push({
             source: 'Best Buy',
             name: name,
             image: image,
             Reviews: ReviewsFromData,
-            AverageRating: 0,
-            ReviewCount: 0
+            AverageRating: "?",
+            ReviewCount: ReviewCount
             });
           }
-        
         // Set the walmartReviews state in the same format as the 'general-query' states
         this.setState({
           allReviews: { reviewSets: reviewSetsArray }
@@ -363,7 +364,9 @@ var ReviewsDisplaySection = React.createClass({
           source={set.source}
           data={set.Reviews}
           name={set.name}
-          image={set.image} />
+          image={set.image}
+          AverageRating={set.AverageRating}
+          ReviewCount={set.ReviewCount} />
         );
     });
     return (
