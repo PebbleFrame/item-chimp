@@ -34,7 +34,7 @@ d3Engine.initValues = function (width, height) {
   var fociGen = function (numFoci, x) {
     var results = [];
     for (var i = 0; i < numFoci; i++) {
-      results.push({x: d3Engine.fociX(i+1)/2, y: 150});
+      results.push({x: d3Engine.fociX(i+1)/2, y: d3Engine.height/2});
     }
     return results;
   };

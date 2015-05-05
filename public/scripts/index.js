@@ -513,6 +513,8 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
       success: function(data) {
         // Show Related Results after user submits query
         $('.related-results-display-container').fadeIn();
+        $('.logo-container').slideUp();
+        $('.query-form').find('input').attr('placeholder', 'Search again');
 
         // Show D3 price chart
         $('.d3-price-container').show();
@@ -624,7 +626,7 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
         
         // initialize d3 chart
         // params are (width, height)
-        this.refs.d3chart.startEngine(500, 275, reviewSetsArray);
+        this.refs.d3chart.startEngine(500, 225, reviewSetsArray);
 
       }.bind(this),
       error: function(xhr, status, err) {
@@ -856,7 +858,7 @@ d3Engine.initValues = function (width, height) {
   var fociGen = function (numFoci, x) {
     var results = [];
     for (var i = 0; i < numFoci; i++) {
-      results.push({x: d3Engine.fociX(i+1)/2, y: 150});
+      results.push({x: d3Engine.fociX(i+1)/2, y: d3Engine.height/2});
     }
     return results;
   };
