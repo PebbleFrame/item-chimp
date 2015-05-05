@@ -5,8 +5,8 @@
   EventEmitter = require("events").EventEmitter,
   util = require('util'),
   bcrypt   = require('bcrypt-nodejs'),
-  SALT_WORK_FACTOR  = 10,
-  jwt  = require('jwt-simple');
+  jwt  = require('jwt-simple'),
+  token;
 //DECLARE GLOBAL VARIABLES ---END
 //Create DataBase wrapper, includes event emitter --- START
   function DB(){
@@ -201,14 +201,18 @@
 //-------------ORM FOR WATCHERS END----------------/
 
 //-------------USER API CONFIGURATION START--------/
+  
+  db.tokenUser = null;
+  //This function determines whether a specific user
+  //already exists in the database
   db.findUser = function(userName){
-    console.log("Hello" + userName)
+    console.log("Hello" + userName);
     db.User.where({username: userName}).fetch()
     .then(function (user) {
       if (!user) {
         user = undefined;
-        console.log("User"+userName+"Does Not Exist")
-        db.emit("foundUser", user)
+        console.log("User"+userName+"Does Not Exist");
+        db.emit("foundUser", user);
       }
       else{
         console.log(user + "Found");
@@ -219,12 +223,11 @@
 
   db.addUser = function(user){
     //Is listening for finduser() event
-    db.on('foundUser',function(found){
+    db.once('foundUser',function(found){
       //If the user is not in the database, a user will be added after
       //there password is salted and hashed
-      //they will then be sent to get logged in
       if(!found){
-        bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+        bcrypt.genSalt(10, function(err, salt) {
           if (err) {
             return console.log("Error with Salt");
           }
@@ -233,42 +236,55 @@
               return console.log("Error with hash");
             }
             user.password = hash;
-            user.salt = salt;
             console.log(user);
             var newUser = new db.User(user);  
             newUser.save().then(function(newUser) {
               db.Users.add(newUser);
               console.log("User Saved");
-              var token = jwt.encode(user.username, 'secret');
+              token = jwt.encode(user.username, 'secret');
               db.emit("userAdded", token);
             });
           });
         });
       }
       else{
+        token = undefined;
         console.log('User already exists');
+        db.emit("userAdded", token);
       }
     });
-    console.log("User: " + user.username)
+    console.log("User: " + user.username);
     //Before adding user, checks to see if the user is already in database
     db.findUser(user.username);
   };
 
   db.login = function(candidate){
     console.log("Logging In");
-    db.on("foundUser", function(user){
-      var candidatePassword = candidate.password;
-      var savedPassword = user.password;
-      bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
-          if (isMatch) {
-            var token = jwt.encode(user.username, 'secret');
-            res.json({token: token});
-          } 
-          else {
-            console.log("Incorrect Password");
-            res.send(false);
-           }
-        });
+    //if the user is found in the database
+    //the password provided will be compared
+    //to the hashed password in the database
+    //if it is a match, a token will be generated
+    db.once("foundUser", function(user){
+      if(user){
+        console.log(user.get('password'));
+        var candidatePassword = candidate.password;
+        var savedPassword = user.get('password');
+        bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
+            if (isMatch) {
+              token = jwt.encode(user.get('username'), 'secret');
+              db.emit('userLogin',token);
+            } 
+            else {
+              token = undefined;
+              console.log("Password Incorrect");
+              db.emit('userLogin', token);
+             }
+          });
+      }else{
+        token = undefined;
+        console.log("User Not Found");
+        db.emit('userLogin', token)
+      }
     });
     console.log(candidate);
     db.findUser(candidate.username);
@@ -280,25 +296,3 @@
 
 module.exports = db;
 
-
-
-
-
-//       user.comparePasswords(user.password)
-//         .then(function(match) {
-//           if (match) {
-//             var token = jwt.encode(user.username, 'secret');
-//             res.json({token: token});
-//           } 
-//           else {
-//               console.log("Incorrect Password");
-//              res.json
-//            }
-//         });
-
-
-
-// bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
-  
-
-//   });
