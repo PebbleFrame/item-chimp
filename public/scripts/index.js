@@ -870,8 +870,8 @@ d3Engine.initValues = function (width, height) {
 
   // another scale, narrower range for foci (don't want foci at edge)
   d3Engine.fociX = d3.scale.linear()
-            .domain([0, 6])
-            .range([100, d3Engine.width-50]);
+            .domain([0, 5])
+            .range([100, d3Engine.width-100]);
 
   // Create foci (1 per 0.5 star spaced out horizontally across chart)
   var fociGen = function (numFoci, x) {
@@ -914,7 +914,8 @@ d3Engine.populateBBData = function (rawData, prodNum) {
     obj.dotSize = obj.reviewLength/50 + 20;
     obj.stars = +rawData[i].rating;
     obj.prodKey = d3Engine.prodKey[prodNum];
-    obj.username = rawData[i].reviewer.name;
+    console.log(rawData[i].reviewer);
+    obj.username = rawData[i].reviewer[0].name;
     obj.reviewTitle = rawData[i].title.slice(0,24) + "..."
     obj.review = rawData[i].comment;
     obj.reviewStart = obj.review.slice(0, 110) + "...";
