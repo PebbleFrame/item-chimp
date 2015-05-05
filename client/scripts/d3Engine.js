@@ -9,7 +9,7 @@ d3Engine.initValues = function (width, height) {
   d3Engine.prodKey = [];
 
   // Data for stars legend at bottom
-  d3Engine.legendData = ['0 stars', '1 star', '3 stars', '4 stars', '5 stars'];
+  d3Engine.legendData = ['1 star', '2 stars', '3 stars', '4 stars', '5 stars'];
 
   // overall chart vars
   d3Engine.width = width || 600;
@@ -28,7 +28,7 @@ d3Engine.initValues = function (width, height) {
   // another scale, narrower range for foci (don't want foci at edge)
   d3Engine.fociX = d3.scale.linear()
             .domain([0, 5])
-            .range([100, d3Engine.width-100]);
+            .range([100, d3Engine.width-70]);
 
   // Create foci (1 per 0.5 star spaced out horizontally across chart)
   var fociGen = function (numFoci, x) {
@@ -141,7 +141,7 @@ d3Engine.create = function (el, width, height, products) {
     .attr("transform", "translate(0, " + (d3Engine.height-25) + ")");
 
   legend.append("text")
-    .attr("x", function(d, i) { return d3Engine.x((i*1.25)+0.3); })
+    .attr("x", function(d, i) { return d3Engine.x((i*1.2)+0.5); })
     .attr("y", 0)
     .text(function(d) {return d});
 
