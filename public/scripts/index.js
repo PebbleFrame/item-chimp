@@ -1161,13 +1161,28 @@ module.exports = function(pricesArray, query) {
   var force = d3.layout.force()
       .nodes(pricesArray)
       .size([width, height])
-      .charge(function(d) { return radiusScale(d.salePrice) * -3; })
+      .charge(function(d) { return radiusScale(d.salePrice) * -3.5; })
       .on("tick", tick)
       .start();
 
   var svg = d3.select(".d3-price-container")
       .attr("width", width)
       .attr("height", height);
+
+  var stores = svg.selectAll("g.stores")
+      .data(['Walmart', 'Best Buy'])
+      .enter().append("text")
+      .attr("x", "390")
+      .attr("y", function(d,i) { return (i+1) * 30; })
+      .attr("font-size", "17px")
+      .attr("fill", function(d,i) { return fill(i & 1); })
+      .text(function(d) { return d; });
+
+  svg.append("text")
+    .attr("x", "30")
+    .attr("y", "30")
+    .attr("font-size", "17px")
+    .text("Prices for " + query);
 
   var node = svg.selectAll("g.node")
       .data(pricesArray)
