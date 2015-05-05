@@ -9,6 +9,7 @@ module.exports = React.createClass({
 
     this.props.walmartRelatedResults.walmart.forEach(function(item) {
       var itemObject = {
+        name: item.name,
         salePrice: item.salePrice,
         source: 'Walmart'
       };
@@ -17,6 +18,7 @@ module.exports = React.createClass({
 
     this.props.bestbuyRelatedResults.bestbuy.forEach(function(item) {
       var itemObject = {
+        name: item.name,
         salePrice: item.salePrice,
         source: 'Best Buy'
       };
@@ -30,9 +32,13 @@ module.exports = React.createClass({
 
   render: function() {
     return (
-      <svg className="d3-price-container">
-
-      </svg>
+      <div>
+        <hr />
+        <div className="d3-price-container">
+            <svg className="price-chart"></svg>
+        </div>
+        <hr />
+      </div>
     );
   }
 

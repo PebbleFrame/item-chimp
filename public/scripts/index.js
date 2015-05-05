@@ -41,11 +41,9 @@ var D3Chart = React.createClass({displayName: "D3Chart",
   },
   render: function() {
     return (
-      React.createElement("div", {className: "d3-container"}, 
-        React.createElement("hr", null), 
-        React.createElement("svg", {className: "chart"}), 
-        React.createElement("hr", null)
-      )
+        React.createElement("div", {className: "d3-container"}, 
+          React.createElement("svg", {className: "chart"})
+        )
     );
   }
 });
@@ -63,6 +61,7 @@ module.exports = React.createClass({displayName: "exports",
 
     this.props.walmartRelatedResults.walmart.forEach(function(item) {
       var itemObject = {
+        name: item.name,
         salePrice: item.salePrice,
         source: 'Walmart'
       };
@@ -71,6 +70,7 @@ module.exports = React.createClass({displayName: "exports",
 
     this.props.bestbuyRelatedResults.bestbuy.forEach(function(item) {
       var itemObject = {
+        name: item.name,
         salePrice: item.salePrice,
         source: 'Best Buy'
       };
@@ -84,8 +84,12 @@ module.exports = React.createClass({displayName: "exports",
 
   render: function() {
     return (
-      React.createElement("svg", {className: "d3-price-container"}
-
+      React.createElement("div", null, 
+        React.createElement("hr", null), 
+        React.createElement("div", {className: "d3-price-container"}, 
+            React.createElement("svg", {className: "price-chart"})
+        ), 
+        React.createElement("hr", null)
       )
     );
   }
@@ -1165,7 +1169,7 @@ module.exports = function(pricesArray, query) {
       .on("tick", tick)
       .start();
 
-  var svg = d3.select(".d3-price-container")
+  var svg = d3.select(".price-chart")
       .attr("width", width)
       .attr("height", height);
 
@@ -1211,8 +1215,10 @@ module.exports = function(pricesArray, query) {
       .duration(1000)
       .style("opacity", 1);
 
-  d3.select("body")
+  d3.select(".d3-price-container")
       .on("mousedown", mousedown);
+
+  tooltipSetup();
 
   function tick(e) {
 
@@ -1234,6 +1240,53 @@ module.exports = function(pricesArray, query) {
 
     });
     force.resume();
+  }
+
+  function tooltipSetup() {
+    // tooltip vars
+    tooltipOffset = 10;
+    tooltipWidth = 220;
+    tooltipHeight = 105;
+
+    tooltip = d3.select(".d3-price-container")
+      .append("div")
+      .style("width", tooltipWidth)
+      .style("height", tooltipHeight)
+      .classed("hoverbox", true);
+
+    tooltip.append('div')
+      .classed("product-name", true);
+
+    var nodes = svg.selectAll("g.node");
+
+    nodes.on('mouseover', function(d) {
+      console.log('mouseover!', d);
+      var mouseLoc = d3.mouse(this.parentNode);
+      if (mouseLoc[0] + tooltipOffset + tooltipWidth > width) {
+        mouseLoc[0] = mouseLoc[0] - tooltipOffset*2 - tooltipWidth;
+      }
+      if (mouseLoc[1] + tooltipOffset + tooltipHeight > height) {
+        mouseLoc[1] = mouseLoc[1] - tooltipOffset*2 - tooltipHeight;
+      }
+      tooltip
+            .style("display", "block")
+            .style("left", (mouseLoc[0]+tooltipOffset)+"px")
+            .style("top", (mouseLoc[1]+tooltipOffset)+"px")
+            .transition()
+            .duration(200)
+            .style('opacity', 1);
+      tooltip.select(".product-name")
+        .text(d.name);
+    });
+
+    nodes.on('mouseout', function(d) {
+      tooltip.transition()
+        .duration(200)
+        .style('opacity', 0)
+        .each('end', function () {
+          tooltip.style("display", "none");
+        });
+    });
   }
 
 };
