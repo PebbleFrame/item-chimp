@@ -4,27 +4,39 @@ var d3PriceEngine = require('../scripts/d3PriceEngine');
 module.exports = React.createClass({
   startEngine: function(width, height) {
 
-    var el = this.getDOMNode();
-
-    var prices = [];
+    var query = this.props.query;
+    var pricesArray = [];
 
     this.props.walmartRelatedResults.walmart.forEach(function(item) {
-      var itemOrganized = {
+      var itemObject = {
         name: item.name,
-        price: item.salePrice,
+        salePrice: item.salePrice,
         source: 'Walmart'
       };
+      pricesArray.push(itemObject);
     });
 
-    d3PriceEngine.create(el, width, height, prices);
+    this.props.bestbuyRelatedResults.bestbuy.forEach(function(item) {
+      var itemObject = {
+        name: item.name,
+        salePrice: item.salePrice,
+        source: 'Best Buy'
+      };
+      pricesArray.push(itemObject);
+    });
+
+
+    d3PriceEngine(pricesArray, query);
 
   },
 
   render: function() {
     return (
-      <div className="d3-price-container">
+      <div>
         <hr />
-        <svg className="price-chart"></svg>
+        <div className="d3-price-container">
+            <svg className="price-chart"></svg>
+        </div>
         <hr />
       </div>
     );

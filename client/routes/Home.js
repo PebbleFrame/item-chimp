@@ -46,6 +46,9 @@ var DisplayBox = React.createClass({
         // Show Related Results after user submits query
         $('.related-results-display-container').fadeIn();
 
+        // Show D3 price chart
+        $('.d3-price-container').show();
+
         // Set the state to contain data for each separate API
         // data[0] --> {walmart: [Array of Walmart results]}
         // data[1] --> {amazon: [Array of Amazon results]}
@@ -57,6 +60,7 @@ var DisplayBox = React.createClass({
           bestbuy: bbResults
           // We removed Amazon because they do not allow keys to be in our public repo
           // amazon: data[2],
+          query: query.query
         });
 
         // initialize d3 price chart
@@ -208,6 +212,7 @@ var DisplayBox = React.createClass({
         </div>
 
         <D3PriceChart
+          query={this.state.query}
           walmartRelatedResults={this.state.walmart}
           bestbuyRelatedResults={this.state.bestbuy}
           ref="d3PriceChart" />
