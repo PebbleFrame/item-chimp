@@ -60,7 +60,73 @@ app.post('/general-query', [walmartGeneralQuery,bestbuyGeneralQuery], function(r
   ]);
 });
 
-app.post('/get-walmart-reviews', function(req, res) {
+var upc = "";
+var WalmartReviewstoSend = "";
+var BestBuyReviewsToSend = "";
+var bestBuySku = "";
+//{walmart: WalmartResultsToSend},
+//{bestbuy: BestbuyResultsToSend}
+
+var walmartReviews = function(req, res,next){
+ // console.log("in walmart Reviews");
+  var itemId = req.body.itemId;
+  // 'http://api.walmartlabs.com/v1/reviews/30135922?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
+  request({
+      url: 'http://api.walmartlabs.com/v1/reviews/' + itemId + '?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
+    }, function (error, response, walmartReviewBody) {
+      if (!error && response.statusCode == 200) {
+        WalmartReviewstoSend = walmartReviewBody;
+  //      console.log(WalmartReviewstoSend);
+        var json = JSON.parse(WalmartReviewstoSend);
+        upc = (json["upc"]);
+//        console.log("upc is "+upc);
+        next();
+      }
+    }
+  );
+}
+
+var bestbuyUPCToSku = function(req, res,next){
+//  console.log("in bestbuyUPCToSku Reviews");
+//  https://api.remix.bestbuy.com/v1/products(upc=013803129113)?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=sku,upc,name,longDescription
+  request({
+      url: 'https://api.remix.bestbuy.com/v1/products(upc='+upc+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=sku,upc,name,longDescription'
+    }, function (error, response, bestBuySkuBody) {
+      if (!error && response.statusCode == 200) {
+        bestBuySku = bestBuySkuBody;
+        var json = JSON.parse(bestBuySkuBody);
+        bestBuySku = json["products"][0].sku;
+//        console.log("sku is "+bestBuySku);
+        next();
+      }
+    }
+  );
+}
+
+var bestbuyReviews = function(req, res,next){
+  request({
+      url: 'http://api.remix.bestbuy.com/v1/reviews(sku=' + bestBuySku +')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
+    }, function (error, response, bestbuyReviewBody) {
+      if (!error && response.statusCode == 200) {
+         BestBuyReviewsToSend = bestbuyReviewBody;
+//        console.log(BestBuyReviewsToSend);
+          next();
+      }
+    }
+  );
+}
+
+app.post('/get-walmart-reviews', [walmartReviews,bestbuyUPCToSku,bestbuyReviews],function(req, res,next) {
+  next();
+}, function (req, res) {
+  res.send([
+    {walmartReviews: WalmartReviewstoSend,
+    bestbuyReviews: BestBuyReviewsToSend}
+  ]);
+});
+
+
+/*app.post('/get-walmart-reviews', function(req, res) {
   var itemId = req.body.itemId;
   // 'http://api.walmartlabs.com/v1/reviews/30135922?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
   request({
@@ -69,6 +135,9 @@ app.post('/get-walmart-reviews', function(req, res) {
       if (!error && response.statusCode == 200) {
         var WalmartReviewstoSend = walmartReviewBody;
         console.log(WalmartReviewstoSend);
+        var json = JSON.parse(WalmartReviewstoSend);
+        upc = (json["upc"]);
+        console.log("upc is "+upc);
         res.send([
           {walmartReviews: WalmartReviewstoSend}
         ]);
@@ -76,7 +145,7 @@ app.post('/get-walmart-reviews', function(req, res) {
     }
   );
 });
-
+*/
 
 app.post('/get-bestbuy-reviews', function(req, res) {
   var itemId = req.body.sku;
