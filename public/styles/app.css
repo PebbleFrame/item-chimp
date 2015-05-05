@@ -108,12 +108,26 @@ body {
 .reviews-display-section {
   display: inline-block;
   font-size: 14px;
-  width: 60%;
+  width: 80%;
 }
 
 .reviews-display-container button {
   font-size: 10px;
   padding: 2px 4px;
+}
+
+.reviews-display {
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: 6px;
+  margin-right: 6px;
+  float: left;
+  width: 45%;
+}
+
+.reviews-display img {
+  float: left;
+  margin-right: 20px;
 }
 
 .walmart-reviews-display {
@@ -163,7 +177,7 @@ body {
   float: right;
   text-align: left;
   margin-left: 6px;
-  width: 35%;
+  width: 19%;
 }
 
 .choose-another-product-section h5,h6 {

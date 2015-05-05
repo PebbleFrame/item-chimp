@@ -2,8 +2,8 @@ var React = require('react');
 
 // Component that displays related results from Best Buy API
 var BestbuyRelatedResultsDisplay = React.createClass({
-  handleBestbuyReviewRequest: function(sku, name, image, reviewAverage, reviewCount) {
-    this.props.onBestbuyReviewRequest(sku, name, image, reviewAverage, reviewCount);
+  handleReviewRequest: function(sku, name, image, reviewAverage, reviewCount) {
+    this.props.onReviewRequest(sku, name, image, reviewAverage, reviewCount);
   },
   render: function() {
     var resultNodes = this.props.data.results.map(function(result, index) {
@@ -23,7 +23,7 @@ var BestbuyRelatedResultsDisplay = React.createClass({
           shortDescription={result.shortDescription}
           image={result.image}
           sku={result.sku}
-          onBestbuyReviewRequest={this.handleBestbuyReviewRequest} />
+          onReviewRequest={this.handleReviewRequest} />
       );
     }.bind(this));
     return (
@@ -37,14 +37,14 @@ var BestbuyRelatedResultsDisplay = React.createClass({
 
 // Component that displays individual results for Best Buy
 var BestbuyIndividualResultDisplay = React.createClass({
-  handleBestbuyReviewRequest: function() {
+  handleReviewRequest: function() {
     $('.bestbuy-reviews-display').removeClass('hidden');
-    this.props.onBestbuyReviewRequest({sku: this.props.sku}, this.props.name, this.props.image,
+    this.props.onReviewRequest({sku: this.props.sku}, this.props.name, this.props.image,
       this.props.customerReviewAverage, this.props.customerReviewCount);
   },
   render: function() {
     return (
-      <div className="individual-display" onClick={this.handleBestbuyReviewRequest}>
+      <div className="individual-display" onClick={this.handleReviewRequest}>
         <h5 className="product-name">
           {this.props.name}
         </h5>

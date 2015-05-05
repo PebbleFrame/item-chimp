@@ -93,9 +93,9 @@ d3Engine.create = function (el, width, height, products) {
   for (var i = 0; i < products.length; i++) {
     d3Engine.prodKey[i] = {name: products[i].name, color: d3Engine.colors[i], source: products[i].source};
     if (products[i].source === 'Walmart') {
-      d3Engine.data = d3Engine.data.concat(d3Engine.populateWMData(products[i].reviews,i));
+      d3Engine.data = d3Engine.data.concat(d3Engine.populateWMData(products[i].Reviews,i));
     } else if (products[i].source === 'Best Buy') {
-      d3Engine.data = d3Engine.data.concat(d3Engine.populateBBData(products[i].reviews,i));
+      d3Engine.data = d3Engine.data.concat(d3Engine.populateBBData(products[i].Reviews,i));
     }
   }
 
