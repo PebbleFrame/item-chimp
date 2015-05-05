@@ -3,7 +3,6 @@ var React = require('react');
 var WalmartComponents = require('./Home-Walmart-Components');
 var WalmartRelatedResultsDisplay = WalmartComponents.WalmartRelatedResultsDisplay;
 var WalmartIndividualResultDisplay = WalmartComponents.WalmartIndividualResultDisplay;
-var WalmartReviewsDisplay = WalmartComponents.WalmartReviewsDisplay;
 var ReviewsDisplay = WalmartComponents.ReviewsDisplay;
 
 var AmazonComponents = require('./Home-Amazon-Components');
@@ -13,7 +12,6 @@ var AmazonIndividualResultDisplay = AmazonComponents.AmazonIndividualResultDispl
 var BestbuyComponents = require('./Home-Bestbuy-Components');
 var BestbuyRelatedResultsDisplay = BestbuyComponents.BestbuyRelatedResultsDisplay;
 var BestbuyIndividualResultDisplay = BestbuyComponents.BestbuyIndividualResultDisplay;
-var BestbuyReviewsDisplay = BestbuyComponents.BestbuyReviewsDisplay;
 
 
 var D3Components = require('./D3-Chart');
@@ -167,55 +165,11 @@ var DisplayBox = React.createClass({
     });
   },
 
-  // Final handler for Best Buy review request
-  // This call is the result of calls bubbling up from the individual Best Buy results
-  handleBestbuyReviewRequest: function(sku, name, image, reviewAverage, reviewCount) {
-
-    // Final handler for Walmart review request
-    // This call is the result of calls bubbling up from the individual Walmart results
-    this.setState({
-      bestbuyReviewedItemName: name,
-      bestbuyReviewedItemImage: image
-    });
-
-    // Makes a specific API call to get reviews for the product clicked on
-    $.ajax({
-      url: 'get-bestbuy-reviews',
-      dataType: 'json',
-      type: 'POST',
-      // sku is used to make a request for Best Buy reviews
-      data: sku,
-      success: function(data) {
-        $('.related-results-display-container').fadeOut();
-
-        // Display the reviews-display only after an item is clicked on
-        $('.reviews-display-container').fadeIn();
-        $('.d3-container').fadeIn();
-
-        // Get the reviews array from the response data
-        var bestbuyReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
-
-        // Set the walmartReviews state in the same format as the 'general-query' states
-        this.setState({
-          bestbuyReviews: {Reviews: bestbuyReviewsFromData,
-                          AverageRating: reviewAverage,
-                          ReviewCount: reviewCount}
-        });
-        
-        // initialize d3 chart
-        // params are (width, height)
-        this.refs.d3chart.startEngine(500, 275);
-
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('get-bestbuy-reviews', status, err.toString());
-      }.bind(this)
-    });
-  },
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
     $('.related-results-display-container').delay(500).fadeIn();
   },
+
   render: function() {
     // Attributes are "props" which can be accessed by the component
     // Many "props" are set as the "state", which is set based on data received from API calls
@@ -225,10 +179,6 @@ var DisplayBox = React.createClass({
         <SearchForm onQuerySubmit={this.handleQuerySubmit} />
 
         <D3Chart
-          walmartData={this.state.walmartReviews}
-          walmartName={this.state.walmartReviewedItemName}
-          bestbuyData={this.state.bestbuyReviews}
-          bestbuyName={this.state.bestbuyReviewedItemName}
           ref="d3chart" />
 
         <div className="reviews-display-container">
@@ -236,14 +186,7 @@ var DisplayBox = React.createClass({
           <div><button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results</button></div>
 
           <ReviewsDisplaySection
-            allReviews={this.state.allReviews}
-            walmartReviews={this.state.walmartReviews}
-            ReviewedItemName={this.state.ReviewedItemName}
-            ReviewedItemImage={this.state.ReviewedItemImage}
-
-            bestbuyReviews={this.state.bestbuyReviews}
-            ReviewedItemName={this.state.ReviewedItemName}
-            ReviewedItemImage={this.state.ReviewedItemImage} />
+            allReviews={this.state.allReviews} />
 
             <ChooseAnotherProductSection
               walmartData={this.state.walmart}
