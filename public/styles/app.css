@@ -267,7 +267,7 @@ a.follow:hover, a.follow:active {
 }
 
 .d3-price-container {
-  display: none;
+  /*display: none;*/
 }
 
 .hoverbox {
