@@ -66,7 +66,7 @@ var App = React.createClass({
   }
 });
 
-// Routes for the React router
+// Routes for the React Router
 // Identifies the files that each route refers to
 var routes = {
   Home: require('../routes/Home'),

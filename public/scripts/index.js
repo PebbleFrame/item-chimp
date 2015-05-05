@@ -23,7 +23,7 @@ var D3Chart = React.createClass({displayName: "D3Chart",
     // so here is a dummy data setup that just duplicates
     // the current item twice.
 
-    // got some real data, trying to pass it through
+    // got some real data,trying to pass it through
 
     // if (this.props.walmartName) {
     //   var product = {
