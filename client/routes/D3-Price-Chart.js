@@ -7,7 +7,7 @@ module.exports = React.createClass({
     var query = this.props.query;
     var pricesArray = [];
 
-    this.props.walmartRelatedResults.walmart.forEach(function(item) {
+    this.props.walmartRelatedResults.results.forEach(function(item) {
       var itemObject = {
         name: item.name,
         salePrice: item.salePrice,
@@ -16,7 +16,7 @@ module.exports = React.createClass({
       pricesArray.push(itemObject);
     });
 
-    this.props.bestbuyRelatedResults.bestbuy.forEach(function(item) {
+    this.props.bestbuyRelatedResults.results.forEach(function(item) {
       var itemObject = {
         name: item.name,
         salePrice: item.salePrice,

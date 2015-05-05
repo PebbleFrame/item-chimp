@@ -124,16 +124,12 @@ module.exports = function(pricesArray, query) {
     nodes.on('mouseover', function(d) {
       console.log('mouseover!', d);
       var mouseLoc = d3.mouse(this.parentNode);
-      if (mouseLoc[0] + tooltipOffset + tooltipWidth > width) {
-        mouseLoc[0] = mouseLoc[0] - tooltipOffset*2 - tooltipWidth;
-      }
-      if (mouseLoc[1] + tooltipOffset + tooltipHeight > height) {
-        mouseLoc[1] = mouseLoc[1] - tooltipOffset*2 - tooltipHeight;
-      }
+
       tooltip
             .style("display", "block")
-            .style("left", (mouseLoc[0]+tooltipOffset)+"px")
-            .style("top", (mouseLoc[1]+tooltipOffset)+"px")
+            .style("left", (mouseLoc[0]-170)+"px")
+            .style("top", (mouseLoc[1]-80)+"px")
+            .style("font-size", "13px")
             .transition()
             .duration(200)
             .style('opacity', 1);

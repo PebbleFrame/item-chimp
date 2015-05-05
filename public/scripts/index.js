@@ -59,7 +59,7 @@ module.exports = React.createClass({displayName: "exports",
     var query = this.props.query;
     var pricesArray = [];
 
-    this.props.walmartRelatedResults.walmart.forEach(function(item) {
+    this.props.walmartRelatedResults.results.forEach(function(item) {
       var itemObject = {
         name: item.name,
         salePrice: item.salePrice,
@@ -68,7 +68,7 @@ module.exports = React.createClass({displayName: "exports",
       pricesArray.push(itemObject);
     });
 
-    this.props.bestbuyRelatedResults.bestbuy.forEach(function(item) {
+    this.props.bestbuyRelatedResults.results.forEach(function(item) {
       var itemObject = {
         name: item.name,
         salePrice: item.salePrice,
@@ -1262,16 +1262,12 @@ module.exports = function(pricesArray, query) {
     nodes.on('mouseover', function(d) {
       console.log('mouseover!', d);
       var mouseLoc = d3.mouse(this.parentNode);
-      if (mouseLoc[0] + tooltipOffset + tooltipWidth > width) {
-        mouseLoc[0] = mouseLoc[0] - tooltipOffset*2 - tooltipWidth;
-      }
-      if (mouseLoc[1] + tooltipOffset + tooltipHeight > height) {
-        mouseLoc[1] = mouseLoc[1] - tooltipOffset*2 - tooltipHeight;
-      }
+
       tooltip
             .style("display", "block")
-            .style("left", (mouseLoc[0]+tooltipOffset)+"px")
-            .style("top", (mouseLoc[1]+tooltipOffset)+"px")
+            .style("left", (mouseLoc[0]-170)+"px")
+            .style("top", (mouseLoc[1]-80)+"px")
+            .style("font-size", "13px")
             .transition()
             .duration(200)
             .style('opacity', 1);
