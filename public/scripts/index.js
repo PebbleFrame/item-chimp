@@ -237,45 +237,6 @@ module.exports = Dashboard;
 },{"react":205}],4:[function(require,module,exports){
 var React = require('react');
 
-// Component that displays related results from Amazon API
-var AmazonRelatedResultsDisplay = React.createClass({displayName: "AmazonRelatedResultsDisplay",
-  render: function() {
-    var resultNodes = this.props.data.amazon.map(function(result, index) {
-      var attributes = result.ItemAttributes[0];
-      // console.log(result.SmallImage.URL)
-      
-      return (
-        React.createElement(AmazonIndividualResultDisplay, {name: attributes.Title})
-      );
-    });
-    return (
-      React.createElement("div", {className: "amazon-related-results-display hidden"}, 
-        React.createElement("h3", null, "Amazon Related Results"), 
-        resultNodes
-      )
-    );
-  }
-});
-
-// Component that displays individual results for Amazon
-var AmazonIndividualResultDisplay = React.createClass({displayName: "AmazonIndividualResultDisplay",
-  render: function() {
-    return (
-      React.createElement("div", {className: "individual-display"}, 
-        React.createElement("h5", {className: "product-name"}, 
-          this.props.name
-        )
-      )
-    );
-  }
-});
-
-module.exports.AmazonRelatedResultsDisplay = AmazonRelatedResultsDisplay;
-
-module.exports.AmazonIndividualResultDisplay = AmazonIndividualResultDisplay;
-},{"react":205}],5:[function(require,module,exports){
-var React = require('react');
-
 // Component that displays related results from Best Buy API
 var BestbuyRelatedResultsDisplay = React.createClass({displayName: "BestbuyRelatedResultsDisplay",
   handleReviewRequest: function(sku, name, image, reviewAverage, reviewCount) {
@@ -315,7 +276,7 @@ var BestbuyRelatedResultsDisplay = React.createClass({displayName: "BestbuyRelat
 var BestbuyIndividualResultDisplay = React.createClass({displayName: "BestbuyIndividualResultDisplay",
   handleReviewRequest: function() {
     $('.bestbuy-reviews-display').removeClass('hidden');
-    this.props.onReviewRequest({sku: this.props.sku}, this.props.name, this.props.image,
+    this.props.onReviewRequest({sku: this.props.sku}, 'Best Buy', this.props.name, this.props.image,
       this.props.customerReviewAverage, this.props.customerReviewCount);
   },
   render: function() {
@@ -345,134 +306,10 @@ var BestbuyIndividualResultDisplay = React.createClass({displayName: "BestbuyInd
   }
 });
 
-var BestbuyReviewsDisplay = React.createClass ({displayName: "BestbuyReviewsDisplay",
-  render: function() {
-    var resultNodes = this.props.data.Reviews.map(function(result, index) {
-      return (
-        React.createElement(BestbuyIndividualReviewDisplay, {
-          key: 'bestbuyResult' + index, 
-          title: result.title, 
-          reviewer: result.reviewer, 
-          comment: result.comment, 
-          rating: result.rating, 
-          sku: result.sku})
-      );
-    });
-
-    return (
-      React.createElement("div", {className: "bestbuy-reviews-display hidden"}, 
-        React.createElement("h4", null, "Best Buy Reviews"), 
-        React.createElement("div", {className: "row"}, 
-          React.createElement("div", {className: "product-image-review"}, React.createElement("img", {src: this.props.image})), 
-          React.createElement("div", {className: "product-name-review"}, 
-            React.createElement("div", null, React.createElement("strong", null, "Product: "), this.props.name), 
-            React.createElement("div", null, React.createElement("strong", null, "Average Rating: "), this.props.data.AverageRating), 
-            React.createElement("div", null, React.createElement("strong", null, "Total Reviews: "), this.props.data.ReviewCount)
-          )
-        ), 
-        React.createElement("hr", null), 
-        resultNodes
-      )
-    );
-  }
-});
-
-var BestbuyIndividualReviewDisplay = React.createClass({displayName: "BestbuyIndividualReviewDisplay",
-  render: function() {
-    return (
-      React.createElement("div", {className: "individual-review-display"}, 
-        React.createElement("h5", null, 
-          this.props.title
-        ), 
-        React.createElement("div", null, 
-          React.createElement("strong", null, "Reviewer:"), " ", this.props.reviewer
-        ), 
-        React.createElement("div", null, 
-          React.createElement("strong", null, "Review:"), " ", this.props.comment
-        ), 
-        React.createElement("div", null, 
-          "Rating: ", this.props.rating
-        )
-      )
-    );
-  }
-});
 
 module.exports.BestbuyRelatedResultsDisplay = BestbuyRelatedResultsDisplay;
-
-module.exports.BestbuyIndividualResultDisplay = BestbuyIndividualResultDisplay;
-
-module.exports.BestbuyReviewsDisplay = BestbuyReviewsDisplay;
-},{"react":205}],6:[function(require,module,exports){
+},{"react":205}],5:[function(require,module,exports){
 var React = require('react');
-
-// Component that displays related results from Walmart API
-var WalmartRelatedResultsDisplay = React.createClass({displayName: "WalmartRelatedResultsDisplay",
-  handleReviewRequest: function(itemId, name, image) {
-    this.props.onReviewRequest(itemId, name, image);
-  },
-  render: function() {
-    var resultNodes = this.props.data.results.map(function(result, index) {
-
-      result.shortDescription = result.shortDescription || '';
-
-      return (
-        React.createElement(WalmartIndividualResultDisplay, {
-          key: 'walmartResult' + index, 
-          name: result.name, 
-          salePrice: result.salePrice, 
-          upc: result.upc, 
-          shortDescription: result.shortDescription, 
-          thumbnailImage: result.thumbnailImage, 
-          customerRating: result.customerRating, 
-          numReviews: result.numReviews, 
-          customerRatingImage: result.customerRatingImage, 
-          itemId: result.itemId, 
-          onReviewRequest: this.handleReviewRequest})
-      );
-    }.bind(this));
-    return (
-      React.createElement("div", {className: "related-results-display"}, 
-        React.createElement("h3", null, "Walmart Related Results"), 
-        resultNodes
-      )
-    );
-  }
-});
-
-// Component that displays individual results for Walmart
-var WalmartIndividualResultDisplay = React.createClass({displayName: "WalmartIndividualResultDisplay",
-  handleReviewRequest: function() {
-    $('.walmart-reviews-display').removeClass('hidden');
-    this.props.onReviewRequest({itemId: this.props.itemId}, this.props.name, this.props.thumbnailImage);
-  },  
-  render: function() {
-    return (
-      React.createElement("div", {className: "individual-display", onClick: this.handleReviewRequest}, 
-        React.createElement("h5", {className: "product-name"}, 
-          this.props.name
-        ), 
-        React.createElement("img", {src: this.props.thumbnailImage}), 
-        React.createElement("div", null, 
-          "$", this.props.salePrice
-        ), 
-        React.createElement("div", null, 
-          "UPC: ", this.props.upc
-        ), 
-        React.createElement("div", null, 
-          "Description: ", this.props.description
-        ), 
-        React.createElement("div", null, 
-          "Rating: ", this.props.customerRating
-        ), 
-        React.createElement("div", null, 
-          this.props.numReviews, " reviews"
-        ), 
-        React.createElement("img", {src: this.props.customerRatingImage})
-      )
-    );
-  }
-});
 
 var ReviewsDisplay = React.createClass ({displayName: "ReviewsDisplay",
   render: function() {
@@ -523,39 +360,6 @@ var ReviewsDisplay = React.createClass ({displayName: "ReviewsDisplay",
   }
 });
 
-var WalmartReviewsDisplay = React.createClass ({displayName: "WalmartReviewsDisplay",
-  render: function() {
-    var resultNodes = this.props.data.Reviews.map(function(result, index) {
-      return (
-        React.createElement(WalmartIndividualReviewDisplay, {
-          key: 'walmartReview' + index, 
-          title: result.title, 
-          overallRating: result.overallRating, 
-          reviewer: result.reviewer, 
-          reviewText: result.reviewText, 
-          upVotes: result.upVotes, 
-          downVotes: result.downVotes})
-      );
-    });
-
-    return (
-      React.createElement("div", {className: "walmart-reviews-display hidden"}, 
-          React.createElement("h4", null, "Walmart Reviews"), 
-        React.createElement("div", {className: "row"}, 
-          React.createElement("div", {className: "product-image-review"}, React.createElement("img", {src: this.props.image})), 
-          React.createElement("div", {className: "product-name-review"}, 
-            React.createElement("div", null, React.createElement("strong", null, "Product: "), this.props.name), 
-            React.createElement("div", null, React.createElement("strong", null, "Average Rating: "), this.props.data.AverageRating), 
-            React.createElement("div", null, React.createElement("strong", null, "Total Reviews: "), this.props.data.ReviewCount)
-          )
-        ), 
-        React.createElement("hr", null), 
-        resultNodes
-      )
-    );
-  }
-});
-
 var WalmartIndividualReviewDisplay = React.createClass({displayName: "WalmartIndividualReviewDisplay",
   render: function() {
     return (
@@ -576,7 +380,6 @@ var WalmartIndividualReviewDisplay = React.createClass({displayName: "WalmartInd
     );
   }
 });
-
 
 var BestbuyIndividualReviewDisplay = React.createClass({displayName: "BestbuyIndividualReviewDisplay",
   render: function() {
@@ -601,29 +404,102 @@ var BestbuyIndividualReviewDisplay = React.createClass({displayName: "BestbuyInd
 
 module.exports.ReviewsDisplay = ReviewsDisplay;
 
+module.exports.WalmartIndividualReviewDisplay = WalmartIndividualReviewDisplay;
+
+module.exports.BestbuyIndividualReviewDisplay = BestbuyIndividualReviewDisplay;
+},{"react":205}],6:[function(require,module,exports){
+var React = require('react');
+
+// Component that displays related results from Walmart API
+var WalmartRelatedResultsDisplay = React.createClass({displayName: "WalmartRelatedResultsDisplay",
+  handleReviewRequest: function(itemId, site, name, image) {
+    this.props.onReviewRequest(itemId, site, name, image);
+  },
+  render: function() {
+    var resultNodes = this.props.data.results.map(function(result, index) {
+
+      result.shortDescription = result.shortDescription || '';
+
+      return (
+        React.createElement(WalmartIndividualResultDisplay, {
+          key: 'walmartResult' + index, 
+          name: result.name, 
+          salePrice: result.salePrice, 
+          upc: result.upc, 
+          shortDescription: result.shortDescription, 
+          thumbnailImage: result.thumbnailImage, 
+          customerRating: result.customerRating, 
+          numReviews: result.numReviews, 
+          customerRatingImage: result.customerRatingImage, 
+          itemId: result.itemId, 
+          onReviewRequest: this.handleReviewRequest})
+      );
+    }.bind(this));
+    return (
+      React.createElement("div", {className: "related-results-display"}, 
+        React.createElement("h3", null, "Walmart Related Results"), 
+        resultNodes
+      )
+    );
+  }
+});
+
+// Component that displays individual results for Walmart
+var WalmartIndividualResultDisplay = React.createClass({displayName: "WalmartIndividualResultDisplay",
+  handleReviewRequest: function() {
+    $('.walmart-reviews-display').removeClass('hidden');
+    this.props.onReviewRequest({itemId: this.props.itemId}, 'Walmart', this.props.name, this.props.thumbnailImage);
+  },  
+  render: function() {
+    return (
+      React.createElement("div", {className: "individual-display", onClick: this.handleReviewRequest}, 
+        React.createElement("h5", {className: "product-name"}, 
+          this.props.name
+        ), 
+        React.createElement("img", {src: this.props.thumbnailImage}), 
+        React.createElement("div", null, 
+          "$", this.props.salePrice
+        ), 
+        React.createElement("div", null, 
+          "UPC: ", this.props.upc
+        ), 
+        React.createElement("div", null, 
+          "Description: ", this.props.description
+        ), 
+        React.createElement("div", null, 
+          "Rating: ", this.props.customerRating
+        ), 
+        React.createElement("div", null, 
+          this.props.numReviews, " reviews"
+        ), 
+        React.createElement("img", {src: this.props.customerRatingImage})
+      )
+    );
+  }
+});
+
+
 module.exports.WalmartRelatedResultsDisplay = WalmartRelatedResultsDisplay;
 
-module.exports.WalmartIndividualResultDisplay = WalmartIndividualResultDisplay;
 
-module.exports.WalmartReviewsDisplay = WalmartReviewsDisplay;
 
 },{"react":205}],7:[function(require,module,exports){
 var React = require('react');
 
 var WalmartComponents = require('./Home-Walmart-Components');
 var WalmartRelatedResultsDisplay = WalmartComponents.WalmartRelatedResultsDisplay;
-var WalmartIndividualResultDisplay = WalmartComponents.WalmartIndividualResultDisplay;
-var WalmartReviewsDisplay = WalmartComponents.WalmartReviewsDisplay;
-var ReviewsDisplay = WalmartComponents.ReviewsDisplay;
 
-var AmazonComponents = require('./Home-Amazon-Components');
-var AmazonRelatedResultsDisplay = AmazonComponents.AmazonRelatedResultsDisplay;
-var AmazonIndividualResultDisplay = AmazonComponents.AmazonIndividualResultDisplay;
+var ReviewComponents = require('./Home-Reviews-Components');
+var ReviewsDisplay = ReviewComponents.ReviewsDisplay;
+var WalmartIndividualReviewDisplay = ReviewComponents.WalmartIndividualReviewDisplay;
+var BestbuyIndividualReviewDisplay = ReviewComponents.BestbuyIndividualReviewDisplay;
+
+// var AmazonComponents = require('./Home-Amazon-Components');
+// var AmazonRelatedResultsDisplay = AmazonComponents.AmazonRelatedResultsDisplay;
+// var AmazonIndividualResultDisplay = AmazonComponents.AmazonIndividualResultDisplay;
 
 var BestbuyComponents = require('./Home-Bestbuy-Components');
 var BestbuyRelatedResultsDisplay = BestbuyComponents.BestbuyRelatedResultsDisplay;
-var BestbuyIndividualResultDisplay = BestbuyComponents.BestbuyIndividualResultDisplay;
-var BestbuyReviewsDisplay = BestbuyComponents.BestbuyReviewsDisplay;
 
 
 var D3Components = require('./D3-Chart');
@@ -642,9 +518,7 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
       amazon: {results: []},
       walmart: {results: []},
       bestbuy: {results: []},
-      allReviews: {reviewSets: []},
-      walmartReviews: {Reviews: []},
-      bestbuyReviews: {Reviews: []}  
+      allReviews: {reviewSets: []}
     };
   },
 
@@ -692,7 +566,8 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
 
   // Final handler for reviews request
   // This call is the result of calls bubbling up from the individual review results
-  handleReviewRequest: function(itemId, name, image, reviewAverage, reviewCount) {
+  // var "id" may be itemId or SKU
+  handleReviewRequest: function(id, site, name, image) {
 
     // Sets the product name and image for the product clicked on (Revews Display)
     // These are passed up from WalmartIndividualResultDisplay
@@ -701,13 +576,22 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
       ReviewedItemImage: image
     });
 
+    var queryUrl;
+
+    if (site === 'Walmart') {
+      queryUrl = 'get-walmart-reviews';
+    } else if (site === 'Best Buy') {
+      queryUrl = 'get-bestbuy-reviews';
+    }
+
     // Makes a specific API call to get reviews for the product clicked on
     $.ajax({
-      url: 'get-walmart-reviews',
+      url: queryUrl,
       dataType: 'json',
       type: 'POST',
-      // itemId is used to make a request for Walmart reviews
-      data: itemId,
+      // "id" is itemId for Walmart
+      // and it's SKU for Best Buy
+      data: id,
       success: function(data) {
 
         // Remove the general results display to display reviews
@@ -767,106 +651,11 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
     });
   },
 
-  // Final handler for Walmart review request
-  // This call is the result of calls bubbling up from the individual Walmart results
-  handleWalmartReviewRequest: function(upc, name, image) {
-
-    // Sets the product name and image for the product clicked on (Revews Display)
-    // These are passed up from WalmartIndividualResultDisplay
-    this.setState({
-      walmartReviewedItemName: name,
-      walmartReviewedItemImage: image
-    });
-
-    // Makes a specific API call to get reviews for the product clicked on
-    $.ajax({
-      url: 'get-walmart-reviews',
-      dataType: 'json',
-      type: 'POST',
-      // upc is used to make a request for Walmart reviews
-      data: upc,
-      success: function(data) {
-        // Remove the general results display to display reviews
-        $('.related-results-display-container').fadeOut();
-
-        // Display the reviews-display only after an item is clicked on
-        $('.reviews-display-container').fadeIn();
-        $('.d3-container').fadeIn();
-
-        // Get the reviews array from the response data
-        var walmartReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
-        var walmartAverageRating = JSON.parse(data[0].walmartReviews).reviewStatistics.averageOverallRating;
-        var walmartReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
-
-        // Set the walmartReviews state in the same format as the 'general-query' states
-        this.setState({
-          walmartReviews: {
-            Reviews: walmartReviewsFromData,
-            AverageRating: walmartAverageRating,
-            ReviewCount: walmartReviewCount
-          }
-        });
-
-        // initialize d3 chart
-        // params are (width, height)
-        this.refs.d3chart.startEngine(500, 275);
-
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('get-walmart-reviews', status, err.toString());
-      }.bind(this)
-    });
-  },
-
-  // Final handler for Best Buy review request
-  // This call is the result of calls bubbling up from the individual Best Buy results
-  handleBestbuyReviewRequest: function(sku, name, image, reviewAverage, reviewCount) {
-
-    // Final handler for Walmart review request
-    // This call is the result of calls bubbling up from the individual Walmart results
-    this.setState({
-      bestbuyReviewedItemName: name,
-      bestbuyReviewedItemImage: image
-    });
-
-    // Makes a specific API call to get reviews for the product clicked on
-    $.ajax({
-      url: 'get-bestbuy-reviews',
-      dataType: 'json',
-      type: 'POST',
-      // sku is used to make a request for Best Buy reviews
-      data: sku,
-      success: function(data) {
-        $('.related-results-display-container').fadeOut();
-
-        // Display the reviews-display only after an item is clicked on
-        $('.reviews-display-container').fadeIn();
-        $('.d3-container').fadeIn();
-
-        // Get the reviews array from the response data
-        var bestbuyReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
-
-        // Set the walmartReviews state in the same format as the 'general-query' states
-        this.setState({
-          bestbuyReviews: {Reviews: bestbuyReviewsFromData,
-                          AverageRating: reviewAverage,
-                          ReviewCount: reviewCount}
-        });
-        
-        // initialize d3 chart
-        // params are (width, height)
-        this.refs.d3chart.startEngine(500, 275);
-
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('get-bestbuy-reviews', status, err.toString());
-      }.bind(this)
-    });
-  },
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
     $('.related-results-display-container').delay(500).fadeIn();
   },
+
   render: function() {
     // Attributes are "props" which can be accessed by the component
     // Many "props" are set as the "state", which is set based on data received from API calls
@@ -876,10 +665,6 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
         React.createElement(SearchForm, {onQuerySubmit: this.handleQuerySubmit}), 
 
         React.createElement(D3Chart, {
-          walmartData: this.state.walmartReviews, 
-          walmartName: this.state.walmartReviewedItemName, 
-          bestbuyData: this.state.bestbuyReviews, 
-          bestbuyName: this.state.bestbuyReviewedItemName, 
           ref: "d3chart"}), 
 
         React.createElement("div", {className: "reviews-display-container"}, 
@@ -887,14 +672,7 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
           React.createElement("div", null, React.createElement("button", {className: "btn btn-info", onClick: this.showResultsHideReviews}, "Back to Results")), 
 
           React.createElement(ReviewsDisplaySection, {
-            allReviews: this.state.allReviews, 
-            walmartReviews: this.state.walmartReviews, 
-            ReviewedItemName: this.state.ReviewedItemName, 
-            ReviewedItemImage: this.state.ReviewedItemImage, 
-
-            bestbuyReviews: this.state.bestbuyReviews, 
-            ReviewedItemName: this.state.ReviewedItemName, 
-            ReviewedItemImage: this.state.ReviewedItemImage}), 
+            allReviews: this.state.allReviews}), 
 
             React.createElement(ChooseAnotherProductSection, {
               walmartData: this.state.walmart, 
@@ -1056,7 +834,7 @@ var Home = React.createClass({displayName: "Home",
 });
 
 module.exports = Home;
-},{"./D3-Chart":1,"./D3-Price-Chart":2,"./Home-Amazon-Components":4,"./Home-Bestbuy-Components":5,"./Home-Walmart-Components":6,"react":205}],8:[function(require,module,exports){
+},{"./D3-Chart":1,"./D3-Price-Chart":2,"./Home-Bestbuy-Components":4,"./Home-Reviews-Components":5,"./Home-Walmart-Components":6,"react":205}],8:[function(require,module,exports){
 
 // ------ CONFIG DATA ---------
 
