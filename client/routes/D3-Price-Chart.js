@@ -33,6 +33,9 @@ module.exports = React.createClass({
   render: function() {
     return (
       <div className="d3-price-container">
+        <div className="d3-price-chart-query">
+        Results for <strong>{this.props.query}</strong>
+        </div>
         <svg className="price-chart"></svg>
       </div>
     );

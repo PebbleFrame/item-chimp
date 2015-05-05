@@ -8,50 +8,51 @@ module.exports = function(pricesArray, query) {
   // i & 1 --> two colors, i & 2 --> three colors, etc.
   var fill = d3.scale.category10();
 
-  var nodes = d3.range(100).map(function(i) {
-    return {index: i};
-  });
-
+  // Used to find the minimum and maximum price for d3.scale.linear
   var pricesOnlyArray = pricesArray.map(function(item) {
     return item.salePrice;
   });
 
+  // Find the minimum and maximum price for all products listed in the query results
   var min = d3.min(pricesOnlyArray);
   var max = d3.max(pricesOnlyArray);
 
+  // Scale for circle radii. Size ranges from 15px to 45px
   var radiusScale = d3.scale.linear()
                             .domain([min, max])
                             .range([15, 45]);
 
+  // Scale for font-size in circles. Size ranges from 7px to 20px
   var textScale = d3.scale.linear()
                           .domain([min, max])
                           .range([7, 20]);
 
+  // Initializes D3 "force", which provides animation for the bubbles
   var force = d3.layout.force()
       .nodes(pricesArray)
       .size([width, height])
+      // "charge" is how strong the attraction between bubbles are
+      // We use radiusScale for greater repulsion for larger bubbles
       .charge(function(d) { return radiusScale(d.salePrice) * -3.5; })
       .on("tick", tick)
       .start();
 
+  // Select the SVG element in the ".d3-price-container"
   var svg = d3.select(".price-chart")
       .attr("width", width)
       .attr("height", height);
 
-  var stores = svg.selectAll("g.stores")
+  // Appends "Walmart" and "Best Buy" key to the chart
+  // Text color represents the bubbles the store is associated with
+  var storesLegend = svg.selectAll("g.stores")
       .data(['Walmart', 'Best Buy'])
       .enter().append("text")
-      .attr("x", "390")
+      .attr("x", "400")
       .attr("y", function(d,i) { return (i+1) * 30; })
       .attr("font-size", "17px")
+      .attr("font-weight", "bold")
       .attr("fill", function(d,i) { return fill(i & 1); })
       .text(function(d) { return d; });
-
-  svg.append("text")
-    .attr("x", "30")
-    .attr("y", "30")
-    .attr("font-size", "17px")
-    .text("Prices for " + query);
 
   var node = svg.selectAll("g.node")
       .data(pricesArray)

@@ -37,7 +37,6 @@ var WalmartRelatedResultsDisplay = React.createClass({
 // Component that displays individual results for Walmart
 var WalmartIndividualResultDisplay = React.createClass({
   handleReviewRequest: function() {
-    $('.walmart-reviews-display').removeClass('hidden');
     this.props.onReviewRequest({itemId: this.props.itemId}, 'Walmart', this.props.name, this.props.thumbnailImage);
   },  
   render: function() {
