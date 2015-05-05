@@ -1167,24 +1167,35 @@ module.exports = function(pricesArray, query) {
       .attr("fill", function(d,i) { return fill(i & 1); })
       .text(function(d) { return d; });
 
+  // Create a node for each product in pricesArray
+  // Use "g" to group things appended to each node
   var node = svg.selectAll("g.node")
       .data(pricesArray)
-    .enter().append("g")
-      .classed("node", true);
+      .enter().append("g")
+      .classed("node", true)
+      .call(force.drag);
 
+  // Create a circle/bubble for each product/node
+  // Size and color are used for data visualization
   node.append("circle")
       .attr("class", "node")
       .attr("cx", 0)
       .attr("cy", 0)
+      // The higher a product's price, the larger the bubble
       .attr("r", function(d) { return radiusScale(d.salePrice); })
+      // Creates two colors for the two halves of pricesArray
       .style("fill", function(d, i) { return fill(i & 1); })
       .style("stroke", function(d, i) { return d3.rgb(fill(i & 1)).darker(2); })
-      .call(force.drag)
+      // Allows bubbles to be dragged
+      // .call(force.drag)
       .on("mousedown", function() { d3.event.stopPropagation(); });
 
+  // Appends the price to each bubble
   node.append("text")
+    // Adjust the x and y position of the price to be close to the middle
     .attr("x", function(d) { return -radiusScale(d.salePrice) * 0.8; })
     .attr("y", function(d) { return radiusScale(d.salePrice) * 0.17; })
+    // Adjust the font size based on the size of the bubble
     .attr("font-size", function(d) { return textScale(d.salePrice) + "px"; })
     .attr("fill", "white")
     .text(function(d) { return "$" + d.salePrice; });
@@ -1194,11 +1205,14 @@ module.exports = function(pricesArray, query) {
       .duration(1000)
       .style("opacity", 1);
 
+  // Scatters bubbles on click
   d3.select(".d3-price-container")
       .on("mousedown", mousedown);
 
+  // Initialize the tooltip popup
   tooltipSetup();
 
+  // D3 "force" uses this to animate the bubbles
   function tick(e) {
 
     // Push different nodes in different directions for clustering.
@@ -1208,6 +1222,7 @@ module.exports = function(pricesArray, query) {
       o.x += i & 1 ? k : -k;
     });
 
+    // Sets the x and y attributes of the "g" node for D3's "force"
     svg.selectAll("g.node")
       .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   }
