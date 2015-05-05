@@ -72,8 +72,9 @@ var ReviewsDisplay = React.createClass ({
   render: function() {
     var resultNodes;
 
-    if (this.props.data.source === 'Walmart') {
-      resultNodes = this.props.data.Reviews.map(function(result, index) {
+    if (this.props.source === 'Walmart') {
+      console.log('Walmart results');
+      resultNodes = this.props.data.map(function(result, index) {
         return (
           <WalmartIndividualReviewDisplay
             key={'walmartReview' + index}
@@ -85,8 +86,9 @@ var ReviewsDisplay = React.createClass ({
             downVotes={result.downVotes} />
         );
       });
-    } else if (this.props.data.source === 'Best Buy') {
-      resultNodes = this.props.data.Reviews.map(function(result, index) {
+    } else if (this.props.source === 'Best Buy') {
+      console.log('BB results');
+      resultNodes = this.props.data.map(function(result, index) {
         return (
           <BestbuyIndividualReviewDisplay
             key={'bestbuyResult' + index}
@@ -100,8 +102,8 @@ var ReviewsDisplay = React.createClass ({
     }
 
     return (
-      <div className="walmart-reviews-display hidden">
-          <h4>{this.props.data.source} Reviews</h4>
+      <div className="walmart-reviews-display">
+          <h4>{this.props.source} Reviews</h4>
         <div className="row">
           <div className="product-image-review"><img src={this.props.image} /></div>
           <div className="product-name-review">

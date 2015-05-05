@@ -22,20 +22,23 @@ var D3Chart = React.createClass({displayName: "D3Chart",
     // no way to get products array from Home.js right now
     // so here is a dummy data setup that just duplicates
     // the current item twice.
-    if (this.props.walmartName) {
-      var product = {
-        name: this.props.walmartName,
-        source: 'Walmart',
-        reviews: this.props.walmartData.Reviews
-      };
-    } else if (this.props.bestbuyName) {
-      var product = {
-        name: this.props.bestbuyName,
-        source: 'Best Buy',
-        reviews: this.props.bestbuyData.Reviews
-      };
-    }
-    var products = [product, product];
+
+    // got some real data, trying to pass it through
+
+    // if (this.props.walmartName) {
+    //   var product = {
+    //     name: this.props.walmartName,
+    //     source: 'Walmart',
+    //     reviews: this.props.walmartData.Reviews
+    //   };
+    // } else if (this.props.bestbuyName) {
+    //   var product = {
+    //     name: this.props.bestbuyName,
+    //     source: 'Best Buy',
+    //     reviews: this.props.bestbuyData.Reviews
+    //   };
+    // }
+    // var products = [product, product];
 
     d3Engine.create(el, width, height, products);
   },
@@ -475,8 +478,9 @@ var ReviewsDisplay = React.createClass ({displayName: "ReviewsDisplay",
   render: function() {
     var resultNodes;
 
-    if (this.props.data.source === 'Walmart') {
-      resultNodes = this.props.data.Reviews.map(function(result, index) {
+    if (this.props.source === 'Walmart') {
+      console.log('Walmart results');
+      resultNodes = this.props.data.map(function(result, index) {
         return (
           React.createElement(WalmartIndividualReviewDisplay, {
             key: 'walmartReview' + index, 
@@ -488,8 +492,9 @@ var ReviewsDisplay = React.createClass ({displayName: "ReviewsDisplay",
             downVotes: result.downVotes})
         );
       });
-    } else if (this.props.data.source === 'Best Buy') {
-      resultNodes = this.props.data.Reviews.map(function(result, index) {
+    } else if (this.props.source === 'Best Buy') {
+      console.log('BB results');
+      resultNodes = this.props.data.map(function(result, index) {
         return (
           React.createElement(BestbuyIndividualReviewDisplay, {
             key: 'bestbuyResult' + index, 
@@ -503,8 +508,8 @@ var ReviewsDisplay = React.createClass ({displayName: "ReviewsDisplay",
     }
 
     return (
-      React.createElement("div", {className: "walmart-reviews-display hidden"}, 
-          React.createElement("h4", null, this.props.data.source, " Reviews"), 
+      React.createElement("div", {className: "walmart-reviews-display"}, 
+          React.createElement("h4", null, this.props.source, " Reviews"), 
         React.createElement("div", {className: "row"}, 
           React.createElement("div", {className: "product-image-review"}, React.createElement("img", {src: this.props.image})), 
           React.createElement("div", {className: "product-name-review"}, 
@@ -698,10 +703,6 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
       ReviewedItemImage: image
     });
 
-    console.log('in home.js handleReviewRequest');
-
-    console.log(itemId);
-
     // Makes a specific API call to get reviews for the product clicked on
     $.ajax({
       url: 'get-walmart-reviews',
@@ -711,7 +712,6 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
       data: itemId,
       success: function(data) {
 
-        console.log(data);
         // Remove the general results display to display reviews
         $('.related-results-display-container').fadeOut();
 
@@ -722,6 +722,8 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
         // Create array of review sets to show
         var reviewSetsArray = [];
 
+        console.log(data);
+
         if (data[0].walmartReviews) {
         // Get the reviews array from the response data
           var ReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
@@ -729,6 +731,8 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
           var ReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
           reviewSetsArray.push({
             source: 'Walmart',
+            name: name,
+            image: image,
             Reviews: ReviewsFromData,
             AverageRating: AverageRating,
             ReviewCount: ReviewCount
@@ -740,6 +744,8 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
           var ReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
           reviewSetsArray.push({
             source: 'Best Buy',
+            name: name,
+            image: image,
             Reviews: ReviewsFromData,
             AverageRating: 0,
             ReviewCount: 0
@@ -753,7 +759,7 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
         
         // initialize d3 chart
         // params are (width, height)
-        this.refs.d3chart.startEngine(500, 275);
+        this.refs.d3chart.startEngine(500, 275, reviewSetsArray);
 
       }.bind(this),
       error: function(xhr, status, err) {
@@ -884,12 +890,12 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
           React.createElement(ReviewsDisplaySection, {
             allReviews: this.state.allReviews, 
             walmartReviews: this.state.walmartReviews, 
-            walmartReviewedItemName: this.state.walmartReviewedItemName, 
-            walmartReviewedItemImage: this.state.walmartReviewedItemImage, 
+            ReviewedItemName: this.state.ReviewedItemName, 
+            ReviewedItemImage: this.state.ReviewedItemImage, 
 
             bestbuyReviews: this.state.bestbuyReviews, 
-            bestbuyReviewedItemName: this.state.bestbuyReviewedItemName, 
-            bestbuyReviewedItemImage: this.state.bestbuyReviewedItemImage}), 
+            ReviewedItemName: this.state.ReviewedItemName, 
+            ReviewedItemImage: this.state.ReviewedItemImage}), 
 
             React.createElement(ChooseAnotherProductSection, {
               walmartData: this.state.walmart, 
@@ -962,17 +968,19 @@ var SearchForm = React.createClass({displayName: "SearchForm",
 
 var ReviewsDisplaySection = React.createClass({displayName: "ReviewsDisplaySection",
   render: function() {
+    var reviewColumns = this.props.allReviews.reviewSets.map(function (set, index) {
+      return (
+        React.createElement(ReviewsDisplay, {
+          key: 'ReviewColumn'+index, 
+          source: set.source, 
+          data: set.Reviews, 
+          name: set.name, 
+          image: set.image})
+        );
+    });
     return (
       React.createElement("div", {className: "reviews-display-section"}, 
-        React.createElement(ReviewsDisplay, {
-          source: this.props.store, 
-          data: this.props.walmartReviews, 
-          name: this.props.walmartReviewedItemName, 
-          image: this.props.walmartReviewedItemImage}), 
-        React.createElement(BestbuyReviewsDisplay, {
-          data: this.props.bestbuyReviews, 
-          name: this.props.bestbuyReviewedItemName, 
-          image: this.props.bestbuyReviewedItemImage})
+        reviewColumns
       )
     );
   }
@@ -1143,9 +1151,9 @@ d3Engine.create = function (el, width, height, products) {
   for (var i = 0; i < products.length; i++) {
     d3Engine.prodKey[i] = {name: products[i].name, color: d3Engine.colors[i], source: products[i].source};
     if (products[i].source === 'Walmart') {
-      d3Engine.data = d3Engine.data.concat(d3Engine.populateWMData(products[i].reviews,i));
+      d3Engine.data = d3Engine.data.concat(d3Engine.populateWMData(products[i].Reviews,i));
     } else if (products[i].source === 'Best Buy') {
-      d3Engine.data = d3Engine.data.concat(d3Engine.populateBBData(products[i].reviews,i));
+      d3Engine.data = d3Engine.data.concat(d3Engine.populateBBData(products[i].Reviews,i));
     }
   }
 

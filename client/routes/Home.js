@@ -91,10 +91,6 @@ var DisplayBox = React.createClass({
       ReviewedItemImage: image
     });
 
-    console.log('in home.js handleReviewRequest');
-
-    console.log(itemId);
-
     // Makes a specific API call to get reviews for the product clicked on
     $.ajax({
       url: 'get-walmart-reviews',
@@ -104,7 +100,6 @@ var DisplayBox = React.createClass({
       data: itemId,
       success: function(data) {
 
-        console.log(data);
         // Remove the general results display to display reviews
         $('.related-results-display-container').fadeOut();
 
@@ -115,6 +110,8 @@ var DisplayBox = React.createClass({
         // Create array of review sets to show
         var reviewSetsArray = [];
 
+        console.log(data);
+
         if (data[0].walmartReviews) {
         // Get the reviews array from the response data
           var ReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
@@ -122,6 +119,8 @@ var DisplayBox = React.createClass({
           var ReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
           reviewSetsArray.push({
             source: 'Walmart',
+            name: name,
+            image: image,
             Reviews: ReviewsFromData,
             AverageRating: AverageRating,
             ReviewCount: ReviewCount
@@ -133,6 +132,8 @@ var DisplayBox = React.createClass({
           var ReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
           reviewSetsArray.push({
             source: 'Best Buy',
+            name: name,
+            image: image,
             Reviews: ReviewsFromData,
             AverageRating: 0,
             ReviewCount: 0
@@ -146,7 +147,7 @@ var DisplayBox = React.createClass({
         
         // initialize d3 chart
         // params are (width, height)
-        this.refs.d3chart.startEngine(500, 275);
+        this.refs.d3chart.startEngine(500, 275, reviewSetsArray);
 
       }.bind(this),
       error: function(xhr, status, err) {
@@ -277,12 +278,12 @@ var DisplayBox = React.createClass({
           <ReviewsDisplaySection
             allReviews={this.state.allReviews}
             walmartReviews={this.state.walmartReviews}
-            walmartReviewedItemName={this.state.walmartReviewedItemName}
-            walmartReviewedItemImage={this.state.walmartReviewedItemImage}
+            ReviewedItemName={this.state.ReviewedItemName}
+            ReviewedItemImage={this.state.ReviewedItemImage}
 
             bestbuyReviews={this.state.bestbuyReviews}
-            bestbuyReviewedItemName={this.state.bestbuyReviewedItemName}
-            bestbuyReviewedItemImage={this.state.bestbuyReviewedItemImage} />
+            ReviewedItemName={this.state.ReviewedItemName}
+            ReviewedItemImage={this.state.ReviewedItemImage} />
 
             <ChooseAnotherProductSection
               walmartData={this.state.walmart}
@@ -355,17 +356,19 @@ var SearchForm = React.createClass({
 
 var ReviewsDisplaySection = React.createClass({
   render: function() {
+    var reviewColumns = this.props.allReviews.reviewSets.map(function (set, index) {
+      return (
+        <ReviewsDisplay 
+          key={'ReviewColumn'+index}
+          source={set.source}
+          data={set.Reviews}
+          name={set.name}
+          image={set.image} />
+        );
+    });
     return (
       <div className="reviews-display-section">
-        <ReviewsDisplay 
-          source={this.props.store}
-          data={this.props.walmartReviews}
-          name={this.props.walmartReviewedItemName}
-          image={this.props.walmartReviewedItemImage} />
-        <BestbuyReviewsDisplay 
-          data={this.props.bestbuyReviews}
-          name={this.props.bestbuyReviewedItemName}
-          image={this.props.bestbuyReviewedItemImage} />
+        {reviewColumns}
       </div>
     );
   }

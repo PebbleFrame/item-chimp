@@ -21,20 +21,23 @@ var D3Chart = React.createClass({
     // no way to get products array from Home.js right now
     // so here is a dummy data setup that just duplicates
     // the current item twice.
-    if (this.props.walmartName) {
-      var product = {
-        name: this.props.walmartName,
-        source: 'Walmart',
-        reviews: this.props.walmartData.Reviews
-      };
-    } else if (this.props.bestbuyName) {
-      var product = {
-        name: this.props.bestbuyName,
-        source: 'Best Buy',
-        reviews: this.props.bestbuyData.Reviews
-      };
-    }
-    var products = [product, product];
+
+    // got some real data, trying to pass it through
+
+    // if (this.props.walmartName) {
+    //   var product = {
+    //     name: this.props.walmartName,
+    //     source: 'Walmart',
+    //     reviews: this.props.walmartData.Reviews
+    //   };
+    // } else if (this.props.bestbuyName) {
+    //   var product = {
+    //     name: this.props.bestbuyName,
+    //     source: 'Best Buy',
+    //     reviews: this.props.bestbuyData.Reviews
+    //   };
+    // }
+    // var products = [product, product];
 
     d3Engine.create(el, width, height, products);
   },
