@@ -82,7 +82,8 @@ var DisplayBox = React.createClass({
 
   // Final handler for reviews request
   // This call is the result of calls bubbling up from the individual review results
-  handleReviewRequest: function(itemId, name, image, reviewAverage, reviewCount) {
+  // var "id" may be itemId or SKU
+  handleReviewRequest: function(id, site, name, image) {
 
     // Sets the product name and image for the product clicked on (Revews Display)
     // These are passed up from WalmartIndividualResultDisplay
@@ -91,13 +92,22 @@ var DisplayBox = React.createClass({
       ReviewedItemImage: image
     });
 
+    var queryUrl;
+
+    if (site === 'Walmart') {
+      queryUrl = 'get-walmart-reviews';
+    } else if (site === 'Best Buy') {
+      queryUrl = 'get-bestbuy-reviews';
+    }
+
     // Makes a specific API call to get reviews for the product clicked on
     $.ajax({
-      url: 'get-walmart-reviews',
+      url: queryUrl,
       dataType: 'json',
       type: 'POST',
-      // itemId is used to make a request for Walmart reviews
-      data: itemId,
+      // "id" is itemId for Walmart
+      // and it's SKU for Best Buy
+      data: id,
       success: function(data) {
 
         // Remove the general results display to display reviews
@@ -149,57 +159,6 @@ var DisplayBox = React.createClass({
         // initialize d3 chart
         // params are (width, height)
         this.refs.d3chart.startEngine(500, 275, reviewSetsArray);
-
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('get-walmart-reviews', status, err.toString());
-      }.bind(this)
-    });
-  },
-
-  // Final handler for Walmart review request
-  // This call is the result of calls bubbling up from the individual Walmart results
-  handleWalmartReviewRequest: function(upc, name, image) {
-
-    // Sets the product name and image for the product clicked on (Revews Display)
-    // These are passed up from WalmartIndividualResultDisplay
-    this.setState({
-      walmartReviewedItemName: name,
-      walmartReviewedItemImage: image
-    });
-
-    // Makes a specific API call to get reviews for the product clicked on
-    $.ajax({
-      url: 'get-walmart-reviews',
-      dataType: 'json',
-      type: 'POST',
-      // upc is used to make a request for Walmart reviews
-      data: upc,
-      success: function(data) {
-        // Remove the general results display to display reviews
-        $('.related-results-display-container').fadeOut();
-
-        // Display the reviews-display only after an item is clicked on
-        $('.reviews-display-container').fadeIn();
-        $('.d3-container').fadeIn();
-
-        // Get the reviews array from the response data
-        var walmartReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
-        var walmartAverageRating = JSON.parse(data[0].walmartReviews).reviewStatistics.averageOverallRating;
-        var walmartReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
-
-        // Set the walmartReviews state in the same format as the 'general-query' states
-        this.setState({
-          walmartReviews: {
-            Reviews: walmartReviewsFromData,
-            AverageRating: walmartAverageRating,
-            ReviewCount: walmartReviewCount
-          }
-        });
-
-        // initialize d3 chart
-        // params are (width, height)
-        this.refs.d3chart.startEngine(500, 275);
 
       }.bind(this),
       error: function(xhr, status, err) {

@@ -39,7 +39,7 @@ var BestbuyRelatedResultsDisplay = React.createClass({
 var BestbuyIndividualResultDisplay = React.createClass({
   handleReviewRequest: function() {
     $('.bestbuy-reviews-display').removeClass('hidden');
-    this.props.onReviewRequest({sku: this.props.sku}, this.props.name, this.props.image,
+    this.props.onReviewRequest({sku: this.props.sku}, 'Best Buy', this.props.name, this.props.image,
       this.props.customerReviewAverage, this.props.customerReviewCount);
   },
   render: function() {
