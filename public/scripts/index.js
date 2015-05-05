@@ -19,27 +19,6 @@ var D3Chart = React.createClass({displayName: "D3Chart",
     // ]
     var el = this.getDOMNode();
 
-    // no way to get products array from Home.js right now
-    // so here is a dummy data setup that just duplicates
-    // the current item twice.
-
-    // got some real data, trying to pass it through
-
-    // if (this.props.walmartName) {
-    //   var product = {
-    //     name: this.props.walmartName,
-    //     source: 'Walmart',
-    //     reviews: this.props.walmartData.Reviews
-    //   };
-    // } else if (this.props.bestbuyName) {
-    //   var product = {
-    //     name: this.props.bestbuyName,
-    //     source: 'Best Buy',
-    //     reviews: this.props.bestbuyData.Reviews
-    //   };
-    // }
-    // var products = [product, product];
-
     d3Engine.create(el, width, height, products);
   },
   render: function() {
@@ -914,7 +893,6 @@ d3Engine.populateBBData = function (rawData, prodNum) {
     obj.dotSize = obj.reviewLength/50 + 20;
     obj.stars = +rawData[i].rating;
     obj.prodKey = d3Engine.prodKey[prodNum];
-    console.log(rawData[i].reviewer);
     obj.username = rawData[i].reviewer[0].name;
     obj.reviewTitle = rawData[i].title.slice(0,24) + "..."
     obj.review = rawData[i].comment;
@@ -947,6 +925,9 @@ d3Engine.create = function (el, width, height, products) {
   this.chart = d3.select(".chart")
     .attr("width", d3Engine.width)
     .attr("height", d3Engine.height);
+
+  // clear D3 chart
+  this.chart.selectAll("g").remove();
 
   // create a "g" element for every review (will contain a circle and a text obj)
   var circle = this.chart.selectAll("g.node")

@@ -71,7 +71,6 @@ d3Engine.populateBBData = function (rawData, prodNum) {
     obj.dotSize = obj.reviewLength/50 + 20;
     obj.stars = +rawData[i].rating;
     obj.prodKey = d3Engine.prodKey[prodNum];
-    console.log(rawData[i].reviewer);
     obj.username = rawData[i].reviewer[0].name;
     obj.reviewTitle = rawData[i].title.slice(0,24) + "..."
     obj.review = rawData[i].comment;
@@ -104,6 +103,9 @@ d3Engine.create = function (el, width, height, products) {
   this.chart = d3.select(".chart")
     .attr("width", d3Engine.width)
     .attr("height", d3Engine.height);
+
+  // clear D3 chart
+  this.chart.selectAll("g").remove();
 
   // create a "g" element for every review (will contain a circle and a text obj)
   var circle = this.chart.selectAll("g.node")
