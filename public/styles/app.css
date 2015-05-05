@@ -125,13 +125,17 @@ body {
 
 .walmart-reviews-display img {
   float: left;
+  margin-right: 20px;
 }
 
 .bestbuy-reviews-display {
   padding: 8px;
   margin: 9px 6px;
-  border: 1px solid #8E8E8E;
-  border-radius: 7px;
+}
+
+.bestbuy-reviews-display img {
+  float: left;
+  margin-right: 20px;
 }
 
 .individual-review-display {
@@ -150,6 +154,10 @@ body {
 }
 
 /* REVIEWS CONTAINER - CHOOSE ANOTHER PRODUCT SECTIOn */
+.product-name-review {
+  float: left;
+  margin-top: 20px;
+}
 
 .choose-another-product-section {
   float: right;

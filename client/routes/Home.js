@@ -27,11 +27,11 @@ var DisplayBox = React.createClass({
       // We set the initial state to the format {'API name': [Array of results]}
       // to help organize the results we get back from the server, since the
       // general-query request returns results from three different APIs
-      amazon: {amazon: []},
-      walmart: {walmart: []},
-      bestbuy: {bestbuy: []},
-      walmartReviews: {walmartReviews: []},
-      bestbuyReviews: {bestbuyReviews: []}  
+      amazon: {results: []},
+      walmart: {results: []},
+      bestbuy: {results: []},
+      walmartReviews: {Reviews: []},
+      bestbuyReviews: {Reviews: []}  
     };
   },
 
@@ -50,9 +50,11 @@ var DisplayBox = React.createClass({
         // data[0] --> {walmart: [Array of Walmart results]}
         // data[1] --> {amazon: [Array of Amazon results]}
         // data[2] --> {bestbuy: [Array of Best Buy results]}
+        var wmResults = {results: data[0].walmart};
+        var bbResults = {results: data[1].bestbuy};
         this.setState({
-          walmart: data[0],
-          bestbuy: data[1],
+          walmart: wmResults,
+          bestbuy: bbResults
           // We removed Amazon because they do not allow keys to be in our public repo
           // amazon: data[2],
         });
@@ -99,10 +101,16 @@ var DisplayBox = React.createClass({
 
         // Get the reviews array from the response data
         var walmartReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
+        var walmartAverageRating = JSON.parse(data[0].walmartReviews).reviewStatistics.averageOverallRating;
+        var walmartReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
 
         // Set the walmartReviews state in the same format as the 'general-query' states
         this.setState({
-          walmartReviews: {walmartReviews: walmartReviewsFromData}
+          walmartReviews: {
+            Reviews: walmartReviewsFromData,
+            AverageRating: walmartAverageRating,
+            ReviewCount: walmartReviewCount
+          }
         });
         
         // initialize d3 chart
@@ -118,7 +126,7 @@ var DisplayBox = React.createClass({
 
   // Final handler for Best Buy review request
   // This call is the result of calls bubbling up from the individual Best Buy results
-  handleBestbuyReviewRequest: function(sku, name, image) {
+  handleBestbuyReviewRequest: function(sku, name, image, reviewAverage, reviewCount) {
 
     // Final handler for Walmart review request
     // This call is the result of calls bubbling up from the individual Walmart results
@@ -146,7 +154,9 @@ var DisplayBox = React.createClass({
 
         // Set the walmartReviews state in the same format as the 'general-query' states
         this.setState({
-          bestbuyReviews: {bestbuyReviews: bestbuyReviewsFromData}
+          bestbuyReviews: {Reviews: bestbuyReviewsFromData,
+                          AverageRating: reviewAverage,
+                          ReviewCount: reviewCount}
         });
         
         // initialize d3 chart
@@ -293,9 +303,11 @@ var ChooseAnotherProductSection = React.createClass({
 
 var ChooseAnotherProductSectionWalmart = React.createClass({
   render: function() {
-    var resultNodes = this.props.walmartData.walmart.map(function(result, index) {
+    var resultNodes = this.props.walmartData.results.map(function(result, index) {
       return (
-        <div className="choose-another-product-individual-display">
+        <div className="choose-another-product-individual-display" 
+          key={'walmartOtherProduct' + index}
+          onClick={this.handleWalmartReviewRequest}>
           <img src={result.thumbnailImage} />
           <strong>Product: </strong>{result.name}
         </div>
@@ -312,9 +324,11 @@ var ChooseAnotherProductSectionWalmart = React.createClass({
 
 var ChooseAnotherProductSectionBestbuy = React.createClass({
   render: function() {
-    var resultNodes = this.props.bestbuyData.bestbuy.map(function(result, index) {
+    var resultNodes = this.props.bestbuyData.results.map(function(result, index) {
       return (
-        <div className="choose-another-product-individual-display">
+        <div className="choose-another-product-individual-display" 
+          key={'bestbuyOtherProduct' + index}
+          onClick={this.handleWalmartReviewRequest}>
           <img src={result.image} />
           <strong>Product: </strong>{result.name}
         </div>

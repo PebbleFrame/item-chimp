@@ -18,7 +18,7 @@ d3Engine.initValues = function (width, height) {
   // tooltip vars
   d3Engine.ttOffset = 10;
   d3Engine.ttWidth = 220;
-  d3Engine.ttHeight = 105;
+  d3Engine.ttHeight = 115;
 
   // x scale based on star rating
   d3Engine.x = d3.scale.linear()
@@ -209,8 +209,12 @@ function tooltipSetup() {
           .transition()
           .duration(200)
           .style('opacity', 1);
+    var ttHeader = d.username + " on " + d.prodKey.name;
+    if (ttHeader.length > 20) {
+      ttHeader = ttHeader.slice(0,20) + "...";
+    }
     tooltip.select(".username")
-      .text(d.username + " on " + d.prodKey.name);
+      .text(ttHeader);
     tooltip.select(".reviewTitle")
       .text(d.reviewTitle);
     tooltip.select(".reviewText")

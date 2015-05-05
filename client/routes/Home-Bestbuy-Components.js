@@ -2,11 +2,11 @@ var React = require('react');
 
 // Component that displays related results from Best Buy API
 var BestbuyRelatedResultsDisplay = React.createClass({
-  handleBestbuyReviewRequest: function(sku, name, image) {
-    this.props.onBestbuyReviewRequest(sku, name, image);
+  handleBestbuyReviewRequest: function(sku, name, image, reviewAverage, reviewCount) {
+    this.props.onBestbuyReviewRequest(sku, name, image, reviewAverage, reviewCount);
   },
   render: function() {
-    var resultNodes = this.props.data.bestbuy.map(function(result, index) {
+    var resultNodes = this.props.data.results.map(function(result, index) {
       
       result.shortDescription = result.shortDescription || 'n/a';
       result.customerReviewAverage = result.customerReviewAverage || 'n/a';
@@ -14,6 +14,7 @@ var BestbuyRelatedResultsDisplay = React.createClass({
 
       return (
         <BestbuyIndividualResultDisplay 
+          key={'bestbuyReview' + index}
           name={result.name}
           salePrice={result.salePrice}
           upc={result.upc}
@@ -37,9 +38,9 @@ var BestbuyRelatedResultsDisplay = React.createClass({
 // Component that displays individual results for Best Buy
 var BestbuyIndividualResultDisplay = React.createClass({
   handleBestbuyReviewRequest: function() {
-    $('.walmart-reviews-display').removeClass('hidden');
-
-    this.props.onBestbuyReviewRequest({sku: this.props.sku}, this.props.name, this.props.image);
+    $('.bestbuy-reviews-display').removeClass('hidden');
+    this.props.onBestbuyReviewRequest({sku: this.props.sku}, this.props.name, this.props.image,
+      this.props.customerReviewAverage, this.props.customerReviewCount);
   },
   render: function() {
     return (
@@ -70,10 +71,10 @@ var BestbuyIndividualResultDisplay = React.createClass({
 
 var BestbuyReviewsDisplay = React.createClass ({
   render: function() {
-    var resultNodes = this.props.data.bestbuyReviews.map(function(result, index) {
-      console.log(result);
+    var resultNodes = this.props.data.Reviews.map(function(result, index) {
       return (
         <BestbuyIndividualReviewDisplay
+          key={'bestbuyResult' + index}
           title={result.title}
           reviewer={result.reviewer}
           comment={result.comment}
@@ -83,10 +84,17 @@ var BestbuyReviewsDisplay = React.createClass ({
     });
 
     return (
-      <div className="bestbuy-reviews-display">
+      <div className="bestbuy-reviews-display hidden">
         <h4>Best Buy Reviews</h4>
-        <h4>{this.props.name}</h4>
-        <img src={this.props.image} />
+        <div className="row">
+          <div className="product-image-review"><img src={this.props.image} /></div>
+          <div className="product-name-review">
+            <div><strong>Product: </strong>{this.props.name}</div>
+            <div><strong>Average Rating: </strong>{this.props.data.AverageRating}</div>
+            <div><strong>Total Reviews: </strong>{this.props.data.ReviewCount}</div>
+          </div>
+        </div>
+        <hr />
         {resultNodes}
       </div>
     );
@@ -96,15 +104,15 @@ var BestbuyReviewsDisplay = React.createClass ({
 var BestbuyIndividualReviewDisplay = React.createClass({
   render: function() {
     return (
-      <div>
+      <div className="individual-review-display">
         <h5>
           {this.props.title}
         </h5>
         <div>
-          Reviewer: {this.props.reviewer}
+          <strong>Reviewer:</strong> {this.props.reviewer}
         </div>
         <div>
-          Review: {this.props.comment}
+          <strong>Review:</strong> {this.props.comment}
         </div>
         <div>
           Rating: {this.props.rating}
