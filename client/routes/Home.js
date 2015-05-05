@@ -2,16 +2,18 @@ var React = require('react');
 
 var WalmartComponents = require('./Home-Walmart-Components');
 var WalmartRelatedResultsDisplay = WalmartComponents.WalmartRelatedResultsDisplay;
-var WalmartIndividualResultDisplay = WalmartComponents.WalmartIndividualResultDisplay;
-var ReviewsDisplay = WalmartComponents.ReviewsDisplay;
 
-var AmazonComponents = require('./Home-Amazon-Components');
-var AmazonRelatedResultsDisplay = AmazonComponents.AmazonRelatedResultsDisplay;
-var AmazonIndividualResultDisplay = AmazonComponents.AmazonIndividualResultDisplay;
+var ReviewComponents = require('./Home-Reviews-Components');
+var ReviewsDisplay = ReviewComponents.ReviewsDisplay;
+var WalmartIndividualReviewDisplay = ReviewComponents.WalmartIndividualReviewDisplay;
+var BestbuyIndividualReviewDisplay = ReviewComponents.BestbuyIndividualReviewDisplay;
+
+// var AmazonComponents = require('./Home-Amazon-Components');
+// var AmazonRelatedResultsDisplay = AmazonComponents.AmazonRelatedResultsDisplay;
+// var AmazonIndividualResultDisplay = AmazonComponents.AmazonIndividualResultDisplay;
 
 var BestbuyComponents = require('./Home-Bestbuy-Components');
 var BestbuyRelatedResultsDisplay = BestbuyComponents.BestbuyRelatedResultsDisplay;
-var BestbuyIndividualResultDisplay = BestbuyComponents.BestbuyIndividualResultDisplay;
 
 
 var D3Components = require('./D3-Chart');
@@ -30,9 +32,7 @@ var DisplayBox = React.createClass({
       amazon: {results: []},
       walmart: {results: []},
       bestbuy: {results: []},
-      allReviews: {reviewSets: []},
-      walmartReviews: {Reviews: []},
-      bestbuyReviews: {Reviews: []}  
+      allReviews: {reviewSets: []}
     };
   },
 
