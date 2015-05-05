@@ -1,8 +1,11 @@
 module.exports = function(pricesArray, query) {
 
-  var width = 500,
-      height = 275;
+  // Set the size of the D3 price chart
+  var width = 500;
+  var height = 275;
 
+  // Used to color bubbles
+  // i & 1 --> two colors, i & 2 --> three colors, etc.
   var fill = d3.scale.category10();
 
   var nodes = d3.range(100).map(function(i) {
