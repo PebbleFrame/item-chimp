@@ -6,12 +6,13 @@ var WalmartRelatedResultsDisplay = React.createClass({
     this.props.onWalmartReviewRequest(itemId, name, image);
   },
   render: function() {
-    var resultNodes = this.props.data.walmart.map(function(result, index) {
+    var resultNodes = this.props.data.results.map(function(result, index) {
 
       result.shortDescription = result.shortDescription || '';
 
       return (
         <WalmartIndividualResultDisplay 
+          key={'walmartResult' + index}
           name={result.name} 
           salePrice={result.salePrice}
           upc={result.upc} 
@@ -37,7 +38,6 @@ var WalmartRelatedResultsDisplay = React.createClass({
 var WalmartIndividualResultDisplay = React.createClass({
   handleWalmartReviewRequest: function() {
     $('.walmart-reviews-display').removeClass('hidden');
-
     this.props.onWalmartReviewRequest({itemId: this.props.itemId}, this.props.name, this.props.thumbnailImage);
   },  
   render: function() {
@@ -70,9 +70,10 @@ var WalmartIndividualResultDisplay = React.createClass({
 
 var WalmartReviewsDisplay = React.createClass ({
   render: function() {
-    var resultNodes = this.props.data.walmartReviews.map(function(result, index) {
+    var resultNodes = this.props.data.Reviews.map(function(result, index) {
       return (
         <WalmartIndividualReviewDisplay
+          key={'walmartReview' + index}
           title={result.title}
           overallRating={result.overallRating}
           reviewer={result.reviewer}
@@ -83,10 +84,16 @@ var WalmartReviewsDisplay = React.createClass ({
     });
 
     return (
-      <div className="walmart-reviews-display">
-        <h4>Walmart Reviews</h4>
-        <img src={this.props.image} />
-        <strong>Product: </strong>{this.props.name}
+      <div className="walmart-reviews-display hidden">
+          <h4>Walmart Reviews</h4>
+        <div className="row">
+          <div className="product-image-review"><img src={this.props.image} /></div>
+          <div className="product-name-review">
+            <div><strong>Product: </strong>{this.props.name}</div>
+            <div><strong>Average Rating: </strong>{this.props.data.AverageRating}</div>
+            <div><strong>Total Reviews: </strong>{this.props.data.ReviewCount}</div>
+          </div>
+        </div>
         <hr />
         {resultNodes}
       </div>

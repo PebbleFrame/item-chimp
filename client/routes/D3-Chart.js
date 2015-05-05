@@ -25,13 +25,13 @@ var D3Chart = React.createClass({
       var product = {
         name: this.props.walmartName,
         source: 'Walmart',
-        reviews: this.props.walmartData.walmartReviews
+        reviews: this.props.walmartData.Reviews
       };
     } else if (this.props.bestbuyName) {
       var product = {
         name: this.props.bestbuyName,
         source: 'Best Buy',
-        reviews: this.props.bestbuyData.bestbuyReviews
+        reviews: this.props.bestbuyData.Reviews
       };
     }
     var products = [product, product];
