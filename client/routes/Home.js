@@ -57,7 +57,7 @@ var DisplayBox = React.createClass({
         var bbResults = {results: data[1].bestbuy};
         this.setState({
           walmart: wmResults,
-          bestbuy: bbResults
+          bestbuy: bbResults,
           // We removed Amazon because they do not allow keys to be in our public repo
           // amazon: data[2],
           query: query.query

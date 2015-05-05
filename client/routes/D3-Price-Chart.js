@@ -32,12 +32,8 @@ module.exports = React.createClass({
 
   render: function() {
     return (
-      <div>
-        <hr />
-        <div className="d3-price-container">
-            <svg className="price-chart"></svg>
-        </div>
-        <hr />
+      <div className="d3-price-container">
+        <svg className="price-chart"></svg>
       </div>
     );
   }

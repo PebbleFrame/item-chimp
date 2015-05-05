@@ -26,13 +26,13 @@ var D3Chart = React.createClass({displayName: "D3Chart",
       var product = {
         name: this.props.walmartName,
         source: 'Walmart',
-        reviews: this.props.walmartData.walmartReviews
+        reviews: this.props.walmartData.Reviews
       };
     } else if (this.props.bestbuyName) {
       var product = {
         name: this.props.bestbuyName,
         source: 'Best Buy',
-        reviews: this.props.bestbuyData.bestbuyReviews
+        reviews: this.props.bestbuyData.Reviews
       };
     }
     var products = [product, product];
@@ -84,12 +84,8 @@ module.exports = React.createClass({displayName: "exports",
 
   render: function() {
     return (
-      React.createElement("div", null, 
-        React.createElement("hr", null), 
-        React.createElement("div", {className: "d3-price-container"}, 
-            React.createElement("svg", {className: "price-chart"})
-        ), 
-        React.createElement("hr", null)
+      React.createElement("div", {className: "d3-price-container"}, 
+        React.createElement("svg", {className: "price-chart"})
       )
     );
   }
@@ -279,11 +275,11 @@ var React = require('react');
 
 // Component that displays related results from Best Buy API
 var BestbuyRelatedResultsDisplay = React.createClass({displayName: "BestbuyRelatedResultsDisplay",
-  handleBestbuyReviewRequest: function(sku, name, image) {
-    this.props.onBestbuyReviewRequest(sku, name, image);
+  handleBestbuyReviewRequest: function(sku, name, image, reviewAverage, reviewCount) {
+    this.props.onBestbuyReviewRequest(sku, name, image, reviewAverage, reviewCount);
   },
   render: function() {
-    var resultNodes = this.props.data.bestbuy.map(function(result, index) {
+    var resultNodes = this.props.data.results.map(function(result, index) {
       
       result.shortDescription = result.shortDescription || 'n/a';
       result.customerReviewAverage = result.customerReviewAverage || 'n/a';
@@ -291,6 +287,7 @@ var BestbuyRelatedResultsDisplay = React.createClass({displayName: "BestbuyRelat
 
       return (
         React.createElement(BestbuyIndividualResultDisplay, {
+          key: 'bestbuyReview' + index, 
           name: result.name, 
           salePrice: result.salePrice, 
           upc: result.upc, 
@@ -314,9 +311,9 @@ var BestbuyRelatedResultsDisplay = React.createClass({displayName: "BestbuyRelat
 // Component that displays individual results for Best Buy
 var BestbuyIndividualResultDisplay = React.createClass({displayName: "BestbuyIndividualResultDisplay",
   handleBestbuyReviewRequest: function() {
-    $('.walmart-reviews-display').removeClass('hidden');
-
-    this.props.onBestbuyReviewRequest({sku: this.props.sku}, this.props.name, this.props.image);
+    $('.bestbuy-reviews-display').removeClass('hidden');
+    this.props.onBestbuyReviewRequest({sku: this.props.sku}, this.props.name, this.props.image,
+      this.props.customerReviewAverage, this.props.customerReviewCount);
   },
   render: function() {
     return (
@@ -347,10 +344,10 @@ var BestbuyIndividualResultDisplay = React.createClass({displayName: "BestbuyInd
 
 var BestbuyReviewsDisplay = React.createClass ({displayName: "BestbuyReviewsDisplay",
   render: function() {
-    var resultNodes = this.props.data.bestbuyReviews.map(function(result, index) {
-      console.log(result);
+    var resultNodes = this.props.data.Reviews.map(function(result, index) {
       return (
         React.createElement(BestbuyIndividualReviewDisplay, {
+          key: 'bestbuyResult' + index, 
           title: result.title, 
           reviewer: result.reviewer, 
           comment: result.comment, 
@@ -360,10 +357,17 @@ var BestbuyReviewsDisplay = React.createClass ({displayName: "BestbuyReviewsDisp
     });
 
     return (
-      React.createElement("div", {className: "bestbuy-reviews-display"}, 
+      React.createElement("div", {className: "bestbuy-reviews-display hidden"}, 
         React.createElement("h4", null, "Best Buy Reviews"), 
-        React.createElement("h4", null, this.props.name), 
-        React.createElement("img", {src: this.props.image}), 
+        React.createElement("div", {className: "row"}, 
+          React.createElement("div", {className: "product-image-review"}, React.createElement("img", {src: this.props.image})), 
+          React.createElement("div", {className: "product-name-review"}, 
+            React.createElement("div", null, React.createElement("strong", null, "Product: "), this.props.name), 
+            React.createElement("div", null, React.createElement("strong", null, "Average Rating: "), this.props.data.AverageRating), 
+            React.createElement("div", null, React.createElement("strong", null, "Total Reviews: "), this.props.data.ReviewCount)
+          )
+        ), 
+        React.createElement("hr", null), 
         resultNodes
       )
     );
@@ -373,15 +377,15 @@ var BestbuyReviewsDisplay = React.createClass ({displayName: "BestbuyReviewsDisp
 var BestbuyIndividualReviewDisplay = React.createClass({displayName: "BestbuyIndividualReviewDisplay",
   render: function() {
     return (
-      React.createElement("div", null, 
+      React.createElement("div", {className: "individual-review-display"}, 
         React.createElement("h5", null, 
           this.props.title
         ), 
         React.createElement("div", null, 
-          "Reviewer: ", this.props.reviewer
+          React.createElement("strong", null, "Reviewer:"), " ", this.props.reviewer
         ), 
         React.createElement("div", null, 
-          "Review: ", this.props.comment
+          React.createElement("strong", null, "Review:"), " ", this.props.comment
         ), 
         React.createElement("div", null, 
           "Rating: ", this.props.rating
@@ -405,12 +409,13 @@ var WalmartRelatedResultsDisplay = React.createClass({displayName: "WalmartRelat
     this.props.onWalmartReviewRequest(itemId, name, image);
   },
   render: function() {
-    var resultNodes = this.props.data.walmart.map(function(result, index) {
+    var resultNodes = this.props.data.results.map(function(result, index) {
 
       result.shortDescription = result.shortDescription || '';
 
       return (
         React.createElement(WalmartIndividualResultDisplay, {
+          key: 'walmartResult' + index, 
           name: result.name, 
           salePrice: result.salePrice, 
           upc: result.upc, 
@@ -436,7 +441,6 @@ var WalmartRelatedResultsDisplay = React.createClass({displayName: "WalmartRelat
 var WalmartIndividualResultDisplay = React.createClass({displayName: "WalmartIndividualResultDisplay",
   handleWalmartReviewRequest: function() {
     $('.walmart-reviews-display').removeClass('hidden');
-
     this.props.onWalmartReviewRequest({itemId: this.props.itemId}, this.props.name, this.props.thumbnailImage);
   },  
   render: function() {
@@ -469,9 +473,10 @@ var WalmartIndividualResultDisplay = React.createClass({displayName: "WalmartInd
 
 var WalmartReviewsDisplay = React.createClass ({displayName: "WalmartReviewsDisplay",
   render: function() {
-    var resultNodes = this.props.data.walmartReviews.map(function(result, index) {
+    var resultNodes = this.props.data.Reviews.map(function(result, index) {
       return (
         React.createElement(WalmartIndividualReviewDisplay, {
+          key: 'walmartReview' + index, 
           title: result.title, 
           overallRating: result.overallRating, 
           reviewer: result.reviewer, 
@@ -482,10 +487,16 @@ var WalmartReviewsDisplay = React.createClass ({displayName: "WalmartReviewsDisp
     });
 
     return (
-      React.createElement("div", {className: "walmart-reviews-display"}, 
-        React.createElement("h4", null, "Walmart Reviews"), 
-        React.createElement("img", {src: this.props.image}), 
-        React.createElement("strong", null, "Product: "), this.props.name, 
+      React.createElement("div", {className: "walmart-reviews-display hidden"}, 
+          React.createElement("h4", null, "Walmart Reviews"), 
+        React.createElement("div", {className: "row"}, 
+          React.createElement("div", {className: "product-image-review"}, React.createElement("img", {src: this.props.image})), 
+          React.createElement("div", {className: "product-name-review"}, 
+            React.createElement("div", null, React.createElement("strong", null, "Product: "), this.props.name), 
+            React.createElement("div", null, React.createElement("strong", null, "Average Rating: "), this.props.data.AverageRating), 
+            React.createElement("div", null, React.createElement("strong", null, "Total Reviews: "), this.props.data.ReviewCount)
+          )
+        ), 
         React.createElement("hr", null), 
         resultNodes
       )
@@ -550,11 +561,11 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
       // We set the initial state to the format {'API name': [Array of results]}
       // to help organize the results we get back from the server, since the
       // general-query request returns results from three different APIs
-      amazon: {amazon: []},
-      walmart: {walmart: []},
-      bestbuy: {bestbuy: []},
-      walmartReviews: {walmartReviews: []},
-      bestbuyReviews: {bestbuyReviews: []}  
+      amazon: {results: []},
+      walmart: {results: []},
+      bestbuy: {results: []},
+      walmartReviews: {Reviews: []},
+      bestbuyReviews: {Reviews: []}  
     };
   },
 
@@ -576,9 +587,11 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
         // data[0] --> {walmart: [Array of Walmart results]}
         // data[1] --> {amazon: [Array of Amazon results]}
         // data[2] --> {bestbuy: [Array of Best Buy results]}
+        var wmResults = {results: data[0].walmart};
+        var bbResults = {results: data[1].bestbuy};
         this.setState({
-          walmart: data[0],
-          bestbuy: data[1],
+          walmart: wmResults,
+          bestbuy: bbResults,
           // We removed Amazon because they do not allow keys to be in our public repo
           // amazon: data[2],
           query: query.query
@@ -626,10 +639,16 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
 
         // Get the reviews array from the response data
         var walmartReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
+        var walmartAverageRating = JSON.parse(data[0].walmartReviews).reviewStatistics.averageOverallRating;
+        var walmartReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
 
         // Set the walmartReviews state in the same format as the 'general-query' states
         this.setState({
-          walmartReviews: {walmartReviews: walmartReviewsFromData}
+          walmartReviews: {
+            Reviews: walmartReviewsFromData,
+            AverageRating: walmartAverageRating,
+            ReviewCount: walmartReviewCount
+          }
         });
         
         // initialize d3 chart
@@ -645,7 +664,7 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
 
   // Final handler for Best Buy review request
   // This call is the result of calls bubbling up from the individual Best Buy results
-  handleBestbuyReviewRequest: function(sku, name, image) {
+  handleBestbuyReviewRequest: function(sku, name, image, reviewAverage, reviewCount) {
 
     // Final handler for Walmart review request
     // This call is the result of calls bubbling up from the individual Walmart results
@@ -673,7 +692,9 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
 
         // Set the walmartReviews state in the same format as the 'general-query' states
         this.setState({
-          bestbuyReviews: {bestbuyReviews: bestbuyReviewsFromData}
+          bestbuyReviews: {Reviews: bestbuyReviewsFromData,
+                          AverageRating: reviewAverage,
+                          ReviewCount: reviewCount}
         });
         
         // initialize d3 chart
@@ -821,9 +842,11 @@ var ChooseAnotherProductSection = React.createClass({displayName: "ChooseAnother
 
 var ChooseAnotherProductSectionWalmart = React.createClass({displayName: "ChooseAnotherProductSectionWalmart",
   render: function() {
-    var resultNodes = this.props.walmartData.walmart.map(function(result, index) {
+    var resultNodes = this.props.walmartData.results.map(function(result, index) {
       return (
-        React.createElement("div", {className: "choose-another-product-individual-display"}, 
+        React.createElement("div", {className: "choose-another-product-individual-display", 
+          key: 'walmartOtherProduct' + index, 
+          onClick: this.handleWalmartReviewRequest}, 
           React.createElement("img", {src: result.thumbnailImage}), 
           React.createElement("strong", null, "Product: "), result.name
         )
@@ -840,9 +863,11 @@ var ChooseAnotherProductSectionWalmart = React.createClass({displayName: "Choose
 
 var ChooseAnotherProductSectionBestbuy = React.createClass({displayName: "ChooseAnotherProductSectionBestbuy",
   render: function() {
-    var resultNodes = this.props.bestbuyData.bestbuy.map(function(result, index) {
+    var resultNodes = this.props.bestbuyData.results.map(function(result, index) {
       return (
-        React.createElement("div", {className: "choose-another-product-individual-display"}, 
+        React.createElement("div", {className: "choose-another-product-individual-display", 
+          key: 'bestbuyOtherProduct' + index, 
+          onClick: this.handleWalmartReviewRequest}, 
           React.createElement("img", {src: result.image}), 
           React.createElement("strong", null, "Product: "), result.name
         )
@@ -890,7 +915,7 @@ d3Engine.initValues = function (width, height) {
   // tooltip vars
   d3Engine.ttOffset = 10;
   d3Engine.ttWidth = 220;
-  d3Engine.ttHeight = 105;
+  d3Engine.ttHeight = 115;
 
   // x scale based on star rating
   d3Engine.x = d3.scale.linear()
@@ -1081,8 +1106,12 @@ function tooltipSetup() {
           .transition()
           .duration(200)
           .style('opacity', 1);
+    var ttHeader = d.username + " on " + d.prodKey.name;
+    if (ttHeader.length > 20) {
+      ttHeader = ttHeader.slice(0,20) + "...";
+    }
     tooltip.select(".username")
-      .text(d.username + " on " + d.prodKey.name);
+      .text(ttHeader);
     tooltip.select(".reviewTitle")
       .text(d.reviewTitle);
     tooltip.select(".reviewText")
@@ -1260,7 +1289,6 @@ module.exports = function(pricesArray, query) {
     var nodes = svg.selectAll("g.node");
 
     nodes.on('mouseover', function(d) {
-      console.log('mouseover!', d);
       var mouseLoc = d3.mouse(this.parentNode);
 
       tooltip

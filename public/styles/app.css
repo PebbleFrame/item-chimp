@@ -277,6 +277,8 @@ a.follow:hover, a.follow:active {
 .d3-price-container {
   display: none;
   position: relative;
+  width: 500px;
+  margin: 0 auto;
   border: 1px solid #8E8E8E;
   border-radius: 10px;
 }

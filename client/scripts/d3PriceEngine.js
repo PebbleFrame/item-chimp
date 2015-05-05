@@ -122,7 +122,6 @@ module.exports = function(pricesArray, query) {
     var nodes = svg.selectAll("g.node");
 
     nodes.on('mouseover', function(d) {
-      console.log('mouseover!', d);
       var mouseLoc = d3.mouse(this.parentNode);
 
       tooltip
