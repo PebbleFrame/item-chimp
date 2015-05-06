@@ -1,6 +1,8 @@
 var React = require('react');
 var Router = require('react-router');
 
+// Require Famo.us/react-famous components
+
 var Transform = require('famous/core/Transform');
 var Easing = require('famous/transitions/Easing');
 var Transitionable = require('famous/transitions/Transitionable');
@@ -48,38 +50,49 @@ var Navbar = React.createClass({
 // Component for the header area underneath the navbar
 var LogoArea = React.createClass({
   componentDidMount: function() {
+
+    // react-famous code for logo image to bounce up and down
     var stateModifier = this.refs.stateModifier.getFamous();
 
     FamousScheduler.schedule(function() {
       var animate = function() {
         stateModifier.halt();
+        // Code for chimp to bounce up
         stateModifier.setTransform(Transform.translate(0, -40), {
           curve: 'easeOut',
           duration: 250
         }, function() {
+          // Code for chimp to fall back down
           stateModifier.setTransform(Transform.translate(0, 0), {
             curve: 'easeIn',
             duration: 125
           }, function() {
+            // Repeat the animation infinitely
             Timer.setTimeout(animate, 625);
           });
         });
       };
 
+      // Initialize the bouncing animation
       animate();
     });
 
+    // react-famous code for chimp to spin
     var modifier = this.refs.modifier.getFamous();
 
+    // Set the spinning speed
     var spinner = {
       speed: 55
     };
 
+    // Create a transitionable that will rotate
     var rotateY = new Transitionable(0);
 
+    // Timer causes rotation to last infinitely
     Timer.every(function() {
       var adjustedSpeed = parseFloat(spinner.speed) / 1000;
       rotateY.set(rotateY.get() + adjustedSpeed);
+      // Start the rotating animation/transition
       modifier.setTransform(Transform.rotateY(rotateY.get()));
     }, 1);
     
@@ -89,7 +102,9 @@ var LogoArea = React.createClass({
     return (
       <div className="logo-container">
         <Context>
+      {/* StateModifier is the bouncing modifier */}
           <StateModifier ref="stateModifier" options={{align: [0.5, 0.5], origin: [0.5, 0.5]}}>
+        {/* Modifier is the spinning modifier */}
           <Modifier ref="modifier" options={{origin: [0.5, 0.5], align: [0.5, 0.5]}}>
             <Surface options={{size: [true, true], properties: {marginTop: '75px', marginBottom: '-60px'}}}>
               <img src="images/chimp.png" className="logo-image" />
