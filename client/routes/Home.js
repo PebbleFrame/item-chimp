@@ -195,12 +195,6 @@ var DisplayBox = React.createClass({
       queryUrl = 'get-bestbuy-reviews';
       data = {sku: id};
     }
-    console.log('called handleCompareRequest top level');
-    console.log('queryUrl: ' + queryUrl);
-    console.log('id: ' + id);
-    console.log('site: ' + site);
-    console.log('name: ' + name);
-    console.log('image: ' + image);
 
     // Makes a specific API call to get reviews for the product clicked on
     $.ajax({
@@ -236,6 +230,8 @@ var DisplayBox = React.createClass({
         this.setState({
           allReviews: { reviewSets: reviewSetsTmp },
         });
+
+        this.refs.d3chart.startEngine(500, 225, reviewSetsTmp);
 
         // switch classes on columns to allow 3-across column display
         $('.reviews-display')
