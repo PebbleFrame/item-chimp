@@ -234,15 +234,17 @@ var DisplayBox = React.createClass({
 
         this.refs.d3chart.startEngine(500, 225, reviewSetsTmp);
 
-        // switch classes on columns to allow 3-across column display
-        $('.reviews-display')
-          .addClass('reviews-display-3-across')
-          .removeClass('reviews-display')
-        // hide compare selection column
-        $('.reviews-display-section')
-          .addClass('reviews-display-section-3-across')
-          .removeClass('reviews-display-section')
-        $('.choose-another-product-section').fadeOut();
+        if (reviewSetsTmp.length > 2) {
+          // switch classes on columns to allow 3-across column display
+          $('.reviews-display')
+            .addClass('reviews-display-3-across')
+            .removeClass('reviews-display')
+          // hide compare selection column
+          $('.reviews-display-section')
+            .addClass('reviews-display-section-3-across')
+            .removeClass('reviews-display-section')
+          $('.choose-another-product-section').fadeOut();
+        }
 
       }.bind(this),
       error: function(xhr, status, err) {
