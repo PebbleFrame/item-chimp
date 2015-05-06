@@ -1,7 +1,7 @@
 "use strict";
 
 var expect = require('expect');
-var app = require('../server');
+var app = require('../../server');
 var request = require('supertest');
 
 describe('Server: routes', function() {
