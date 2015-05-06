@@ -85,13 +85,6 @@ var DisplayBox = React.createClass({
   // var "id" may be itemId or SKU
   handleReviewRequest: function(id, site, name, image) {
 
-    // Sets the product name and image for the product clicked on (Revews Display)
-    // These are passed up from WalmartIndividualResultDisplay
-    this.setState({
-      ReviewedItemName: name,
-      ReviewedItemImage: image
-    });
-
     var queryUrl;
 
     if (site === 'Walmart') {
@@ -191,14 +184,74 @@ var DisplayBox = React.createClass({
   },
 
   handleCompareRequest: function(id, site, name, image) {
-    // will need to get this.state.allReviews.reviewSets array
-    // add an element to it
-    // put it back with setState
+
+    var queryUrl;
+    var data;
+
+    if (site === 'Walmart') {
+      queryUrl = 'get-walmart-reviews';
+      data = {itemId: id};
+    } else if (site === 'Best Buy') {
+      queryUrl = 'get-bestbuy-reviews';
+      data = {sku: id};
+    }
     console.log('called handleCompareRequest top level');
+    console.log('queryUrl: ' + queryUrl);
     console.log('id: ' + id);
     console.log('site: ' + site);
     console.log('name: ' + name);
     console.log('image: ' + image);
+
+    // Makes a specific API call to get reviews for the product clicked on
+    $.ajax({
+      url: queryUrl,
+      dataType: 'json',
+      type: 'POST',
+      // "id" is itemId for Walmart
+      // and it's SKU for Best Buy
+      data: data,
+      success: function(data) {;
+
+        // will need to get this.state.allReviews.reviewSets array
+        var reviewSetsTmp = this.state.allReviews.reviewSets;
+        // add an element to it
+
+        if (site === 'Walmart') {
+        // Get the reviews array from the response data
+          reviewSetsTmp.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].walmartReviews), 'Walmart', name, image
+              )
+            );
+        }
+        if (site === 'Best Buy') {
+        // Get the reviews array from the response data
+          reviewSetsTmp.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].bestbuyReviews), 'Best Buy', name, image
+            )
+          );
+        }
+        // put it back with setState
+        this.setState({
+          allReviews: { reviewSets: reviewSetsTmp },
+        });
+
+        // switch classes on columns to allow 3-across column display
+        $('.reviews-display')
+          .addClass('reviews-display-3-across')
+          .removeClass('reviews-display')
+        // hide compare selection column
+        $('.reviews-display-section')
+          .addClass('reviews-display-section-3-across')
+          .removeClass('reviews-display-section')
+        $('.choose-another-product-section').fadeOut();
+
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('get-walmart-reviews', status, err.toString());
+      }.bind(this)
+    });
 
 
   },

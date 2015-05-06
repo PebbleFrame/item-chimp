@@ -110,6 +110,11 @@ body {
   font-size: 14px;
   width: 80%;
 }
+.reviews-display-section-3-across {
+  display: inline-block;
+  font-size: 14px;
+  width: 100%;
+}
 
 .reviews-display-container button {
   font-size: 10px;
@@ -125,11 +130,28 @@ body {
   width: 45%;
 }
 
+.reviews-display-3-across {
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: 6px;
+  margin-right: 6px;
+  float: left;
+  width: 32%;
+}
+
 .reviews-display img {
   float: left;
   margin-right: 20px;
 }
 
+.reviews-display .product-name-review {
+  float: left;
+  margin-top: 20px;
+}
+
+.reviews-display-3-across .product-name-review {
+  margin-top: 0px;
+}
 .walmart-reviews-display {
   padding-left: 8px;
   padding-right: 8px;
@@ -168,10 +190,6 @@ body {
 }
 
 /* REVIEWS CONTAINER - CHOOSE ANOTHER PRODUCT SECTIOn */
-.product-name-review {
-  float: left;
-  margin-top: 20px;
-}
 
 .choose-another-product-section {
   float: right;
