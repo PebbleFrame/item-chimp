@@ -18,7 +18,7 @@ var authRouter = express.Router();
 app.use('/auth', authRouter);
 require('./server/auth-routes')(authRouter);
 
-app.get('*', function(req, res) {
+app.get('/', function(req, res) {
   res.render('index.html');
 });
 
@@ -239,8 +239,15 @@ app.post('/get-bestbuy-reviews', [bestbuyReviews,bestbuySkuToUPC,bestbuyUPCToIte
   ]);
 });
 
+app.get('*', function(req, res) {
+  res.status(404)
+     .send('Page not found!');
+});
+
 var port = process.env.PORT || 3000;
 
 app.listen(port, function() {
   console.log('Server listening on port ' + port);
 });
+
+exports = module.exports = app;

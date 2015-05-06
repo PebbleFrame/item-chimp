@@ -45,7 +45,24 @@ module.exports = function(grunt) {
       nodemon: {
           command: 'nodemon server.js'
       }
+    },
+
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'spec'
+        },
+        src: ['test/**/*.js']
+      }
+    },
+
+    jest: {
+      options: {
+        coverage: true,
+        testPathPattern: /.*-test.js/
+      }
     }
+
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -53,10 +70,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-concurrent');
+  grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-jest');
 
   grunt.registerTask('serve', [
     'browserify',
     'concurrent:dev'
+  ]);
+
+  grunt.registerTask('test', [
+    'mochaTest'
   ]);
 
   grunt.registerTask('default', [
