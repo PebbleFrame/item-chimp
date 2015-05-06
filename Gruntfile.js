@@ -54,6 +54,13 @@ module.exports = function(grunt) {
         },
         src: ['test/**/*.js']
       }
+    },
+
+    jest: {
+      options: {
+        coverage: true,
+        testPathPattern: /.*-test.js/
+      }
     }
 
   });
@@ -64,6 +71,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-jest');
 
   grunt.registerTask('serve', [
     'browserify',
