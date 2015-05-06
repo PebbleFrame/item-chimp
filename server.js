@@ -64,11 +64,8 @@ var upc = "";
 var WalmartReviewstoSend = "";
 var BestBuyReviewsToSend = "";
 var bestBuySku = "";
-//{walmart: WalmartResultsToSend},
-//{bestbuy: BestbuyResultsToSend}
 
 var walmartReviews = function(req, res,next){
- // console.log("in walmart Reviews");
   WalmartReviewstoSend = "";
   var itemId = req.body.itemId;
   // 'http://api.walmartlabs.com/v1/reviews/30135922?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
@@ -77,10 +74,9 @@ var walmartReviews = function(req, res,next){
     }, function (error, response, walmartReviewBody) {
       if (!error && response.statusCode == 200) {
         WalmartReviewstoSend = walmartReviewBody;
-  //      console.log(WalmartReviewstoSend);
+        console.log(WalmartReviewstoSend);
         var json = JSON.parse(WalmartReviewstoSend);
         upc = (json["upc"]);
-//        console.log("upc is "+upc);
         next();
       }
     }
@@ -114,16 +110,12 @@ var bestbuyUPCToSku = function(req, res,next){
 var bestbuyReviews = function(req, res,next){
   BestBuyReviewsToSend ="";
   if(bestBuySku !== undefined) {
-//    console.log("insideBB");
-//    console.log(bestBuySku);
     var bb = parseInt(bestBuySku);
     request({
         url: 'http://api.remix.bestbuy.com/v1/reviews(sku='+bestBuySku+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
       }, function (error, response, bestbuyReviewBody) {
- //       console.log("url:"+this.url);
         if (!error && response.statusCode == 200) {
           BestBuyReviewsToSend = bestbuyReviewBody;
- //         console.log(BestBuyReviewsToSend);
         }
         next();
       }
@@ -156,6 +148,9 @@ var bestbuyReviews = function(req, res,next){
       if (!error && response.statusCode == 200) {
         bbReviews = bestbuyReviewBody;
   //      console.log(bbReviews);
+        next();
+      }
+      else{
         next();
       }
     }
@@ -244,12 +239,11 @@ var walmartReviews = function(req, res,next){
 app.post('/get-bestbuy-reviews', [bestbuyReviews,bestbuySkuToUPC,bestbuyUPCToItemId,walmartReviews],function(req, res,next) {
   next();
 }, function (req, res) {
+  console.log(WalmartReviewstoSend);
 //  console.log(bbReviews);
   var json = JSON.parse(bbReviews);
   json["customerReviewAverage"] = customerReviewAverage;
   var strJson = JSON.stringify(json);
- // console.log(strJson);
- // console.log(WalmartReviewstoSend);
   res.send([
     {walmartReviews: WalmartReviewstoSend,
       bestbuyReviews: strJson}
