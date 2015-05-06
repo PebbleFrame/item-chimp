@@ -9,7 +9,7 @@ d3Engine.initValues = function (width, height) {
   d3Engine.prodKey = [];
 
   // Data for stars legend at bottom
-  d3Engine.legendData = ['0 stars', '1 star', '3 stars', '4 stars', '5 stars'];
+  d3Engine.legendData = ['1 star', '2 stars', '3 stars', '4 stars', '5 stars'];
 
   // overall chart vars
   d3Engine.width = width || 600;
@@ -27,14 +27,14 @@ d3Engine.initValues = function (width, height) {
 
   // another scale, narrower range for foci (don't want foci at edge)
   d3Engine.fociX = d3.scale.linear()
-            .domain([0, 6])
-            .range([100, d3Engine.width-50]);
+            .domain([0, 5])
+            .range([100, d3Engine.width-70]);
 
   // Create foci (1 per 0.5 star spaced out horizontally across chart)
   var fociGen = function (numFoci, x) {
     var results = [];
     for (var i = 0; i < numFoci; i++) {
-      results.push({x: d3Engine.fociX(i+1)/2, y: 150});
+      results.push({x: d3Engine.fociX(i+1)/2, y: d3Engine.height/2});
     }
     return results;
   };
@@ -71,7 +71,7 @@ d3Engine.populateBBData = function (rawData, prodNum) {
     obj.dotSize = obj.reviewLength/50 + 20;
     obj.stars = +rawData[i].rating;
     obj.prodKey = d3Engine.prodKey[prodNum];
-    obj.username = rawData[i].reviewer.name;
+    obj.username = rawData[i].reviewer[0].name;
     obj.reviewTitle = rawData[i].title.slice(0,24) + "..."
     obj.review = rawData[i].comment;
     obj.reviewStart = obj.review.slice(0, 110) + "...";
@@ -103,6 +103,9 @@ d3Engine.create = function (el, width, height, products) {
   this.chart = d3.select(".chart")
     .attr("width", d3Engine.width)
     .attr("height", d3Engine.height);
+
+  // clear D3 chart
+  this.chart.selectAll("g").remove();
 
   // create a "g" element for every review (will contain a circle and a text obj)
   var circle = this.chart.selectAll("g.node")
@@ -138,7 +141,7 @@ d3Engine.create = function (el, width, height, products) {
     .attr("transform", "translate(0, " + (d3Engine.height-25) + ")");
 
   legend.append("text")
-    .attr("x", function(d, i) { return d3Engine.x((i*1.25)+0.3); })
+    .attr("x", function(d, i) { return d3Engine.x((i*1.2)+0.5); })
     .attr("y", 0)
     .text(function(d) {return d});
 
