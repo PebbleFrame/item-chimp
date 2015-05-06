@@ -65,7 +65,7 @@ var WalmartReviewstoSend = "";
 var BestBuyReviewsToSend = "";
 var bestBuySku = "";
 
-var walmartReviews = function(req, res,next){
+var walmartReviewsW = function(req, res,next){
   WalmartReviewstoSend = "";
   var itemId = req.body.itemId;
   // 'http://api.walmartlabs.com/v1/reviews/30135922?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
@@ -107,7 +107,7 @@ var bestbuyUPCToSku = function(req, res,next){
   );
 }
 
-var bestbuyReviews = function(req, res,next){
+var bestbuyReviewsW = function(req, res,next){
   BestBuyReviewsToSend ="";
   if(bestBuySku !== undefined) {
     var bb = parseInt(bestBuySku);
@@ -126,7 +126,7 @@ var bestbuyReviews = function(req, res,next){
   }
 }
 
-app.post('/get-walmart-reviews', [walmartReviews,bestbuyUPCToSku,bestbuyReviews],function(req, res,next) {
+app.post('/get-walmart-reviews', [walmartReviewsW,bestbuyUPCToSku,bestbuyReviewsW],function(req, res,next) {
   next();
 }, function (req, res) {
   res.send([
