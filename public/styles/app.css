@@ -298,6 +298,12 @@ a.follow:hover, a.follow:active {
   border-radius: 10px;
 }
 
+.d3-price-chart-query {
+  background: #F8F8F8;
+  margin: 0;
+  border-radius: 10px 10px 0 0 ;
+}
+
 .hoverbox {
   border: 2px solid rgb(190,190,190);
   border-radius: 10px;

@@ -60,7 +60,8 @@ module.exports = function(pricesArray, query) {
       .data(pricesArray)
       .enter().append("g")
       .classed("node", true)
-      .call(force.drag);
+      .call(force.drag)
+      .on("mousedown", function() { d3.event.stopPropagation(); });
 
   // Create a circle/bubble for each product/node
   // Size and color are used for data visualization
@@ -75,7 +76,6 @@ module.exports = function(pricesArray, query) {
       .style("stroke", function(d, i) { return d3.rgb(fill(i & 1)).darker(2); })
       // Allows bubbles to be dragged
       // .call(force.drag)
-      .on("mousedown", function() { d3.event.stopPropagation(); });
 
   // Appends the price to each bubble
   node.append("text")
