@@ -143,7 +143,7 @@ var DisplayBox = React.createClass({
 
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error('get-walmart-reviews', status, err.toString());
+        console.error(queryUrl, status, err.toString());
       }.bind(this)
     });
   },
@@ -168,9 +168,8 @@ var DisplayBox = React.createClass({
         });
     } else if (site === 'Best Buy') {
       ReviewsFromData = rawObj.reviews;
-      // Can't get average rating directly from review API call, strangely enough
-      // Have to get it from a product API call.
-      // Find a way to save this in the course of the query.
+      console.log(rawObj);
+      AverageRating = rawObj.customerReviewAverage;
       ReviewCount = rawObj.total;
       this.setState({currentProductSKU: rawObj.reviews[0].sku});
       return({
@@ -178,7 +177,7 @@ var DisplayBox = React.createClass({
         name: name,
         image: image,
         Reviews: ReviewsFromData,
-        AverageRating: "?",
+        AverageRating: AverageRating,
         ReviewCount: ReviewCount
         });
 
@@ -247,7 +246,7 @@ var DisplayBox = React.createClass({
 
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error('get-walmart-reviews', status, err.toString());
+        console.error(queryUrl, status, err.toString());
       }.bind(this)
     });
 
