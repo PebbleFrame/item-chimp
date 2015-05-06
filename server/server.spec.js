@@ -2,13 +2,26 @@
 
 var expect = require('expect');
 var app = require('../server');
-var supertest = require('supertest');
+var request = require('supertest');
 
-describe('TESTING!!!!!', function() {
+describe('Server: routes', function() {
 
-  it('should be true', function(done) {
-    expect(5).toEqual(5);
-    done();
+  it('should serve the home page', function(done) {
+    request(app)
+      .get('/')
+      .end(function(err, res) {
+        expect(res.statusCode).toEqual(200);
+        done();
+      })
+  });
+
+  it('should 404 for non-root get requests', function(done) {
+    request(app)
+      .get('/djflksdfjs')
+      .end(function(err, res) {
+        expect(res.statusCode).toEqual(404);
+        done();
+      })
   });
 
 });
