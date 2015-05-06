@@ -217,7 +217,7 @@ var walmartReviews = function(req, res,next){
         url: 'http://api.walmartlabs.com/v1/reviews/' + bbItemId + '?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
       }, function (error, response, walmartReviewBody) {
         if (!error && response.statusCode == 200) {
-          var WalmartReviewstoSend = walmartReviewBody;
+           WalmartReviewstoSend = walmartReviewBody;
 //          console.log(WalmartReviewstoSend);
           next();
         }
@@ -229,40 +229,16 @@ var walmartReviews = function(req, res,next){
 app.post('/get-bestbuy-reviews', [bestbuyReviews,bestbuySkuToUPC,bestbuyUPCToItemId,walmartReviews],function(req, res,next) {
   next();
 }, function (req, res) {
-//  console.log(BestBuyReviewsToSend);
-//  BestBuyReviewsToSend["customerReviewAverage"] = customerReviewAverage;
-//  console.log(BestBuyReviewsToSend);
   var json = JSON.parse(BestBuyReviewsToSend);
   json["customerReviewAverage"] = customerReviewAverage;
-//  console.log(JSON.stringify(json));
   var strJson = JSON.stringify(json);
-//  console.log(strJson);
-//  BestBuyReviewsToSend ="";
-//  BestBuyReviewsToSend = JSON.stringify(json);
- // console.log(BestBuyReviewsToSend);
-
+  console.log(WalmartReviewstoSend);
   res.send([
     {walmartReviews: WalmartReviewstoSend,
       bestbuyReviews: strJson}
   ]);
 });
 
-/*app.post('/get-bestbuy-reviews', function(req, res) {
-  var itemId = req.body.sku;
-// 'http://api.remix.bestbuy.com/v1/reviews(sku=1780275)?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
-  request({
-      url: 'http://api.remix.bestbuy.com/v1/reviews(sku=' + itemId +')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
-    }, function (error, response, bestbuyReviewBody) {
-      if (!error && response.statusCode == 200) {
-        var BestBuyReviewsToSend = bestbuyReviewBody;
-        res.send([
-          {bestbuyReviews: BestBuyReviewsToSend}
-        ]);
-      }
-    }
-  );
-});
-*/
 var port = process.env.PORT || 3000;
 
 app.listen(port, function() {
