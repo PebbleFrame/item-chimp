@@ -1,6 +1,15 @@
 var React = require('react');
 var Router = require('react-router');
 
+var Transform = require('famous/core/Transform');
+var Easing = require('famous/transitions/Easing');
+var Timer = require('famous/utilities/Timer');
+var Context = require('react-famous/core/Context');
+var Modifier = require('react-famous/core/Modifier');
+var Surface = require('react-famous/core/Surface');
+var FamousScheduler = require('react-famous/lib/FamousScheduler');
+var StateModifier = require('react-famous/modifiers/StateModifier');
+
 // Component for the bootstrap navbar
 // React Router routes are included in here
 var Navbar = React.createClass({
@@ -36,10 +45,39 @@ var Navbar = React.createClass({
   
 // Component for the header area underneath the navbar
 var LogoArea = React.createClass({
+  componentDidMount: function() {
+    var stateModifier = this.refs.stateModifier.getFamous();
+
+    FamousScheduler.schedule(function() {
+      var animate = function() {
+        stateModifier.halt();
+        stateModifier.setTransform(Transform.translate(0, -40), {
+          curve: 'easeOut',
+          duration: 250
+        }, function() {
+          stateModifier.setTransform(Transform.translate(0, 0), {
+            curve: 'easeIn',
+            duration: 125
+          }, function() {
+            Timer.setTimeout(animate, 625);
+          });
+        });
+      };
+
+      animate();
+    });
+  },
   render: function() {
     return (
       <div className="logo-container">
-        <h1 className="logo-title"><img src="images/chimp.png" className="logo-image" />ItemChimp</h1>
+        <Context>
+          <StateModifier ref="stateModifier" options={{align: [0.5, 0.6], origin: [0.5, 0.5]}}>
+            <Surface options={{size: [true, true], properties: {marginTop: '75px', marginBottom: '-60px'}}}>
+              <img src="images/chimp.png" className="logo-image" />
+            </Surface>
+          </StateModifier>
+        </Context>
+        <h1 className="logo-title">ItemChimp</h1>
         <h3 className="logo-tagline">A Data Visualization Tool for Shoppers</h3>
       </div>
     );
