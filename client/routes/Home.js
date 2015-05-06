@@ -338,7 +338,7 @@ var SearchForm = React.createClass({
   render: function() {
     return (
       <div className="query-form-container">
-        <h4 className="query-form-title">ShopChimp, at your service.</h4>
+        <h4 className="query-form-title">ItemChimp, at your service.</h4>
 
         <form className="query-form" onSubmit={this.handleSubmit}>
           <input type="text" placeholder="Enter a product" className="form-control" ref="query" />

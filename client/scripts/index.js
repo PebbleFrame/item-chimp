@@ -15,7 +15,7 @@ var Navbar = React.createClass({
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
             </button>
-            <Router.Link to="home" className="navbar-brand home">ShopChimp</Router.Link>
+            <Router.Link to="home" className="navbar-brand home">ItemChimp</Router.Link>
           </div>
 
           <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -39,7 +39,7 @@ var LogoArea = React.createClass({
   render: function() {
     return (
       <div className="logo-container">
-        <h1 className="logo-title"><img src="images/chimp.png" className="logo-image" />ShopChimp</h1>
+        <h1 className="logo-title"><img src="images/chimp.png" className="logo-image" />ItemChimp</h1>
         <h3 className="logo-tagline">A Data Visualization Tool for Shoppers</h3>
       </div>
     );
