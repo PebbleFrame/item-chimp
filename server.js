@@ -129,6 +129,9 @@ var bestbuyReviews = function(req, res,next){
       }
     );
   }
+  else{
+    next();
+  }
 }
 
 app.post('/get-walmart-reviews', [walmartReviews,bestbuyUPCToSku,bestbuyReviews],function(req, res,next) {
@@ -150,7 +153,7 @@ var bestbuyReviews = function(req, res,next){
       url: 'http://api.remix.bestbuy.com/v1/reviews(sku=' + sku +')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
     }, function (error, response, bestbuyReviewBody) {
       if (!error && response.statusCode == 200) {
-        BestBuyReviewsToSend = bestbuyReviewBody;
+//        BestBuyReviewsToSend = bestbuyReviewBody;
 //        console.log(BestBuyReviewsToSend);
         next();
       }
