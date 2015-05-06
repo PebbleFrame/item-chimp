@@ -3,7 +3,9 @@ var Router = require('react-router');
 
 var Transform = require('famous/core/Transform');
 var Easing = require('famous/transitions/Easing');
+var Transitionable = require('famous/transitions/Transitionable');
 var Timer = require('famous/utilities/Timer');
+
 var Context = require('react-famous/core/Context');
 var Modifier = require('react-famous/core/Modifier');
 var Surface = require('react-famous/core/Surface');
@@ -66,15 +68,33 @@ var LogoArea = React.createClass({
 
       animate();
     });
+
+    var modifier = this.refs.modifier.getFamous();
+
+    var spinner = {
+      speed: 55
+    };
+
+    var rotateY = new Transitionable(0);
+
+    Timer.every(function() {
+      var adjustedSpeed = parseFloat(spinner.speed) / 1000;
+      rotateY.set(rotateY.get() + adjustedSpeed);
+      modifier.setTransform(Transform.rotateY(rotateY.get()));
+    }, 1);
+    
   },
   render: function() {
+
     return (
       <div className="logo-container">
         <Context>
-          <StateModifier ref="stateModifier" options={{align: [0.5, 0.6], origin: [0.5, 0.5]}}>
+          <StateModifier ref="stateModifier" options={{align: [0.5, 0.5], origin: [0.5, 0.5]}}>
+          <Modifier ref="modifier" options={{origin: [0.5, 0.5], align: [0.5, 0.5]}}>
             <Surface options={{size: [true, true], properties: {marginTop: '75px', marginBottom: '-60px'}}}>
               <img src="images/chimp.png" className="logo-image" />
             </Surface>
+          </Modifier>
           </StateModifier>
         </Context>
         <h1 className="logo-title">ItemChimp</h1>
