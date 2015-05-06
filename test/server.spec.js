@@ -1,4 +1,4 @@
-"user strict";
+"use strict";
 
 var expect = require('expect');
 var app = require('../server');
@@ -17,7 +17,7 @@ describe('Server: routes', function() {
 
   it('should 404 for non-root get requests', function(done) {
     request(app)
-      .get('/djflksdfjs')
+      .get('/nonexistentroute')
       .end(function(err, res) {
         expect(res.statusCode).toEqual(404);
         done();
