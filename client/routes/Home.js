@@ -129,10 +129,12 @@ var DisplayBox = React.createClass({
               JSON.parse(data[0].bestbuyReviews), 'Best Buy', name, image
               )
             );
+
           }
         // Put all reviews into an array stored in allReviews state
         this.setState({
           allReviews: { reviewSets: reviewSetsArray },
+
         });
         
         // initialize d3 chart
@@ -413,6 +415,7 @@ var ChooseAnotherProductSectionTab = React.createClass({
     this.props.onCompareRequest(itemId, site, name, image);
   },
   render: function() {
+
     var currentId = this.props.currentProductId;
     var site = this.props.site;
     var resultNodes = this.props.data.results.map(function(result, index) {
