@@ -26,8 +26,6 @@ module.exports = {
     });
     db.login(req.body);
   },
-  logout: function(){},
-
 
   //if a user has signed in, they will have a token
   //this function tests if the user has a token

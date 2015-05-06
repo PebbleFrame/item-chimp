@@ -85,13 +85,6 @@ var DisplayBox = React.createClass({
   // var "id" may be itemId or SKU
   handleReviewRequest: function(id, site, name, image) {
 
-    // Sets the product name and image for the product clicked on (Revews Display)
-    // These are passed up from WalmartIndividualResultDisplay
-    this.setState({
-      ReviewedItemName: name,
-      ReviewedItemImage: image
-    });
-
     var queryUrl;
 
     if (site === 'Walmart') {
@@ -120,49 +113,28 @@ var DisplayBox = React.createClass({
 
         // Create array of review sets to show
         var reviewSetsArray = [];
-        var ReviewsFromData;
-        var AverageRating;
-        var ReviewCount;
-        var currentProductItemID;
-        var currentProductSKU;
 
         if (data[0].walmartReviews) {
         // Get the reviews array from the response data
-          ReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
-          AverageRating = JSON.parse(data[0].walmartReviews).reviewStatistics.averageOverallRating;
-          ReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
-          currentProductItemID = JSON.parse(data[0].walmartReviews).itemId;
-          reviewSetsArray.push({
-            source: 'Walmart',
-            name: name,
-            image: image,
-            Reviews: ReviewsFromData,
-            AverageRating: AverageRating,
-            ReviewCount: ReviewCount
-            });
+          reviewSetsArray.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].walmartReviews), 'Walmart', name, image
+              )
+            );
         }
         if (data[0].bestbuyReviews) {
         // Get the reviews array from the response data
-          ReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
-          // Can't get average rating directly from review API call, strangely enough
-          // Have to get it from a product API call.
-          // Find a way to save this in the course of the query.
-          ReviewCount = JSON.parse(data[0].bestbuyReviews).total;
-          currentProductSKU = JSON.parse(data[0].bestbuyReviews).reviews[0].sku;
-          reviewSetsArray.push({
-            source: 'Best Buy',
-            name: name,
-            image: image,
-            Reviews: ReviewsFromData,
-            AverageRating: "?",
-            ReviewCount: ReviewCount
-            });
+          reviewSetsArray.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].bestbuyReviews), 'Best Buy', name, image
+              )
+            );
+
           }
         // Put all reviews into an array stored in allReviews state
         this.setState({
           allReviews: { reviewSets: reviewSetsArray },
-          currentProductItemID: currentProductItemID,
-          currentProductSKU: currentProductSKU
+
         });
         
         // initialize d3 chart
@@ -175,6 +147,113 @@ var DisplayBox = React.createClass({
       }.bind(this)
     });
   },
+
+  makeReviewSetFromRawData: function(rawObj, site, name, image) {
+    var ReviewsFromData;
+    var AverageRating;
+    var ReviewCount;
+
+    if (site === 'Walmart') {
+      ReviewsFromData = rawObj.reviews;
+      AverageRating = rawObj.reviewStatistics.averageOverallRating;
+      ReviewCount = rawObj.reviewStatistics.totalReviewCount;
+      this.setState({currentProductItemID: rawObj.itemId});
+      return ({
+        source: 'Walmart',
+        name: name,
+        image: image,
+        Reviews: ReviewsFromData,
+        AverageRating: AverageRating,
+        ReviewCount: ReviewCount
+        });
+    } else if (site === 'Best Buy') {
+      ReviewsFromData = rawObj.reviews;
+      // Can't get average rating directly from review API call, strangely enough
+      // Have to get it from a product API call.
+      // Find a way to save this in the course of the query.
+      ReviewCount = rawObj.total;
+      this.setState({currentProductSKU: rawObj.reviews[0].sku});
+      return({
+        source: 'Best Buy',
+        name: name,
+        image: image,
+        Reviews: ReviewsFromData,
+        AverageRating: "?",
+        ReviewCount: ReviewCount
+        });
+
+    }
+  },
+
+  handleCompareRequest: function(id, site, name, image) {
+
+    var queryUrl;
+    var data;
+
+    if (site === 'Walmart') {
+      queryUrl = 'get-walmart-reviews';
+      data = {itemId: id};
+    } else if (site === 'Best Buy') {
+      queryUrl = 'get-bestbuy-reviews';
+      data = {sku: id};
+    }
+
+    // Makes a specific API call to get reviews for the product clicked on
+    $.ajax({
+      url: queryUrl,
+      dataType: 'json',
+      type: 'POST',
+      // "id" is itemId for Walmart
+      // and it's SKU for Best Buy
+      data: data,
+      success: function(data) {;
+
+        // will need to get this.state.allReviews.reviewSets array
+        var reviewSetsTmp = this.state.allReviews.reviewSets;
+        // add an element to it
+
+        if (site === 'Walmart') {
+        // Get the reviews array from the response data
+          reviewSetsTmp.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].walmartReviews), 'Walmart', name, image
+              )
+            );
+        }
+        if (site === 'Best Buy') {
+        // Get the reviews array from the response data
+          reviewSetsTmp.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].bestbuyReviews), 'Best Buy', name, image
+            )
+          );
+        }
+        // put it back with setState
+        this.setState({
+          allReviews: { reviewSets: reviewSetsTmp },
+        });
+
+        this.refs.d3chart.startEngine(500, 225, reviewSetsTmp);
+
+        // switch classes on columns to allow 3-across column display
+        $('.reviews-display')
+          .addClass('reviews-display-3-across')
+          .removeClass('reviews-display')
+        // hide compare selection column
+        $('.reviews-display-section')
+          .addClass('reviews-display-section-3-across')
+          .removeClass('reviews-display-section')
+        $('.choose-another-product-section').fadeOut();
+
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('get-walmart-reviews', status, err.toString());
+      }.bind(this)
+    });
+
+
+  },
+
 
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
@@ -203,6 +282,7 @@ var DisplayBox = React.createClass({
             allReviews={this.state.allReviews} />
 
             <ChooseAnotherProductSection
+              onCompareRequest={this.handleCompareRequest}
               currentProductItemID={this.state.currentProductItemID}
               currentProductSKU={this.state.currentProductSKU}
               walmartData={this.state.walmart}
@@ -296,6 +376,10 @@ var ReviewsDisplaySection = React.createClass({
 });
 
 var ChooseAnotherProductSection = React.createClass({
+  handleCompareRequest: function(itemId, site, name, image) {
+    console.log('HCR Section level');
+    this.props.onCompareRequest(itemId, site, name, image);
+  },
   render: function() {
     return (
       <div className="choose-another-product-section">
@@ -306,14 +390,18 @@ var ChooseAnotherProductSection = React.createClass({
         </ul>
         <div className="tab-content">
           <div role="tabpanel" id="walmartChoices" className="tab-pane active">
-            <ChooseAnotherProductSectionWalmart
-              currentProductItemID={this.props.currentProductItemID}
-              walmartData={this.props.walmartData} />
+            <ChooseAnotherProductSectionTab
+              site="Walmart"
+              onCompareRequest={this.handleCompareRequest}
+              currentProductId={this.props.currentProductItemID}
+              data={this.props.walmartData} />
           </div>
           <div role="tabpanel" id="bestbuyChoices" className="tab-pane">
-            <ChooseAnotherProductSectionBestbuy
-              currentProductSKU={this.props.currentProductSKU}
-              bestbuyData={this.props.bestbuyData} />
+            <ChooseAnotherProductSectionTab
+              site="Best Buy"
+              onCompareRequest={this.handleCompareRequest}
+              currentProductId={this.props.currentProductSKU}
+              data={this.props.bestbuyData} />
           </div>
         </div>
       </div>
@@ -321,50 +409,59 @@ var ChooseAnotherProductSection = React.createClass({
   }
 });
 
-var ChooseAnotherProductSectionWalmart = React.createClass({
+var ChooseAnotherProductSectionTab = React.createClass({
+  handleCompareRequest: function(itemId, site, name, image) {
+    console.log('HCR Tab level');
+    this.props.onCompareRequest(itemId, site, name, image);
+  },
   render: function() {
-    var currentId = this.props.currentProductItemID;
-    var resultNodes = this.props.walmartData.results.map(function(result, index) {
+
+    var currentId = this.props.currentProductId;
+    var site = this.props.site;
+    var resultNodes = this.props.data.results.map(function(result, index) {
       // put an if condition here to check if the result is current product already displayed
-      if (currentId !== result.itemId) {
+      var resultId;
+      var image;
+      if (site === 'Walmart') {
+        resultId = result.itemId;
+        image = result.thumbnailImage;
+      } else if (site === 'Best Buy') {
+        resultId = result.sku;
+        image = result.image;
+      }
+      if (currentId !== resultId) {
         return (
-          <div className="choose-another-product-individual-display" 
-            key={'walmartOtherProduct' + index}
-            onClick={this.handleWalmartReviewRequest}>
-            <img src={result.thumbnailImage} />
-            <strong>Product: </strong>{result.name}
-          </div>
+          <IndividualProductCompareChoice 
+            key={site + 'OtherProduct' + index}
+            site={site}
+            id={resultId}
+            onCompareRequest={this.handleCompareRequest}
+            image={image}
+            name={result.name} />
         );
       }
-    });
+    }.bind(this));
     return (
       <div>
-        <h6>Walmart</h6>
+        <h6>{this.props.site}</h6>
         {resultNodes}
       </div>
     );
   }
 });
 
-var ChooseAnotherProductSectionBestbuy = React.createClass({
+var IndividualProductCompareChoice = React.createClass({
+  handleCompareRequest: function(id, site, name, image) {
+    console.log('HCR bottom level');
+    this.props.onCompareRequest(this.props.id, this.props.site, this.props.name, this.props.image);
+  },
   render: function() {
-    var currentId = this.props.currentProductSKU;
-    var resultNodes = this.props.bestbuyData.results.map(function(result, index) {
-      if (currentId !== result.sku) {
-        return (
-          <div className="choose-another-product-individual-display" 
-            key={'bestbuyOtherProduct' + index}
-            onClick={this.handleWalmartReviewRequest}>
-            <img src={result.image} />
-            <strong>Product: </strong>{result.name}
-          </div>
-        );
-      }
-    });
     return (
-      <div>
-        <h6>Best Buy</h6>
-        {resultNodes}
+      <div className="choose-another-product-individual-display" 
+        key={this.props.key}
+        onClick={this.handleCompareRequest}>
+        <img src={this.props.image} />
+        <strong>Product: </strong>{this.props.name}
       </div>
     );
   }

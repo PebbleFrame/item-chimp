@@ -7,7 +7,6 @@ var authorize = authController.authorize;
 module.exports = function(app) {
   app.post('/signup', authController.signup);
   app.post('/login', authController.login);
-  app.post('/logout', authController.logout);
   app.get('/users/', authorize, usersController.users);
   app.get('/users/reviews', authorize, usersController.reviews);
   app.get('/users/watching', authorize,  usersController.watching);

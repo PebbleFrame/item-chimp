@@ -552,13 +552,6 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
   // var "id" may be itemId or SKU
   handleReviewRequest: function(id, site, name, image) {
 
-    // Sets the product name and image for the product clicked on (Revews Display)
-    // These are passed up from WalmartIndividualResultDisplay
-    this.setState({
-      ReviewedItemName: name,
-      ReviewedItemImage: image
-    });
-
     var queryUrl;
 
     if (site === 'Walmart') {
@@ -587,49 +580,28 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
 
         // Create array of review sets to show
         var reviewSetsArray = [];
-        var ReviewsFromData;
-        var AverageRating;
-        var ReviewCount;
-        var currentProductItemID;
-        var currentProductSKU;
 
         if (data[0].walmartReviews) {
         // Get the reviews array from the response data
-          ReviewsFromData = JSON.parse(data[0].walmartReviews).reviews;
-          AverageRating = JSON.parse(data[0].walmartReviews).reviewStatistics.averageOverallRating;
-          ReviewCount = JSON.parse(data[0].walmartReviews).reviewStatistics.totalReviewCount;
-          currentProductItemID = JSON.parse(data[0].walmartReviews).itemId;
-          reviewSetsArray.push({
-            source: 'Walmart',
-            name: name,
-            image: image,
-            Reviews: ReviewsFromData,
-            AverageRating: AverageRating,
-            ReviewCount: ReviewCount
-            });
+          reviewSetsArray.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].walmartReviews), 'Walmart', name, image
+              )
+            );
         }
         if (data[0].bestbuyReviews) {
         // Get the reviews array from the response data
-          ReviewsFromData = JSON.parse(data[0].bestbuyReviews).reviews;
-          // Can't get average rating directly from review API call, strangely enough
-          // Have to get it from a product API call.
-          // Find a way to save this in the course of the query.
-          ReviewCount = JSON.parse(data[0].bestbuyReviews).total;
-          currentProductSKU = JSON.parse(data[0].bestbuyReviews).reviews[0].sku;
-          reviewSetsArray.push({
-            source: 'Best Buy',
-            name: name,
-            image: image,
-            Reviews: ReviewsFromData,
-            AverageRating: "?",
-            ReviewCount: ReviewCount
-            });
+          reviewSetsArray.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].bestbuyReviews), 'Best Buy', name, image
+              )
+            );
+
           }
         // Put all reviews into an array stored in allReviews state
         this.setState({
           allReviews: { reviewSets: reviewSetsArray },
-          currentProductItemID: currentProductItemID,
-          currentProductSKU: currentProductSKU
+
         });
         
         // initialize d3 chart
@@ -642,6 +614,113 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
       }.bind(this)
     });
   },
+
+  makeReviewSetFromRawData: function(rawObj, site, name, image) {
+    var ReviewsFromData;
+    var AverageRating;
+    var ReviewCount;
+
+    if (site === 'Walmart') {
+      ReviewsFromData = rawObj.reviews;
+      AverageRating = rawObj.reviewStatistics.averageOverallRating;
+      ReviewCount = rawObj.reviewStatistics.totalReviewCount;
+      this.setState({currentProductItemID: rawObj.itemId});
+      return ({
+        source: 'Walmart',
+        name: name,
+        image: image,
+        Reviews: ReviewsFromData,
+        AverageRating: AverageRating,
+        ReviewCount: ReviewCount
+        });
+    } else if (site === 'Best Buy') {
+      ReviewsFromData = rawObj.reviews;
+      // Can't get average rating directly from review API call, strangely enough
+      // Have to get it from a product API call.
+      // Find a way to save this in the course of the query.
+      ReviewCount = rawObj.total;
+      this.setState({currentProductSKU: rawObj.reviews[0].sku});
+      return({
+        source: 'Best Buy',
+        name: name,
+        image: image,
+        Reviews: ReviewsFromData,
+        AverageRating: "?",
+        ReviewCount: ReviewCount
+        });
+
+    }
+  },
+
+  handleCompareRequest: function(id, site, name, image) {
+
+    var queryUrl;
+    var data;
+
+    if (site === 'Walmart') {
+      queryUrl = 'get-walmart-reviews';
+      data = {itemId: id};
+    } else if (site === 'Best Buy') {
+      queryUrl = 'get-bestbuy-reviews';
+      data = {sku: id};
+    }
+
+    // Makes a specific API call to get reviews for the product clicked on
+    $.ajax({
+      url: queryUrl,
+      dataType: 'json',
+      type: 'POST',
+      // "id" is itemId for Walmart
+      // and it's SKU for Best Buy
+      data: data,
+      success: function(data) {;
+
+        // will need to get this.state.allReviews.reviewSets array
+        var reviewSetsTmp = this.state.allReviews.reviewSets;
+        // add an element to it
+
+        if (site === 'Walmart') {
+        // Get the reviews array from the response data
+          reviewSetsTmp.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].walmartReviews), 'Walmart', name, image
+              )
+            );
+        }
+        if (site === 'Best Buy') {
+        // Get the reviews array from the response data
+          reviewSetsTmp.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].bestbuyReviews), 'Best Buy', name, image
+            )
+          );
+        }
+        // put it back with setState
+        this.setState({
+          allReviews: { reviewSets: reviewSetsTmp },
+        });
+
+        this.refs.d3chart.startEngine(500, 225, reviewSetsTmp);
+
+        // switch classes on columns to allow 3-across column display
+        $('.reviews-display')
+          .addClass('reviews-display-3-across')
+          .removeClass('reviews-display')
+        // hide compare selection column
+        $('.reviews-display-section')
+          .addClass('reviews-display-section-3-across')
+          .removeClass('reviews-display-section')
+        $('.choose-another-product-section').fadeOut();
+
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('get-walmart-reviews', status, err.toString());
+      }.bind(this)
+    });
+
+
+  },
+
 
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
@@ -670,6 +749,7 @@ var DisplayBox = React.createClass({displayName: "DisplayBox",
             allReviews: this.state.allReviews}), 
 
             React.createElement(ChooseAnotherProductSection, {
+              onCompareRequest: this.handleCompareRequest, 
               currentProductItemID: this.state.currentProductItemID, 
               currentProductSKU: this.state.currentProductSKU, 
               walmartData: this.state.walmart, 
@@ -763,6 +843,10 @@ var ReviewsDisplaySection = React.createClass({displayName: "ReviewsDisplaySecti
 });
 
 var ChooseAnotherProductSection = React.createClass({displayName: "ChooseAnotherProductSection",
+  handleCompareRequest: function(itemId, site, name, image) {
+    console.log('HCR Section level');
+    this.props.onCompareRequest(itemId, site, name, image);
+  },
   render: function() {
     return (
       React.createElement("div", {className: "choose-another-product-section"}, 
@@ -773,14 +857,18 @@ var ChooseAnotherProductSection = React.createClass({displayName: "ChooseAnother
         ), 
         React.createElement("div", {className: "tab-content"}, 
           React.createElement("div", {role: "tabpanel", id: "walmartChoices", className: "tab-pane active"}, 
-            React.createElement(ChooseAnotherProductSectionWalmart, {
-              currentProductItemID: this.props.currentProductItemID, 
-              walmartData: this.props.walmartData})
+            React.createElement(ChooseAnotherProductSectionTab, {
+              site: "Walmart", 
+              onCompareRequest: this.handleCompareRequest, 
+              currentProductId: this.props.currentProductItemID, 
+              data: this.props.walmartData})
           ), 
           React.createElement("div", {role: "tabpanel", id: "bestbuyChoices", className: "tab-pane"}, 
-            React.createElement(ChooseAnotherProductSectionBestbuy, {
-              currentProductSKU: this.props.currentProductSKU, 
-              bestbuyData: this.props.bestbuyData})
+            React.createElement(ChooseAnotherProductSectionTab, {
+              site: "Best Buy", 
+              onCompareRequest: this.handleCompareRequest, 
+              currentProductId: this.props.currentProductSKU, 
+              data: this.props.bestbuyData})
           )
         )
       )
@@ -788,50 +876,59 @@ var ChooseAnotherProductSection = React.createClass({displayName: "ChooseAnother
   }
 });
 
-var ChooseAnotherProductSectionWalmart = React.createClass({displayName: "ChooseAnotherProductSectionWalmart",
+var ChooseAnotherProductSectionTab = React.createClass({displayName: "ChooseAnotherProductSectionTab",
+  handleCompareRequest: function(itemId, site, name, image) {
+    console.log('HCR Tab level');
+    this.props.onCompareRequest(itemId, site, name, image);
+  },
   render: function() {
-    var currentId = this.props.currentProductItemID;
-    var resultNodes = this.props.walmartData.results.map(function(result, index) {
+
+    var currentId = this.props.currentProductId;
+    var site = this.props.site;
+    var resultNodes = this.props.data.results.map(function(result, index) {
       // put an if condition here to check if the result is current product already displayed
-      if (currentId !== result.itemId) {
+      var resultId;
+      var image;
+      if (site === 'Walmart') {
+        resultId = result.itemId;
+        image = result.thumbnailImage;
+      } else if (site === 'Best Buy') {
+        resultId = result.sku;
+        image = result.image;
+      }
+      if (currentId !== resultId) {
         return (
-          React.createElement("div", {className: "choose-another-product-individual-display", 
-            key: 'walmartOtherProduct' + index, 
-            onClick: this.handleWalmartReviewRequest}, 
-            React.createElement("img", {src: result.thumbnailImage}), 
-            React.createElement("strong", null, "Product: "), result.name
-          )
+          React.createElement(IndividualProductCompareChoice, {
+            key: site + 'OtherProduct' + index, 
+            site: site, 
+            id: resultId, 
+            onCompareRequest: this.handleCompareRequest, 
+            image: image, 
+            name: result.name})
         );
       }
-    });
+    }.bind(this));
     return (
       React.createElement("div", null, 
-        React.createElement("h6", null, "Walmart"), 
+        React.createElement("h6", null, this.props.site), 
         resultNodes
       )
     );
   }
 });
 
-var ChooseAnotherProductSectionBestbuy = React.createClass({displayName: "ChooseAnotherProductSectionBestbuy",
+var IndividualProductCompareChoice = React.createClass({displayName: "IndividualProductCompareChoice",
+  handleCompareRequest: function(id, site, name, image) {
+    console.log('HCR bottom level');
+    this.props.onCompareRequest(this.props.id, this.props.site, this.props.name, this.props.image);
+  },
   render: function() {
-    var currentId = this.props.currentProductSKU;
-    var resultNodes = this.props.bestbuyData.results.map(function(result, index) {
-      if (currentId !== result.sku) {
-        return (
-          React.createElement("div", {className: "choose-another-product-individual-display", 
-            key: 'bestbuyOtherProduct' + index, 
-            onClick: this.handleWalmartReviewRequest}, 
-            React.createElement("img", {src: result.image}), 
-            React.createElement("strong", null, "Product: "), result.name
-          )
-        );
-      }
-    });
     return (
-      React.createElement("div", null, 
-        React.createElement("h6", null, "Best Buy"), 
-        resultNodes
+      React.createElement("div", {className: "choose-another-product-individual-display", 
+        key: this.props.key, 
+        onClick: this.handleCompareRequest}, 
+        React.createElement("img", {src: this.props.image}), 
+        React.createElement("strong", null, "Product: "), this.props.name
       )
     );
   }
@@ -1179,24 +1276,35 @@ module.exports = function(pricesArray, query) {
       .attr("fill", function(d,i) { return fill(i & 1); })
       .text(function(d) { return d; });
 
+  // Create a node for each product in pricesArray
+  // Use "g" to group things appended to each node
   var node = svg.selectAll("g.node")
       .data(pricesArray)
-    .enter().append("g")
-      .classed("node", true);
+      .enter().append("g")
+      .classed("node", true)
+      // Allows bubbles to be dragged
+      .call(force.drag)
+      // Prevents bubbles from scattering on drag event
+      .on("mousedown", function() { d3.event.stopPropagation(); });
 
+  // Create a circle/bubble for each product/node
+  // Size and color are used for data visualization
   node.append("circle")
       .attr("class", "node")
       .attr("cx", 0)
       .attr("cy", 0)
+      // The higher a product's price, the larger the bubble
       .attr("r", function(d) { return radiusScale(d.salePrice); })
+      // Creates two colors for the two halves of pricesArray
       .style("fill", function(d, i) { return fill(i & 1); })
-      .style("stroke", function(d, i) { return d3.rgb(fill(i & 1)).darker(2); })
-      .call(force.drag)
-      .on("mousedown", function() { d3.event.stopPropagation(); });
+      .style("stroke", function(d, i) { return d3.rgb(fill(i & 1)).darker(2); });
 
+  // Appends the price to each bubble
   node.append("text")
+    // Adjust the x and y position of the price to be close to the middle
     .attr("x", function(d) { return -radiusScale(d.salePrice) * 0.8; })
     .attr("y", function(d) { return radiusScale(d.salePrice) * 0.17; })
+    // Adjust the font size based on the size of the bubble
     .attr("font-size", function(d) { return textScale(d.salePrice) + "px"; })
     .attr("fill", "white")
     .text(function(d) { return "$" + d.salePrice; });
@@ -1206,11 +1314,14 @@ module.exports = function(pricesArray, query) {
       .duration(1000)
       .style("opacity", 1);
 
+  // Scatters bubbles on click
   d3.select(".d3-price-container")
       .on("mousedown", mousedown);
 
+  // Initialize the tooltip popup
   tooltipSetup();
 
+  // D3 "force" uses this to animate the bubbles
   function tick(e) {
 
     // Push different nodes in different directions for clustering.
@@ -1220,10 +1331,12 @@ module.exports = function(pricesArray, query) {
       o.x += i & 1 ? k : -k;
     });
 
+    // Sets the x and y attributes of the "g" node for D3's "force"
     svg.selectAll("g.node")
       .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   }
 
+  // Function that scatters bubbles on click event
   function mousedown() {
     pricesArray.forEach(function(o, i) {
       o.x += (Math.random() - 0.5) * 40;
@@ -1239,20 +1352,25 @@ module.exports = function(pricesArray, query) {
     tooltipWidth = 220;
     tooltipHeight = 105;
 
-    tooltip = d3.select(".d3-price-container")
+    // Append tooltip popup div to container
+    var tooltip = d3.select(".d3-price-container")
       .append("div")
       .style("width", tooltipWidth)
       .style("height", tooltipHeight)
       .classed("hoverbox", true);
 
+    // Append "product-name" div to tooltip div
     tooltip.append('div')
       .classed("product-name", true);
 
+    // Select all products in the array
     var nodes = svg.selectAll("g.node");
 
+    // On mouseover event over a bubble, display the tooltip popup that displays the product name
     nodes.on('mouseover', function(d) {
       var mouseLoc = d3.mouse(this.parentNode);
 
+      // Set position and styling of tooltip div
       tooltip
             .style("display", "block")
             .style("left", (mouseLoc[0]-170)+"px")
@@ -1261,10 +1379,13 @@ module.exports = function(pricesArray, query) {
             .transition()
             .duration(200)
             .style('opacity', 1);
+
+      // Set the text in the tooltip popup to be the product name associated with the price in the bubble
       tooltip.select(".product-name")
         .text(d.name);
     });
 
+    // On mouseout event, tooltip div disappears
     nodes.on('mouseout', function(d) {
       tooltip.transition()
         .duration(200)
@@ -1300,7 +1421,7 @@ var Navbar = React.createClass({displayName: "Navbar",
 
           React.createElement("div", {className: "collapse navbar-collapse", id: "bs-example-navbar-collapse-1"}, 
             React.createElement("ul", {className: "nav navbar-nav navbar-right"}, 
-              React.createElement("li", {className: "active home"}, 
+              React.createElement("li", {className: "active home "}, 
                 React.createElement(Router.Link, {to: "home"}, "Home")
               ), 
               React.createElement("li", {className: "dashboard"}, 
