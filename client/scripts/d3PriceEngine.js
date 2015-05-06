@@ -60,7 +60,9 @@ module.exports = function(pricesArray, query) {
       .data(pricesArray)
       .enter().append("g")
       .classed("node", true)
+      // Allows bubbles to be dragged
       .call(force.drag)
+      // Prevents bubbles from scattering on drag event
       .on("mousedown", function() { d3.event.stopPropagation(); });
 
   // Create a circle/bubble for each product/node
@@ -74,8 +76,6 @@ module.exports = function(pricesArray, query) {
       // Creates two colors for the two halves of pricesArray
       .style("fill", function(d, i) { return fill(i & 1); })
       .style("stroke", function(d, i) { return d3.rgb(fill(i & 1)).darker(2); })
-      // Allows bubbles to be dragged
-      // .call(force.drag)
 
   // Appends the price to each bubble
   node.append("text")
@@ -114,6 +114,7 @@ module.exports = function(pricesArray, query) {
       .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   }
 
+  // Function that scatters bubbles on click event
   function mousedown() {
     pricesArray.forEach(function(o, i) {
       o.x += (Math.random() - 0.5) * 40;
@@ -129,20 +130,25 @@ module.exports = function(pricesArray, query) {
     tooltipWidth = 220;
     tooltipHeight = 105;
 
-    tooltip = d3.select(".d3-price-container")
+    // Append tooltip popup div to container
+    var tooltip = d3.select(".d3-price-container")
       .append("div")
       .style("width", tooltipWidth)
       .style("height", tooltipHeight)
       .classed("hoverbox", true);
 
+    // Append "product-name" div to tooltip div
     tooltip.append('div')
       .classed("product-name", true);
 
+    // Select all products in the array
     var nodes = svg.selectAll("g.node");
 
+    // On mouseover event over a bubble, display the tooltip popup that displays the product name
     nodes.on('mouseover', function(d) {
       var mouseLoc = d3.mouse(this.parentNode);
 
+      // Set position and styling of tooltip div
       tooltip
             .style("display", "block")
             .style("left", (mouseLoc[0]-170)+"px")
@@ -151,10 +157,13 @@ module.exports = function(pricesArray, query) {
             .transition()
             .duration(200)
             .style('opacity', 1);
+
+      // Set the text in the tooltip popup to be the product name associated with the price in the bubble
       tooltip.select(".product-name")
         .text(d.name);
     });
 
+    // On mouseout event, tooltip div disappears
     nodes.on('mouseout', function(d) {
       tooltip.transition()
         .duration(200)
