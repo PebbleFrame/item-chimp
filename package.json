@@ -35,12 +35,16 @@
     "util": "^0.10.3"
   },
   "devDependencies": {
+    "expect": "^1.6.0",
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.8.0",
     "grunt-concurrent": "^1.0.0",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-mocha-test": "^0.12.7",
     "grunt-react": "^0.12.2",
-    "grunt-shell": "^1.1.2"
+    "grunt-shell": "^1.1.2",
+    "mocha": "^2.2.4",
+    "supertest": "^0.15.0"
   }
 }
