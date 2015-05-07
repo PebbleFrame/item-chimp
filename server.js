@@ -73,7 +73,6 @@ var walmartReviewsW = function(req, res,next){
     }, function (error, response, walmartReviewBody) {
       if (!error && response.statusCode == 200) {
         WalmartReviewstoSend = walmartReviewBody;
-        console.log(WalmartReviewstoSend);
         var json = JSON.parse(WalmartReviewstoSend);
         upc = (json.upc);
         next();
