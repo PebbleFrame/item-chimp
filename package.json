@@ -1,5 +1,5 @@
 {
-  "name": "Shopagator",
+  "name": "ItemChimp",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -52,5 +52,8 @@
     "jest-cli": "^0.4.1",
     "mocha": "^2.2.4",
     "supertest": "^0.15.0"
+  },
+  "scripts": {
+    "test": "grunt test"
   }
 }

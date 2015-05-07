@@ -12,12 +12,12 @@ module.exports = function(grunt) {
     },
 
     jshint: {
-      files: ['Gruntfile.js', 'server.js', 'server/**/*.js', 'test/**/*.js'],
-      options: {
-        globals: {
-          jQuery: true
-        }
-      }
+      ignore_warning: {
+        options: {
+          '-W117': true,
+        },
+        src: ['Gruntfile.js', 'server.js', 'server/**/*.js', 'test/**/*.js'],
+      },
     },
 
     watch: {
@@ -79,6 +79,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('test', [
+    'jshint',
     'mochaTest'
   ]);
 
