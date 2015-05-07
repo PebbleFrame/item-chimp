@@ -61,48 +61,14 @@
 //-------------ORM FOR USERS START-----------------/
   //Create user Model
   db.User = db.orm.Model.extend({
-     tableName:"users",
-     comparePasswords : function (candidatePassword) {
-      var defer = Q.defer();
-      var savedPassword = this.password;
-      bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
-        if (err) {
-          defer.reject(err);
-        } else {
-          defer.resolve(isMatch);
-        }
-      });
-      return defer.promise;
-      }
+     tableName:"users"
   });
 
   //Create user Collection
   db.Users = new db.orm.Collection();
   db.Users.model = db.User;
 
-  //Create New Users --For Development Only
-  var user = new db.User({
-    username: "Gilgamesh",
-    password: 1,
-    email: "g@gmail.com"
-  });
 
-  //Save user to the database
-  user.save().then(function(newUser) {
-    db.Users.add(newUser);
-    console.log("User Saved")
-  });
-
-  user = new db.User({
-    username: "Enkidu",
-    password: 1,
-    email: "e@gmail.com"
-  });
-
-  user.save().then(function(newUser) {
-    db.Users.add(newUser);
-    console.log("User Saved")
-  });
 //-------------ORM FOR USERS END-------------------/
 
 //-------------ORM FOR REVIEWS START---------------/
@@ -115,20 +81,20 @@
   db.Reviews = new db.orm.Collection();
   db.Reviews.model = db.Review;
 
-  //Create New Review (template) --For Development Only
-  var review = new db.Review({
-    user_id: 1,
-    upc: 12345678910,
-    rating: 2,
-    review_text: 'AWESOME'
-  });
-
-  //Review Save (template) to the database --For Development Only
-  review.save().then(function(newReview) {
-    db.Reviews.add(newReview);
-    console.log("Review Saved")
-  });
-//-------------ORM FOR REVIEWS END-----------------/
+//  //Create New Review (template) --For Development Only
+//  var review = new db.Review({
+//    user_id: 1,
+//    upc: 12345678910,
+//    rating: 2,
+//    review_text: 'AWESOME'
+//  });
+//
+//  //Review Save (template) to the database --For Development Only
+//  review.save().then(function(newReview) {
+//    db.Reviews.add(newReview);
+//    console.log("Review Saved")
+//  });
+////-------------ORM FOR REVIEWS END-----------------/
 
 //-------------ORM FOR PRODUCTS START--------------/
   //Create Products Model
@@ -297,6 +263,25 @@
 
 
 //-------------API CONFIGURATION END---------------/
+
+//Create New Users --For Development Only
+	var user = {
+		username: "Gilgamesh",
+		password: 1,
+		email: "g@gmail.com"
+	};
+
+	//Save user to the database
+	db.addUser(user);
+
+	user = {
+		username: "Enkidu",
+		password: 1,
+		email: "e@gmail.com"
+	};
+	db.addUser(user);
+//Create New Users --For Development Only
+
 
 module.exports = db;
 
