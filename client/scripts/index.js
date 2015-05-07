@@ -82,7 +82,7 @@ var LogoArea = React.createClass({
 
     // Set the spinning speed
     var spinner = {
-      speed: 55
+      speed: 15
     };
 
     // Create a transitionable that will rotate
