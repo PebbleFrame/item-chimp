@@ -79,7 +79,6 @@ var DisplayBox = React.createClass({
       }.bind(this)
     });
   },
-
   // Final handler for reviews request
   // This call is the result of calls bubbling up from the individual review results
   // var "id" may be itemId or SKU
@@ -184,6 +183,32 @@ var DisplayBox = React.createClass({
     }
   },
 
+  adjustColumnDisplay: function(numColumns) {
+
+        if (numColumns > 2) {
+          // switch classes on columns to allow 3-across column display
+          $('.reviews-display')
+            .addClass('reviews-display-3-across')
+            .removeClass('reviews-display')
+          $('.reviews-display-section')
+            .addClass('reviews-display-section-3-across')
+            .removeClass('reviews-display-section')
+          // hide compare selection column
+          $('.choose-another-product-section').fadeOut();
+        } else {
+          // switch classes on columns to go back to 2-column display
+          $('.reviews-display-3-across')
+            .addClass('reviews-display')
+            .removeClass('reviews-display-3-across')
+          $('.reviews-display-section-3-across')
+            .addClass('reviews-display-section')
+            .removeClass('reviews-display-section-3-across')
+          // show compare selection column
+          $('.choose-another-product-section').fadeIn();
+        }
+
+  },
+
   handleCompareRequest: function(id, site, name, image) {
 
     var queryUrl;
@@ -234,17 +259,7 @@ var DisplayBox = React.createClass({
 
         this.refs.d3chart.startEngine(500, 225, reviewSetsTmp);
 
-        if (reviewSetsTmp.length > 2) {
-          // switch classes on columns to allow 3-across column display
-          $('.reviews-display')
-            .addClass('reviews-display-3-across')
-            .removeClass('reviews-display')
-          // hide compare selection column
-          $('.reviews-display-section')
-            .addClass('reviews-display-section-3-across')
-            .removeClass('reviews-display-section')
-          $('.choose-another-product-section').fadeOut();
-        }
+        this.adjustColumnDisplay(reviewSetsTmp.length);
 
       }.bind(this),
       error: function(xhr, status, err) {
@@ -255,6 +270,28 @@ var DisplayBox = React.createClass({
 
   },
 
+  // Handler for dismissing a column (by clicking the red X)
+  handleDismissColumn: function(name, site) {
+    console.log("DC in top level: " + name + " " + site);
+
+    // will need to get this.state.allReviews.reviewSets array
+    var reviewSetsTmp = this.state.allReviews.reviewSets;
+
+    // look for column to dismiss
+    for (var i = 0; i < reviewSetsTmp.length; i++) {
+      if (reviewSetsTmp[i].name === name && reviewSetsTmp[i].source === site) {
+        // splice it out of array
+        reviewSetsTmp.splice(i, 1);
+        break;
+      }
+    }
+    // put it back with setState
+    this.setState({
+      allReviews: { reviewSets: reviewSetsTmp },
+    });
+
+    this.adjustColumnDisplay(reviewSetsTmp.length);
+  },
 
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
@@ -280,7 +317,8 @@ var DisplayBox = React.createClass({
           <div><button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results</button></div>
 
           <ReviewsDisplaySection
-            allReviews={this.state.allReviews} />
+            allReviews={this.state.allReviews}
+            onDismissColumn={this.handleDismissColumn} />
 
             <ChooseAnotherProductSection
               onCompareRequest={this.handleCompareRequest}
@@ -355,6 +393,11 @@ var SearchForm = React.createClass({
 });
 
 var ReviewsDisplaySection = React.createClass({
+  dismissColumn: function(name, site) {
+    console.log("DC in RDS: " + name + " " + site);
+    this.props.onDismissColumn(name, site);
+  },
+
   render: function() {
     var reviewColumns = this.props.allReviews.reviewSets.map(function (set, index) {
       return (
@@ -365,9 +408,10 @@ var ReviewsDisplaySection = React.createClass({
           name={set.name}
           image={set.image}
           AverageRating={set.AverageRating}
-          ReviewCount={set.ReviewCount} />
+          ReviewCount={set.ReviewCount}
+          onDismissColumn={this.dismissColumn} />
         );
-    });
+    }.bind(this));
     return (
       <div className="reviews-display-section">
         {reviewColumns}

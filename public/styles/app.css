@@ -109,11 +109,13 @@ body {
   display: inline-block;
   font-size: 14px;
   width: 80%;
+  margin-top: 10px;
 }
 .reviews-display-section-3-across {
   display: inline-block;
   font-size: 14px;
   width: 100%;
+  margin-top: 10px;
 }
 
 .reviews-display-container button {
@@ -126,6 +128,8 @@ body {
   padding-right: 8px;
   margin-left: 6px;
   margin-right: 6px;
+  border: 1px solid gray;
+  border-radius: 5px;
   float: left;
   width: 45%;
 }
@@ -135,13 +139,26 @@ body {
   padding-right: 8px;
   margin-left: 6px;
   margin-right: 6px;
+  border: 1px solid gray;
+  border-radius: 5px;
   float: left;
   width: 30%;
+}
+
+.reviews-display-header {
+  padding: 3px 0;
+}
+
+.button-dismiss {
+  margin-right: 10px;
+  float: right;
+  background-color: #f66;
 }
 
 .reviews-display img {
   float: left;
   margin-right: 20px;
+  margin-left: 10px;
 }
 
 .reviews-display .product-name-review {
