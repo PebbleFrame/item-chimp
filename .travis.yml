@@ -6,4 +6,4 @@ node_js:
 before_script:
   - npm install -g bower grunt-cli
   - bower install
-  - mysql -e "create database IF NOT EXISTS pebble;"
+  - mysql -u root < server/db/schema.sql
