@@ -23,7 +23,7 @@ module.exports = {
         res.json(user);
 		  //Login Failure
       }else{
-		    console.log("Login Failed")
+		    console.log("Login Failed");
         res.send(false);      
       }
       return;
