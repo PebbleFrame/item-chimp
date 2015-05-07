@@ -4,9 +4,11 @@ jwt  = require('jwt-simple');
 module.exports = {
   signup: function (req, res) {
     db.once("userAdded", function(token){
+	    //Sign Up Successful
       if(token){
         res.json({"token": token});
       }
+      //Sign Up Failure
       else{
         res.send(false);
      
@@ -15,11 +17,13 @@ module.exports = {
     db.addUser(req.body);
   },
   login: function(req,res){
-    db.once("userLogin", function(token){
-      console.log("AuthController Login");
-      if(token){
-        res.json({'token': token});
+    db.once("userLogin", function(user){
+      //Login Successful; user obj contains token property
+	    if(user){
+        res.json(user);
+		  //Login Failure
       }else{
+		    console.log("Login Failed")
         res.send(false);      
       }
       return;

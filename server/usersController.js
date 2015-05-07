@@ -1,8 +1,12 @@
 var db = require('./db/db.js');
 
 module.exports = {
-	users : function(){
-		console.log("users");
+	users : function(req,res){
+		db.once("foundUser", function(user){
+			res.json({username: user.get("username"),
+								email: user.get("email")});
+		});
+		db.findUser(db.tokenUser);
 	},
 	reviews:function(){
 		console.log("reviews");

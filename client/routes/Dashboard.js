@@ -1,25 +1,128 @@
 React = require('react');
 
 var Dashboard = React.createClass({
-  getInitialState: function() {
-    return {
-      username: 'username',
-      email: 'email@email.com'  
-    };
-  },
+
+	loadUserFromServer: function(){
+		if(this.state.token){
+			$.ajax({
+			 type: 'GET',
+			 url: '/auth/users',
+			 headers: {'x-access-token': this.state.token},
+			 success: function (data) {
+			   this.setState({
+				   username : data.username,
+				   email : data.email});
+			 }.bind(this),
+			 error: function(xhr,status,err){
+			  console.error('/auth/users', status, err.toString());
+			 }.bind(this)
+			});
+		}
+		else{
+			this.setState({login:true})
+		}
+	},
+
+	getInitialState: function() {
+	  if(!localStorage.getItem('tokenChimp')){
+	    return {
+		    token: false,
+		    username : false,
+			  email  : false,
+		    mounted: false
+	    };
+	  }
+	  else {
+		  console.log("Getting Token")
+		  var token = localStorage.getItem('tokenChimp');
+		  }
+		  return {
+			  token: token,
+			  username: false,
+			  email: false,
+			  login: false
+		  };
+	  },
+
+	componentDidMount: function(){
+		this.loadUserFromServer();
+	},
+	handleLoginSubmit: function(user) {
+		$.ajax({
+			url: '/auth/login' ,
+			dataType: 'json',
+			type: 'POST',
+			data: user,
+			success: function(data) {
+				if(data) {
+					console.log("setting login state")
+					this.setState({
+						username: data.username,
+						email: data.email
+					});
+					localStorage.setItem('tokenChimp', data.token);
+				}
+			}.bind(this),
+			error: function(xhr, status, err) {
+				console.log('/auth/login', status, err.toString());
+			}.bind(this)
+		});
+	},
 	render: function() {
-		return (
-      <div>
-  			<h3>Dashboard</h3>
-        <h4>Welcome, {this.state.username}!</h4>
-        <TopControlRow email={this.props.email} />
-        <div className="row">
-          <YouAreFollowingBox />
-          <FollowingYouBox />
-        </div>
-      </div>
-		);
+		if(this.state.username) {
+			return (
+				<div>
+					<h3>Dashboard</h3>
+					<h4>Welcome, {this.state.username}!</h4>
+					<TopControlRow email={this.state.email}/>
+
+					<div className="row">
+						<YouAreFollowingBox />
+						<FollowingYouBox />
+					</div>
+				</div>
+			);
+		}
+		else
+		if(this.state.login)
+		{
+			return(
+				<UserLoginPanel onLoginSubmit = {this.handleLoginSubmit} />
+			);
+		}
+		else{
+			return(<div></div>);
+		}
 	}
+});
+
+var UserLoginPanel = React.createClass({
+  handleSubmit:function(e){
+	  e.preventDefault();
+	  var username = React.findDOMNode(this.refs.username).value.trim();
+	  var password = React.findDOMNode(this.refs.password).value.trim();
+	  if (!username || !password) {
+		  return;
+	  }
+	  this.props.onLoginSubmit({username: username, password: password});
+	  React.findDOMNode(this.refs.username).value = '';
+	  React.findDOMNode(this.refs.password).value = '';
+	  return;
+  },
+	render: function(){
+    return(
+	    <div className="container">
+	        <div className="col-md-4 col-md-offset-4">
+	            <h1>Member Login</h1>
+	            <form name="login" onSubmit={this.handleSubmit}>
+	                <input type='text'className="form-control" placeholder = "Username" ref="username"/>
+	                <input type="password" className="form-control" placeholder = "password" ref="password"/>
+	                <button className="btn btn-primary">Login</button>
+	            </form>
+	        </div>
+	    </div>
+    )
+  }
 });
 
 var TopControlRow = React.createClass({

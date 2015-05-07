@@ -271,9 +271,13 @@
         var savedPassword = user.get('password');
         bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
             if (isMatch) {
-              token = jwt.encode(user.get('username'), 'secret');
-              db.emit('userLogin',token);
-            } 
+	            token = jwt.encode(user.get('username'), 'secret');
+	            db.emit('userLogin', {
+		            token: token,
+		            username: user.get('username'),
+		            email: user.get('email')
+	            });
+            }
             else {
               token = undefined;
               console.log("Password Incorrect");
