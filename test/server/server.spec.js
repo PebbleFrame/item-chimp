@@ -12,7 +12,7 @@ describe('Server: routes', function() {
       .end(function(err, res) {
         expect(res.statusCode).toEqual(200);
         done();
-      })
+      });
   });
 
   it('should 404 for non-root get requests', function(done) {
@@ -21,7 +21,7 @@ describe('Server: routes', function() {
       .end(function(err, res) {
         expect(res.statusCode).toEqual(404);
         done();
-      })
+      });
   });
 
 });
