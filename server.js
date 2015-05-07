@@ -90,7 +90,7 @@ var bestbuyUPCToSku = function(req, res,next){
         var json = JSON.parse(bestBuySkuBody);
         var len = json.products.length;
         if(len>0) {
-            bestBuySku = json["products"][0].sku;
+            bestBuySku = json.products[0].sku;
         }
         else{
           bestBuySku =undefined;
