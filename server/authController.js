@@ -18,12 +18,12 @@ module.exports = {
   },
   login: function(req,res){
     db.once("userLogin", function(user){
-      console.log("AuthController Login");
       //Login Successful; user obj contains token property
 	    if(user){
         res.json(user);
 		  //Login Failure
       }else{
+		    console.log("Login Failed")
         res.send(false);      
       }
       return;

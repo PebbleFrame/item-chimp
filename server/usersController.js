@@ -2,7 +2,7 @@ var db = require('./db/db.js');
 
 module.exports = {
 	users : function(req,res){
-		db.on("foundUser", function(user){
+		db.once("foundUser", function(user){
 			res.json({username: user.get("username"),
 								email: user.get("email")});
 		});

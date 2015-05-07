@@ -3,7 +3,7 @@ React = require('react');
 var Dashboard = React.createClass({
 
 	loadUserFromServer: function(){
-		if(token !== null){
+		if(this.state.token){
 			$.ajax({
 			 type: 'GET',
 			 url: '/auth/users',
@@ -11,30 +11,36 @@ var Dashboard = React.createClass({
 			 success: function (data) {
 			   this.setState({
 				   username : data.username,
-				   email : data.email};
+				   email : data.email});
 			 }.bind(this),
 			 error: function(xhr,status,err){
 			  console.error('/auth/users', status, err.toString());
 			 }.bind(this)
 			});
 		}
+		else{
+			this.setState({login:true})
+		}
 	},
 
 	getInitialState: function() {
 	  if(!localStorage.getItem('tokenChimp')){
 	    return {
-		    token: null,
-		    username : null,
-			  email  : null
+		    token: false,
+		    username : false,
+			  email  : false,
+		    mounted: false
 	    };
 	  }
 	  else {
+		  console.log("Getting Token")
 		  var token = localStorage.getItem('tokenChimp');
 		  }
 		  return {
 			  token: token,
-			  username: null,
-			  email: null
+			  username: false,
+			  email: false,
+			  login: false
 		  };
 	  },
 
@@ -48,17 +54,22 @@ var Dashboard = React.createClass({
 			type: 'POST',
 			data: user,
 			success: function(data) {
-				this.setState({username: data.username,
-											 email: data.email});
-				localStorage.setItem('tokenChimp', data.token);
+				if(data) {
+					console.log("setting login state")
+					this.setState({
+						username: data.username,
+						email: data.email
+					});
+					localStorage.setItem('tokenChimp', data.token);
+				}
 			}.bind(this),
 			error: function(xhr, status, err) {
-				console.error('/auth/login', status, err.toString());
+				console.log('/auth/login', status, err.toString());
 			}.bind(this)
 		});
 	},
 	render: function() {
-		if(this.state.username !== null) {
+		if(this.state.username) {
 			return (
 				<div>
 					<h3>Dashboard</h3>
@@ -72,10 +83,15 @@ var Dashboard = React.createClass({
 				</div>
 			);
 		}
-		else{
+		else
+		if(this.state.login)
+		{
 			return(
 				<UserLoginPanel onLoginSubmit = {this.handleLoginSubmit} />
 			);
+		}
+		else{
+			return(<div></div>);
 		}
 	}
 });
