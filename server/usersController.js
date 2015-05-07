@@ -12,9 +12,9 @@ module.exports = {
 		console.log("reviews");
 	},
 	watching: function(){
-		console.log("watching")
+		console.log("watching");
 	},
 	following: function(){
-		console.log("following")
+		console.log("following");
 	}
 };

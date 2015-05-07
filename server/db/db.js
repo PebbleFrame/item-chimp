@@ -116,7 +116,7 @@
   //Save Product to the database--For Development Only
   product.save().then(function(newProduct) {
     db.Products.add(newProduct);
-    console.log("Product Saved")
+    console.log("Product Saved");
   });
 //-------------ORM FOR PRODUCTS END----------------/
 
@@ -253,7 +253,7 @@
       }else{
         token = undefined;
         console.log("User Not Found");
-        db.emit('userLogin', token)
+        db.emit('userLogin', token);
       }
     });
     console.log(candidate);
