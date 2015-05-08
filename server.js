@@ -64,6 +64,7 @@ var upc = "";
 var WalmartReviewstoSend = "";
 var BestBuyReviewsToSend = "";
 var bestBuySku = "";
+var customerReviewAverage = '';
 
 var walmartReviewsW = function(req, res,next){
   WalmartReviewstoSend = "";
@@ -84,13 +85,14 @@ var walmartReviewsW = function(req, res,next){
 var bestbuyUPCToSku = function(req, res,next){
   bestBuySku = "";
   request({
-      url: 'https://api.remix.bestbuy.com/v1/products(upc='+upc+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=sku,upc,name,longDescription'
+      url: 'https://api.remix.bestbuy.com/v1/products(upc='+upc+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=sku,upc,name,longDescription,customerReviewAverage'
     }, function (error, response, bestBuySkuBody) {
       if (!error && response.statusCode == 200) {
         var json = JSON.parse(bestBuySkuBody);
         var len = json.products.length;
         if(len>0) {
-            bestBuySku = json.products[0].sku;
+          bestBuySku = json.products[0].sku;
+          customerReviewAverage = json.products[0].customerReviewAverage;
         }
         else{
           bestBuySku =undefined;
@@ -123,9 +125,15 @@ var bestbuyReviewsW = function(req, res,next){
 app.post('/get-walmart-reviews', [walmartReviewsW,bestbuyUPCToSku,bestbuyReviewsW],function(req, res,next) {
   next();
 }, function (req, res) {
+  var strJson = "";
+  if(BestBuyReviewsToSend) {
+    var json = JSON.parse(BestBuyReviewsToSend);
+    json.customerReviewAverage = customerReviewAverage;
+    strJson = JSON.stringify(json);
+  }
   res.send([
     {walmartReviews: WalmartReviewstoSend,
-    bestbuyReviews: BestBuyReviewsToSend}
+    bestbuyReviews: strJson}
   ]);
 });
 
@@ -150,7 +158,7 @@ var bestbuyReviews = function(req, res,next){
 };
 
 var bbUpc = "";
-var customerReviewAverage = '';
+customerReviewAverage = '';
 var bestbuySkuToUPC = function(req, res,next){
   request({
       url: 'https://api.remix.bestbuy.com/v1/products(sku='+bbSku+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=name,longDescription,upc,customerReviewAverage'
