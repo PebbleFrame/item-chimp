@@ -75,7 +75,6 @@ body {
 
 .related-results-display-container {
   display: none;
-  margin-top: 47px;
 }
 
 .reviews-display-container {
@@ -100,6 +99,9 @@ body {
 
 .individual-display:hover {
   background: #F8F8F8;
+  transition: .3s transform;
+  -webkit-transform: rotate(1deg);
+  transform: rotate(1deg);
 }
 
 /* REVIEWS CONTAINER */
@@ -207,16 +209,19 @@ body {
 }
 
 .sale-price-display {
+  color: #921B16;
   font-size: 18px;
   font-weight: bold;
-  color: #921B16;
+  margin: 10px 0;
 }
 
 .description-display {
   text-align: left;
   font-size: 12px;
   line-height: 1.2em;
-  max-height: 130px;
+  padding: 6px;
+  max-height: 100px;
+  margin-bottom: 10px;
   border: 1px solid #C1BCC2;
   border-radius: 4px;
   overflow: scroll;
@@ -248,6 +253,9 @@ body {
 
 .choose-another-product-individual-display:hover {
   background: #F8F8F8;
+  transition: .3s transform;
+  -webkit-transform: rotate(1deg);
+  transform: rotate(1deg);
 }
 
 .choose-another-product-individual-display img {
