@@ -297,7 +297,9 @@ var DisplayBox = React.createClass({
       allReviews: { reviewSets: reviewSetsTmp },
     });
 
-    this.adjustColumnDisplay(reviewSetsTmp.length);
+    this.adjustColumnDisplay();
+    console.log("?");
+    this.refs.d3chart.startEngine(500, 275, reviewSetsTmp);
   },
 
   showResultsHideReviews: function() {
