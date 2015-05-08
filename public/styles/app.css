@@ -206,6 +206,22 @@ body {
   color: red;
 }
 
+.sale-price-display {
+  font-size: 18px;
+  font-weight: bold;
+  color: #921B16;
+}
+
+.description-display {
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.2em;
+  max-height: 130px;
+  border: 1px solid #C1BCC2;
+  border-radius: 4px;
+  overflow: scroll;
+}
+
 /* REVIEWS CONTAINER - CHOOSE ANOTHER PRODUCT SECTIOn */
 
 .choose-another-product-section {

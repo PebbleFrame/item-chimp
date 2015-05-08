@@ -8,7 +8,7 @@ var WalmartRelatedResultsDisplay = React.createClass({
   render: function() {
     var resultNodes = this.props.data.results.map(function(result, index) {
 
-      result.shortDescription = result.shortDescription || '';
+      result.shortDescription = result.shortDescription || 'n/a';
 
       return (
         <WalmartIndividualResultDisplay 
@@ -46,21 +46,16 @@ var WalmartIndividualResultDisplay = React.createClass({
           {this.props.name}
         </h5>
         <img src={this.props.thumbnailImage} />
-        <div>
+        <div className="sale-price-display">
           ${this.props.salePrice}
         </div>
-        <div>
-          UPC: {this.props.upc}
+        <div className="description-display">
+          <strong>Description:</strong> {this.props.shortDescription}
         </div>
         <div>
-          Description: {this.props.description}
+          <strong>Rating:</strong> {this.props.customerRating} ({this.props.numReviews} reviews)
         </div>
-        <div>
-          Rating: {this.props.customerRating}
-        </div>
-        <div>
-          {this.props.numReviews} reviews
-        </div>
+        
         <img src={this.props.customerRatingImage} />
       </div>
     );
