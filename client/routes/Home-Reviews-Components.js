@@ -69,8 +69,8 @@ var WalmartIndividualReviewDisplay = React.createClass({
         <div>
           <strong>Review:</strong> {this.props.reviewText}
         </div>
-        <div>
-          <span className="upvotes">+{this.props.upVotes}</span> | <span className="downvotes">-{this.props.downVotes}</span>
+        <div className="review-rating-display">
+          <span className="upvotes"><strong>+{this.props.upVotes}</strong></span> | <span className="downvotes"><strong>-{this.props.downVotes}</strong></span>
         </div>
       </div>
     );
@@ -90,8 +90,8 @@ var BestbuyIndividualReviewDisplay = React.createClass({
         <div>
           <strong>Review:</strong> {this.props.comment}
         </div>
-        <div>
-          Rating: {this.props.rating}
+        <div className="review-rating-display">
+          <strong>Rating:</strong> {this.props.rating}
         </div>
       </div>
     );

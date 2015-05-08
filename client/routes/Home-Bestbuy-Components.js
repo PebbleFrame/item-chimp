@@ -49,20 +49,14 @@ var BestbuyIndividualResultDisplay = React.createClass({
           {this.props.name}
         </h5>
         <img src={this.props.image} />
-        <div>
+        <div className="sale-price-display">
           ${this.props.salePrice}
         </div>
-        <div>
-          UPC: {this.props.upc}
+        <div className="description-display">
+          <strong>Description:</strong> {this.props.shortDescription}
         </div>
         <div>
-          Description: {this.props.shortDescription}
-        </div>
-        <div>
-          Rating: {this.props.customerReviewAverage}
-        </div>
-        <div>
-          {this.props.customerReviewCount} reviews
+          <strong>Rating:</strong> {this.props.customerReviewAverage} ({this.props.customerReviewCount} reviews)
         </div>
       </div>
     );
