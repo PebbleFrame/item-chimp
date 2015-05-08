@@ -2,8 +2,6 @@ var React = require('react');
 
 var ReviewsDisplay = React.createClass ({
   dismissColumn: function(name, site) {
-    console.log(this.props);
-    console.log("DC in RD: " + name + " " + site);
     this.props.onDismissColumn(this.props.name, this.props.source);
   },
 
