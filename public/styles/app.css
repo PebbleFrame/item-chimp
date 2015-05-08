@@ -157,17 +157,6 @@ body {
   background-color: #f66;
 }
 
-.reviews-display img {
-  float: left;
-  margin-right: 20px;
-  margin-left: 10px;
-}
-
-.reviews-display .product-name-review {
-  float: left;
-  margin-top: 20px;
-}
-
 .reviews-display-3-across .product-name-review {
   margin-top: 0px;
 }
