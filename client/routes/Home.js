@@ -44,6 +44,13 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: query,
       success: function(data) {
+
+        // reset review column data to empty
+        this.setState({
+          allReviews: { reviewSets: [] },
+        });
+        this.adjustColumnDisplay();
+
         // Show Related Results after user submits query
         $('.related-results-display-container').fadeIn();
         $('.logo-container').slideUp();
@@ -109,6 +116,7 @@ var DisplayBox = React.createClass({
         // Display the reviews-display only after an item is clicked on
         $('.reviews-display-container').delay(500).fadeIn();
         $('.d3-container').delay(500).fadeIn();
+        $('.choose-another-product-section').delay(500).fadeIn();
 
         // Create array of review sets to show
         var reviewSetsArray = [];
@@ -133,8 +141,9 @@ var DisplayBox = React.createClass({
         // Put all reviews into an array stored in allReviews state
         this.setState({
           allReviews: { reviewSets: reviewSetsArray },
-
         });
+
+        this.adjustColumnDisplay();
         
         // initialize d3 chart
         // params are (width, height)
@@ -167,7 +176,6 @@ var DisplayBox = React.createClass({
         });
     } else if (site === 'Best Buy') {
       ReviewsFromData = rawObj.reviews;
-      console.log(rawObj);
       AverageRating = rawObj.customerReviewAverage;
       ReviewCount = rawObj.total;
       this.setState({currentProductSKU: rawObj.reviews[0].sku});
@@ -183,29 +191,29 @@ var DisplayBox = React.createClass({
     }
   },
 
-  adjustColumnDisplay: function(numColumns) {
+  adjustColumnDisplay: function() {
 
-        if (numColumns > 2) {
-          // switch classes on columns to allow 3-across column display
-          $('.reviews-display')
-            .addClass('reviews-display-3-across')
-            .removeClass('reviews-display')
-          $('.reviews-display-section')
-            .addClass('reviews-display-section-3-across')
-            .removeClass('reviews-display-section')
-          // hide compare selection column
-          $('.choose-another-product-section').fadeOut();
-        } else {
-          // switch classes on columns to go back to 2-column display
-          $('.reviews-display-3-across')
-            .addClass('reviews-display')
-            .removeClass('reviews-display-3-across')
-          $('.reviews-display-section-3-across')
-            .addClass('reviews-display-section')
-            .removeClass('reviews-display-section-3-across')
-          // show compare selection column
-          $('.choose-another-product-section').fadeIn();
-        }
+    if (this.state.allReviews.reviewSets.length > 2) {
+      // switch classes on columns to allow 3-across column display
+      $('.reviews-display')
+        .addClass('reviews-display-3-across')
+        .removeClass('reviews-display')
+      $('.reviews-display-section')
+        .addClass('reviews-display-section-3-across')
+        .removeClass('reviews-display-section')
+      // hide compare selection column
+      $('.choose-another-product-section').fadeOut();
+    } else {
+      // switch classes on columns to go back to 2-column display
+      $('.reviews-display-3-across')
+        .addClass('reviews-display')
+        .removeClass('reviews-display-3-across')
+      $('.reviews-display-section-3-across')
+        .addClass('reviews-display-section')
+        .removeClass('reviews-display-section-3-across')
+      // show compare selection column
+      $('.choose-another-product-section').fadeIn();
+    }
 
   },
 
@@ -272,7 +280,6 @@ var DisplayBox = React.createClass({
 
   // Handler for dismissing a column (by clicking the red X)
   handleDismissColumn: function(name, site) {
-    console.log("DC in top level: " + name + " " + site);
 
     // will need to get this.state.allReviews.reviewSets array
     var reviewSetsTmp = this.state.allReviews.reviewSets;
@@ -394,7 +401,6 @@ var SearchForm = React.createClass({
 
 var ReviewsDisplaySection = React.createClass({
   dismissColumn: function(name, site) {
-    console.log("DC in RDS: " + name + " " + site);
     this.props.onDismissColumn(name, site);
   },
 
@@ -422,7 +428,6 @@ var ReviewsDisplaySection = React.createClass({
 
 var ChooseAnotherProductSection = React.createClass({
   handleCompareRequest: function(itemId, site, name, image) {
-    console.log('HCR Section level');
     this.props.onCompareRequest(itemId, site, name, image);
   },
   render: function() {
@@ -456,7 +461,6 @@ var ChooseAnotherProductSection = React.createClass({
 
 var ChooseAnotherProductSectionTab = React.createClass({
   handleCompareRequest: function(itemId, site, name, image) {
-    console.log('HCR Tab level');
     this.props.onCompareRequest(itemId, site, name, image);
   },
   render: function() {
@@ -497,7 +501,6 @@ var ChooseAnotherProductSectionTab = React.createClass({
 
 var IndividualProductCompareChoice = React.createClass({
   handleCompareRequest: function(id, site, name, image) {
-    console.log('HCR bottom level');
     this.props.onCompareRequest(this.props.id, this.props.site, this.props.name, this.props.image);
   },
   render: function() {

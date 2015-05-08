@@ -108,7 +108,7 @@ var bestbuyReviewsW = function(req, res,next){
   if(bestBuySku !== undefined) {
     var bb = parseInt(bestBuySku);
     request({
-        url: 'http://api.remix.bestbuy.com/v1/reviews(sku='+bestBuySku+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
+        url: 'http://api.remix.bestbuy.com/v1/reviews(sku='+bestBuySku+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&pageSize=25&show=id,sku,rating,title,comment,reviewer.name'
       }, function (error, response, bestbuyReviewBody) {
         if (!error && response.statusCode == 200) {
           BestBuyReviewsToSend = bestbuyReviewBody;
@@ -144,7 +144,7 @@ var bestbuyReviews = function(req, res,next){
   bbSku = sku;
   bbReviews = "";
   request({
-      url: 'http://api.remix.bestbuy.com/v1/reviews(sku=' + sku +')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=id,sku,rating,title,comment,reviewer.name'
+      url: 'http://api.remix.bestbuy.com/v1/reviews(sku=' + sku +')?format=json&apiKey=n34qnnunjqcb9387gthg8625&pageSize=25&show=id,sku,rating,title,comment,reviewer.name'
     }, function (error, response, bestbuyReviewBody) {
       if (!error && response.statusCode == 200) {
         bbReviews = bestbuyReviewBody;
