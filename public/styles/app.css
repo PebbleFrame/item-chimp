@@ -148,6 +148,7 @@ body {
 }
 
 .reviews-display-header {
+  line-height: 1.2em;
   padding: 3px 0;
 }
 
@@ -183,10 +184,19 @@ body {
 }
 
 .individual-review-display {
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.2em;
   padding: 5px;
-  margin: 5px;
-  border: 1px solid #8E8E8E;
-  border-radius: 7px;
+  margin: 10px 5px;
+  max-height: 140px;
+  border-radius: 4px;
+  border: 1px solid #C1BCC2;
+  overflow: scroll;
+}
+
+.individual-review-display h5 {
+  font-size: 16px;
 }
 
 .upvotes {
@@ -214,6 +224,10 @@ body {
   border: 1px solid #C1BCC2;
   border-radius: 4px;
   overflow: scroll;
+}
+
+.review-rating-display {
+  text-align: center;
 }
 
 /* REVIEWS CONTAINER - CHOOSE ANOTHER PRODUCT SECTIOn */
