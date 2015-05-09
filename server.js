@@ -25,7 +25,7 @@ app.get('/', function(req, res) {
   res.render('index.html');
 });
 
-
+// Calls Walmart API for a product keyword search
 var walmartGeneralQuery = function(req, res, next){
   var query = req.body.query;
   request({
@@ -44,6 +44,7 @@ var walmartGeneralQuery = function(req, res, next){
   });
 };
 
+// Calls Best Buy API for a product keyword search
 var bestbuyGeneralQuery =  function(req, res, next) {
   var query = req.body.query;
   request({
@@ -72,6 +73,8 @@ var bestbuyGeneralQuery =  function(req, res, next) {
   });
 };
 
+// Handle request from client for keyword search
+// Hits both Walmart and Best Buy APIs and returns search results
 app.post('/general-query', [walmartGeneralQuery,bestbuyGeneralQuery], function (req, res) {
   res.send([
   {walmart: req.walmartResults},
@@ -79,7 +82,14 @@ app.post('/general-query', [walmartGeneralQuery,bestbuyGeneralQuery], function (
   ]);
 });
 
+// Calls Walmart API for reviews of product whose itemID is equal to
+// req.body.itemId (if called directly by clicking on a Walmart product)
+// or req.itemId (if called after user has clicked on a Best Buy product
+//     and server is looking for identical item at Walmart)
 var walmartReviews = function(req, res, next){
+  // If call is coming from get-walmart-reviews, itemId will be in req.body
+  // If call is coming from get-bestbuy-reviews, a previous middleware function
+  // will have put the itemId in req.itemId.
   if (req.body.itemId) {
     req.itemId = req.body.itemId;
   }
@@ -95,6 +105,7 @@ var walmartReviews = function(req, res, next){
     }, function (error, response, walmartReviewBody) {
       if (!error && response.statusCode === 200) {
         req.walmartReviews = walmartReviewBody;
+        // pass upc to next function by storing it on req
         req.upc = JSON.parse(req.walmartReviews).upc;
         next();
       } else {
@@ -105,6 +116,9 @@ var walmartReviews = function(req, res, next){
   );
 };
 
+// Calls Best Buy PRODUCTS API to convert UPC (universal) to SKU (Best Buy internal tracking #)
+// We need to use this in the Best Buy REVIEWS API call later because the Reviews API doesn't
+// accept UPC as a search param, but does accept SKU.
 var bestbuyUPCToSku = function(req, res, next){
   request({
       url: 'https://api.remix.bestbuy.com/v1/products(upc=' + req.upc + ')',
@@ -120,6 +134,7 @@ var bestbuyUPCToSku = function(req, res, next){
       if (!error && response.statusCode === 200) {
         var json = JSON.parse(bestBuySkuBody);
         if(json.products.length > 0) {
+          // pass sku and customerReviewAverage to next function by storing it in req
           req.sku = json.products[0].sku;
           req.customerReviewAverage = json.products[0].customerReviewAverage;
         }
@@ -129,7 +144,14 @@ var bestbuyUPCToSku = function(req, res, next){
   );
 };
 
+// Calls Best Buy REVIEWS API for reviews of product whose itemID is equal to
+// req.body.sku (if called directly by clicking on a Best Buy product)
+// or req.sku (if called after user has clicked on a Walmart product
+//     and server is looking for identical item at Best Buy)
 var bestbuyReviews = function(req, res, next){
+  // If call is coming from get-walmart-reviews, sku will be in req.body
+  // If call is coming from get-bestbuy-reviews, a previous middleware function
+  // will have put the sku in req.sku.
   if (req.body.sku) {
     req.sku = req.body.sku;
   }
@@ -160,22 +182,29 @@ var bestbuyReviews = function(req, res, next){
   );
 };
 
-
+// Handles call from client to get reviews for an item the user clicks on
+// in the Walmart search results column.
+// Gets the Walmart reviews first, then checks to see if there is an identical
+// item at Best Buy, and gets those reviews if so.
 app.post('/get-walmart-reviews', [walmartReviews,bestbuyUPCToSku,bestbuyReviews], function (req, res) {
-  var strJson = "";
   if(req.bestbuyReviews) {
+    // convert req.bestbuyReviews to obj so we can add customerReviewAverage property to it
+    // then re stringify it
     var json = JSON.parse(req.bestbuyReviews);
     json.customerReviewAverage = req.customerReviewAverage;
-    strJson = JSON.stringify(json);
+    req.bestbuyReviews = JSON.stringify(json);
   }
   res.send([
     {
       walmartReviews: req.walmartReviews,
-      bestbuyReviews: strJson
+      bestbuyReviews: req.bestbuyReviews
     }
   ]);
 });
 
+// Calls Best Buy PRODUCTS API to convert SKU (Best Buy internal tracking #) to UPC (universal)
+// We need UPC to check if Walmart has identical item, since Walmart obviously does not recognize
+// Best Buy SKUs.
 var bestbuySkuToUPC = function(req, res, next){
   request({
       url: 'https://api.remix.bestbuy.com/v1/products(sku='+req.sku+')',
@@ -191,6 +220,7 @@ var bestbuySkuToUPC = function(req, res, next){
       if (!error && response.statusCode === 200) {
         var json = JSON.parse(bestbuyReviewBody);
         if(json.products.length>0) {
+          // Pass upc and customerReviewAverage onto following middleware functions
           req.upc = json.products[0].upc;
           req.customerReviewAverage = json.products[0].customerReviewAverage;
         }
@@ -204,6 +234,9 @@ var bestbuySkuToUPC = function(req, res, next){
   );
 };
 
+// Calls Walmart API to convert UPC to itemID (Walmart's internal tracking #)
+// We need itemID to look up Walmart reviews for that item, because Walmart's
+// reviews API doesn't recognize UPC as a search term.
 var bestbuyUPCToItemId = function(req, res, next){
   if (req.upc) {
     request({
@@ -217,6 +250,7 @@ var bestbuyUPCToItemId = function(req, res, next){
         if (!error && response.statusCode === 200) {
           var json = JSON.parse(cb3Body);
           if(json.items.length>0) {
+            // pass itemId to following middleware functions
             req.itemId = json.items[0].itemId;
             }
           next();
@@ -233,16 +267,21 @@ var bestbuyUPCToItemId = function(req, res, next){
   }
  };
 
+// Handles call from client to get reviews for an item the user clicks on
+// in the Best Buy search results column.
+// Gets the Best Buy reviews first, then checks to see if there is an identical
+// item at Walmart, and gets those reviews if so.
 app.post('/get-bestbuy-reviews', [bestbuyReviews,bestbuySkuToUPC,bestbuyUPCToItemId,walmartReviews], function (req, res) {
-  var strJson = "";
   if(req.bestbuyReviews.length>0) {
+    // convert req.bestbuyReviews to obj so we can add customerReviewAverage property to it
+    // then re stringify it
     var json = JSON.parse(req.bestbuyReviews);
     json.customerReviewAverage = req.customerReviewAverage;
-     strJson = JSON.stringify(json);
+    req.bestbuyReviews = JSON.stringify(json);
   }
   res.send([
     {walmartReviews: req.walmartReviews,
-      bestbuyReviews: strJson}
+      bestbuyReviews: req.bestbuyReviews}
   ]);
 });
 
