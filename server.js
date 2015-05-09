@@ -1,10 +1,13 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var reactify = require('reactify');
+//var reactify = require('reactify');
 var nunjucks = require('nunjucks');
 var authRouter = require('./server/auth-routes');
-var OperationHelper = require('apac').OperationHelper;
+//var OperationHelper = require('apac').OperationHelper;
 var request = require('request');
+
+var wmAPIKey = "va35uc9pw8cje38csxx7csk8";
+var bbAPIKey = "n34qnnunjqcb9387gthg8625";
 
 var app = express();
 app.use(express.static('public'));
@@ -22,80 +25,118 @@ app.get('/', function(req, res) {
   res.render('index.html');
 });
 
-var WalmartResultsToSend = "";
-var BestbuyResultsToSend = "";
-
-var walmartGeneralQuery = function(req, res,next){
+// Calls Walmart API for a product keyword search
+var walmartGeneralQuery = function(req, res, next){
   var query = req.body.query;
   request({
-    url: 'http://api.walmartlabs.com/v1/search?query=' + query + '&format=json&apiKey=va35uc9pw8cje38csxx7csk8',
+    url: 'http://api.walmartlabs.com/v1/search',
+    qs: {
+      query: query,
+      format: 'json',
+      apiKey: wmAPIKey
+    },
     json: true
   },function (error, response, walmartBody) {
-    if (!error && response.statusCode == 200) {
-      WalmartResultsToSend = walmartBody.items;
+    if (!error && response.statusCode === 200) {
+      req.walmartResults = walmartBody.items;
      next();
     }
   });
 };
 
-var bestbuyGeneralQuery =  function(req, res,next) {
+// Calls Best Buy API for a product keyword search
+var bestbuyGeneralQuery =  function(req, res, next) {
   var query = req.body.query;
   request({
-    url: 'http://api.remix.bestbuy.com/v1/products(name=' + query + '*)?show=name,sku,salePrice,customerReviewAverage,customerReviewCount,shortDescription,upc,image&sort=bestSellingRank&format=json&apiKey=n34qnnunjqcb9387gthg8625',
+    url: 'http://api.remix.bestbuy.com/v1/products(name=' + query + '*)',
+    qs: {
+      show: [
+        'name',
+        'sku',
+        'salePrice',
+        'customerReviewAverage',
+        'customerReviewCount',
+        'shortDescription',
+        'upc',
+        'image'
+      ].join(","),
+    sort: 'bestSellingRank',
+    format: 'json',
+    apiKey: bbAPIKey
+    },
     json: true
   }, function (error, response, bestbuyBody) {
-    if (!error && response.statusCode == 200) {
-      BestbuyResultsToSend = bestbuyBody.products;
+    if (!error && response.statusCode === 200) {
+      req.bestbuyResults = bestbuyBody.products;
       next();
     }
   });
 };
 
-app.post('/general-query', [walmartGeneralQuery,bestbuyGeneralQuery], function(req, res,next) {
-  next();
-}, function (req, res) {
+// Handle request from client for keyword search
+// Hits both Walmart and Best Buy APIs and returns search results
+app.post('/general-query', [walmartGeneralQuery,bestbuyGeneralQuery], function (req, res) {
   res.send([
-  {walmart: WalmartResultsToSend},
-  {bestbuy: BestbuyResultsToSend}
+  {walmart: req.walmartResults},
+  {bestbuy: req.bestbuyResults}
   ]);
 });
 
-var upc = "";
-var WalmartReviewstoSend = "";
-var BestBuyReviewsToSend = "";
-var bestBuySku = "";
-var customerReviewAverage = '';
-
-var walmartReviewsW = function(req, res,next){
-  WalmartReviewstoSend = "";
-  var itemId = req.body.itemId;
+// Calls Walmart API for reviews of product whose itemID is equal to
+// req.body.itemId (if called directly by clicking on a Walmart product)
+// or req.itemId (if called after user has clicked on a Best Buy product
+//     and server is looking for identical item at Walmart)
+var walmartReviews = function(req, res, next){
+  // If call is coming from get-walmart-reviews, itemId will be in req.body
+  // If call is coming from get-bestbuy-reviews, a previous middleware function
+  // will have put the itemId in req.itemId.
+  if (req.body.itemId) {
+    req.itemId = req.body.itemId;
+  }
+  if (!req.itemId) {
+    return next();
+  }
   request({
-      url: 'http://api.walmartlabs.com/v1/reviews/' + itemId + '?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
+      url: 'http://api.walmartlabs.com/v1/reviews/' + req.itemId,
+      qs: {
+        format: 'json',
+        apiKey: wmAPIKey
+      }
     }, function (error, response, walmartReviewBody) {
-      if (!error && response.statusCode == 200) {
-        WalmartReviewstoSend = walmartReviewBody;
-        var json = JSON.parse(WalmartReviewstoSend);
-        upc = (json.upc);
+      if (!error && response.statusCode === 200) {
+        req.walmartReviews = walmartReviewBody;
+        // pass upc to next function by storing it on req
+        req.upc = JSON.parse(req.walmartReviews).upc;
         next();
+      } else {
+        console.log(error);
+        console.log("Response status code for walmartReviews: " + response.statusCode);
       }
     }
   );
 };
 
-var bestbuyUPCToSku = function(req, res,next){
-  bestBuySku = "";
+// Calls Best Buy PRODUCTS API to convert UPC (universal) to SKU (Best Buy internal tracking #)
+// We need to use this in the Best Buy REVIEWS API call later because the Reviews API doesn't
+// accept UPC as a search param, but does accept SKU.
+var bestbuyUPCToSku = function(req, res, next){
   request({
-      url: 'https://api.remix.bestbuy.com/v1/products(upc='+upc+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=sku,upc,name,longDescription,customerReviewAverage'
+      url: 'https://api.remix.bestbuy.com/v1/products(upc=' + req.upc + ')',
+      qs: {
+        format: 'json',
+        apiKey: bbAPIKey,
+        show: [
+          'sku',
+          'customerReviewAverage'
+        ].join(",")
+      }
     }, function (error, response, bestBuySkuBody) {
-      if (!error && response.statusCode == 200) {
+      if (!error && response.statusCode === 200) {
         var json = JSON.parse(bestBuySkuBody);
-        var len = json.products.length;
-        if(len>0) {
-          bestBuySku = json.products[0].sku;
-          customerReviewAverage = json.products[0].customerReviewAverage;
-        }
-        else{
-          bestBuySku =undefined;
+        if(json.products.length > 0) {
+          // pass sku and customerReviewAverage to next function by storing it in req
+          req.sku = json.products[0].sku;
+          req.customerReviewAverage = json.products[0].customerReviewAverage;
         }
         next();
       }
@@ -103,140 +144,144 @@ var bestbuyUPCToSku = function(req, res,next){
   );
 };
 
-var bestbuyReviewsW = function(req, res,next){
-  BestBuyReviewsToSend ="";
-  if(bestBuySku !== undefined) {
-    var bb = parseInt(bestBuySku);
-    request({
-        url: 'http://api.remix.bestbuy.com/v1/reviews(sku='+bestBuySku+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&pageSize=25&show=id,sku,rating,title,comment,reviewer.name'
-      }, function (error, response, bestbuyReviewBody) {
-        if (!error && response.statusCode == 200) {
-          BestBuyReviewsToSend = bestbuyReviewBody;
-        }
-        next();
+// Calls Best Buy REVIEWS API for reviews of product whose itemID is equal to
+// req.body.sku (if called directly by clicking on a Best Buy product)
+// or req.sku (if called after user has clicked on a Walmart product
+//     and server is looking for identical item at Best Buy)
+var bestbuyReviews = function(req, res, next){
+  // If call is coming from get-walmart-reviews, sku will be in req.body
+  // If call is coming from get-bestbuy-reviews, a previous middleware function
+  // will have put the sku in req.sku.
+  if (req.body.sku) {
+    req.sku = req.body.sku;
+  }
+  if (!req.sku) {
+    return next();
+  }
+  request({
+      url: 'http://api.remix.bestbuy.com/v1/reviews(sku='+req.sku+')',
+      qs: {
+        format: 'json',
+        apiKey: bbAPIKey,
+        pageSize: 25,
+        show: [
+          'id',
+          'sku',
+          'rating',
+          'title',
+          'comment',
+          'reviewer.name'
+        ].join(",")
       }
-    );
-  }
-  else{
-    next();
-  }
+    }, function (error, response, bestbuyReviewBody) {
+      if (!error && response.statusCode === 200) {
+        req.bestbuyReviews = bestbuyReviewBody;
+      }
+      next();
+    }
+  );
 };
 
-app.post('/get-walmart-reviews', [walmartReviewsW,bestbuyUPCToSku,bestbuyReviewsW],function(req, res,next) {
-  next();
-}, function (req, res) {
-  var strJson = "";
-  if(BestBuyReviewsToSend) {
-    var json = JSON.parse(BestBuyReviewsToSend);
-    json.customerReviewAverage = customerReviewAverage;
-    strJson = JSON.stringify(json);
+// Handles call from client to get reviews for an item the user clicks on
+// in the Walmart search results column.
+// Gets the Walmart reviews first, then checks to see if there is an identical
+// item at Best Buy, and gets those reviews if so.
+app.post('/get-walmart-reviews', [walmartReviews,bestbuyUPCToSku,bestbuyReviews], function (req, res) {
+  if(req.bestbuyReviews) {
+    // convert req.bestbuyReviews to obj so we can add customerReviewAverage property to it
+    // then re stringify it
+    var json = JSON.parse(req.bestbuyReviews);
+    json.customerReviewAverage = req.customerReviewAverage;
+    req.bestbuyReviews = JSON.stringify(json);
   }
   res.send([
-    {walmartReviews: WalmartReviewstoSend,
-    bestbuyReviews: strJson}
+    {
+      walmartReviews: req.walmartReviews,
+      bestbuyReviews: req.bestbuyReviews
+    }
   ]);
 });
 
-var bbSku = "";
-var bbReviews = "";
-var bestbuyReviews = function(req, res,next){
-  var sku = req.body.sku;
-  bbSku = sku;
-  bbReviews = "";
+// Calls Best Buy PRODUCTS API to convert SKU (Best Buy internal tracking #) to UPC (universal)
+// We need UPC to check if Walmart has identical item, since Walmart obviously does not recognize
+// Best Buy SKUs.
+var bestbuySkuToUPC = function(req, res, next){
   request({
-      url: 'http://api.remix.bestbuy.com/v1/reviews(sku=' + sku +')?format=json&apiKey=n34qnnunjqcb9387gthg8625&pageSize=25&show=id,sku,rating,title,comment,reviewer.name'
-    }, function (error, response, bestbuyReviewBody) {
-      if (!error && response.statusCode == 200) {
-        bbReviews = bestbuyReviewBody;
-        next();
+      url: 'https://api.remix.bestbuy.com/v1/products(sku='+req.sku+')',
+      qs: {
+        format: 'json',
+        apiKey: bbAPIKey,
+        show: [
+          'upc',
+          'customerReviewAverage'
+        ].join(",")
       }
-      else{
-        next();
-      }
-    }
-  );
-};
-
-var bbUpc = "";
-customerReviewAverage = '';
-var bestbuySkuToUPC = function(req, res,next){
-  request({
-      url: 'https://api.remix.bestbuy.com/v1/products(sku='+bbSku+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=name,longDescription,upc,customerReviewAverage'
     }, function (error, response, bestbuyReviewBody) {
-      if (!error && response.statusCode == 200) {
+      if (!error && response.statusCode === 200) {
         var json = JSON.parse(bestbuyReviewBody);
         if(json.products.length>0) {
-          bbUpc = json.products[0].upc;
-          customerReviewAverage = json.products[0].customerReviewAverage;
+          // Pass upc and customerReviewAverage onto following middleware functions
+          req.upc = json.products[0].upc;
+          req.customerReviewAverage = json.products[0].customerReviewAverage;
         }
-        else{
-          bbUpc = undefined;
-        }
+        next();
+      } else {
+        console.log(error);
+        console.log("Response status code for bestbuySkuToUPC: " + response.statusCode);
         next();
       }
     }
   );
 };
 
-var bbItemId = "";
-var bestbuyUPCToItemId = function(req, res,next){
-  if(bbUpc !== undefined){
+// Calls Walmart API to convert UPC to itemID (Walmart's internal tracking #)
+// We need itemID to look up Walmart reviews for that item, because Walmart's
+// reviews API doesn't recognize UPC as a search term.
+var bestbuyUPCToItemId = function(req, res, next){
+  if (req.upc) {
     request({
-        url: 'http://api.walmartlabs.com/v1/items?apiKey=va35uc9pw8cje38csxx7csk8&upc='+bbUpc
+        url: 'http://api.walmartlabs.com/v1/items',
+        qs: {
+          format: 'json',
+          apiKey: wmAPIKey,
+          upc: req.upc
+        }
       }, function (error, response, cb3Body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
           var json = JSON.parse(cb3Body);
           if(json.items.length>0) {
-            bbItemId = json.items[0].itemId;
+            // pass itemId to following middleware functions
+            req.itemId = json.items[0].itemId;
             }
-          else{
-            bbItemId = undefined;
-          }
           next();
-        }
-        else{
-          bbItemId = undefined;
+        } else {
+          console.log(error);
+          console.log("Response status code for bestbuyUPCToItemId: " + response.statusCode);
           next();
         }
       }
     );
   }
   else{
-    bbItemId = undefined;
     next();
   }
  };
 
-var walmartReviews = function(req, res,next){
-  WalmartReviewstoSend = "";
-  if(bbItemId !== undefined) {
-    request({
-        url: 'http://api.walmartlabs.com/v1/reviews/' + bbItemId + '?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
-      }, function (error, response, walmartReviewBody) {
-        if (!error && response.statusCode == 200) {
-           WalmartReviewstoSend = walmartReviewBody;
-          next();
-        }
-      }
-    );
-  }
-  else{
-    next();
-  }
-};
-
-app.post('/get-bestbuy-reviews', [bestbuyReviews,bestbuySkuToUPC,bestbuyUPCToItemId,walmartReviews],function(req, res,next) {
-  next();
-}, function (req, res) {
-  var strJson = "";
-  if(bbReviews.length>0) {
-    var json = JSON.parse(bbReviews);
-    json.customerReviewAverage = customerReviewAverage;
-     strJson = JSON.stringify(json);
+// Handles call from client to get reviews for an item the user clicks on
+// in the Best Buy search results column.
+// Gets the Best Buy reviews first, then checks to see if there is an identical
+// item at Walmart, and gets those reviews if so.
+app.post('/get-bestbuy-reviews', [bestbuyReviews,bestbuySkuToUPC,bestbuyUPCToItemId,walmartReviews], function (req, res) {
+  if(req.bestbuyReviews.length>0) {
+    // convert req.bestbuyReviews to obj so we can add customerReviewAverage property to it
+    // then re stringify it
+    var json = JSON.parse(req.bestbuyReviews);
+    json.customerReviewAverage = req.customerReviewAverage;
+    req.bestbuyReviews = JSON.stringify(json);
   }
   res.send([
-    {walmartReviews: WalmartReviewstoSend,
-      bestbuyReviews: strJson}
+    {walmartReviews: req.walmartReviews,
+      bestbuyReviews: req.bestbuyReviews}
   ]);
 });
 
