@@ -292,7 +292,7 @@ var SignUpPanel = React.createClass({
               <form name="signup" onSubmit={this.handleSubmit}>
                   <input type='text'className="form-control" placeholder = "Username" ref="username"/>
                   <input type="password" className="form-control logButton" placeholder = "Password" ref="password"/>
-                  <input type="password" className="form-control logButton" placeholder = "Email" ref="email"/>
+                  <input type="text" className="form-control logButton" placeholder = "Email" ref="email"/>
                   <button className="btn btn-primary logButton">Sign Up</button>
               </form>
           </div>
