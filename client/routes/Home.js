@@ -1,23 +1,10 @@
 var React = require('react');
 
-var WalmartComponents = require('./Home-Walmart-Components');
-var WalmartRelatedResultsDisplay = WalmartComponents.WalmartRelatedResultsDisplay;
-
-var ReviewComponents = require('./Home-Reviews-Components');
-var ReviewsDisplay = ReviewComponents.ReviewsDisplay;
-var WalmartIndividualReviewDisplay = ReviewComponents.WalmartIndividualReviewDisplay;
-var BestbuyIndividualReviewDisplay = ReviewComponents.BestbuyIndividualReviewDisplay;
-
-// var AmazonComponents = require('./Home-Amazon-Components');
-// var AmazonRelatedResultsDisplay = AmazonComponents.AmazonRelatedResultsDisplay;
-// var AmazonIndividualResultDisplay = AmazonComponents.AmazonIndividualResultDisplay;
-
-var BestbuyComponents = require('./Home-Bestbuy-Components');
-var BestbuyRelatedResultsDisplay = BestbuyComponents.BestbuyRelatedResultsDisplay;
-
-
-var D3Components = require('./D3-Chart');
-var D3Chart = D3Components.D3Chart;
+var WalmartRelatedResultsDisplay = require('./Home-Walmart-Components').WalmartRelatedResultsDisplay;
+var BestbuyRelatedResultsDisplay = require('./Home-Bestbuy-Components').BestbuyRelatedResultsDisplay;
+var ReviewsDisplaySection = require('./Home-Reviews-Components').ReviewsDisplaySection;
+var ChooseAnotherProductSection = require('./Home-Compare-Components').ChooseAnotherProductSection;
+var D3Chart = require('./D3-Chart').D3Chart;
 
 var D3PriceChart = require('./D3-Price-Chart');
 
@@ -156,15 +143,25 @@ var DisplayBox = React.createClass({
     });
   },
 
+  // take raw review data from different sites and turn it into an
+  // object that is more or less the same across different stores...
+  // or at least has some same property names.
+  // This enables the review columns display functions to be more
+  // or less agnostic about where the data came from
   makeReviewSetFromRawData: function(rawObj, site, name, image) {
     var ReviewsFromData;
     var AverageRating;
     var ReviewCount;
 
     if (site === 'Walmart') {
+      // array of reviews
       ReviewsFromData = rawObj.reviews;
       AverageRating = rawObj.reviewStatistics.averageOverallRating;
       ReviewCount = rawObj.reviewStatistics.totalReviewCount;
+      // saves id of current item so it won't show up in
+      // "choose another product" column
+      // doesn't hold up if you have 2 columns with 2 different
+      // items
       this.setState({currentProductItemID: rawObj.itemId});
       return ({
         source: 'Walmart',
@@ -175,9 +172,14 @@ var DisplayBox = React.createClass({
         ReviewCount: ReviewCount
         });
     } else if (site === 'Best Buy') {
+      // array of reviews
       ReviewsFromData = rawObj.reviews;
       AverageRating = rawObj.customerReviewAverage;
       ReviewCount = rawObj.total;
+      // saves id of current item so it won't show up in
+      // "choose another product" column
+      // doesn't hold up if you have 2 columns with 2 different
+      // items
       this.setState({currentProductSKU: rawObj.reviews[0].sku});
       return({
         source: 'Best Buy',
@@ -191,6 +193,9 @@ var DisplayBox = React.createClass({
     }
   },
 
+  // checks how many columns (items in reviewSets array) and
+  // switches to 3-across styling if there's 3, or 2-across
+  // styling if there's less than 3
   adjustColumnDisplay: function() {
 
     if (this.state.allReviews.reviewSets.length > 2) {
@@ -217,11 +222,15 @@ var DisplayBox = React.createClass({
 
   },
 
+  // Handles event where user clicks on an item in "choose another
+  // product" column, adds another column with reviews for that
+  // product
   handleCompareRequest: function(id, site, name, image) {
 
     var queryUrl;
     var data;
 
+    // id for lookup will be itemId for walmart and sku for Best Buy
     if (site === 'Walmart') {
       queryUrl = 'get-walmart-reviews';
       data = {itemId: id};
@@ -296,12 +305,13 @@ var DisplayBox = React.createClass({
     this.setState({
       allReviews: { reviewSets: reviewSetsTmp },
     });
-
+    // make sure column display style is appropriate for new number of columns
     this.adjustColumnDisplay();
-    console.log("?");
+    // refresh d3 review chart
     this.refs.d3chart.startEngine(500, 275, reviewSetsTmp);
   },
 
+  // Shows search results columns and hides reviews columns
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
     $('.d3-container').fadeOut();
@@ -401,121 +411,6 @@ var SearchForm = React.createClass({
   }
 });
 
-var ReviewsDisplaySection = React.createClass({
-  dismissColumn: function(name, site) {
-    this.props.onDismissColumn(name, site);
-  },
-
-  render: function() {
-    var reviewColumns = this.props.allReviews.reviewSets.map(function (set, index) {
-      return (
-        <ReviewsDisplay 
-          key={'ReviewColumn'+index}
-          source={set.source}
-          data={set.Reviews}
-          name={set.name}
-          image={set.image}
-          AverageRating={set.AverageRating}
-          ReviewCount={set.ReviewCount}
-          onDismissColumn={this.dismissColumn} />
-        );
-    }.bind(this));
-    return (
-      <div className="reviews-display-section">
-        {reviewColumns}
-      </div>
-    );
-  }
-});
-
-var ChooseAnotherProductSection = React.createClass({
-  handleCompareRequest: function(itemId, site, name, image) {
-    this.props.onCompareRequest(itemId, site, name, image);
-  },
-  render: function() {
-    return (
-      <div className="choose-another-product-section">
-        <h5>Choose another product to compare</h5>
-        <ul className="nav nav-tabs">
-          <li role="presentation" className="active"><a href="#walmartChoices" data-toggle="tab">Walmart</a></li>
-          <li role="presentation"><a href="#bestbuyChoices" data-toggle="tab">Best Buy</a></li>
-        </ul>
-        <div className="tab-content">
-          <div role="tabpanel" id="walmartChoices" className="tab-pane active">
-            <ChooseAnotherProductSectionTab
-              site="Walmart"
-              onCompareRequest={this.handleCompareRequest}
-              currentProductId={this.props.currentProductItemID}
-              data={this.props.walmartData} />
-          </div>
-          <div role="tabpanel" id="bestbuyChoices" className="tab-pane">
-            <ChooseAnotherProductSectionTab
-              site="Best Buy"
-              onCompareRequest={this.handleCompareRequest}
-              currentProductId={this.props.currentProductSKU}
-              data={this.props.bestbuyData} />
-          </div>
-        </div>
-      </div>
-    );
-  }
-});
-
-var ChooseAnotherProductSectionTab = React.createClass({
-  handleCompareRequest: function(itemId, site, name, image) {
-    this.props.onCompareRequest(itemId, site, name, image);
-  },
-  render: function() {
-
-    var currentId = this.props.currentProductId;
-    var site = this.props.site;
-    var resultNodes = this.props.data.results.map(function(result, index) {
-      // put an if condition here to check if the result is current product already displayed
-      var resultId;
-      var image;
-      if (site === 'Walmart') {
-        resultId = result.itemId;
-        image = result.thumbnailImage;
-      } else if (site === 'Best Buy') {
-        resultId = result.sku;
-        image = result.image;
-      }
-      if (currentId !== resultId) {
-        return (
-          <IndividualProductCompareChoice 
-            key={site + 'OtherProduct' + index}
-            site={site}
-            id={resultId}
-            onCompareRequest={this.handleCompareRequest}
-            image={image}
-            name={result.name} />
-        );
-      }
-    }.bind(this));
-    return (
-      <div>
-        <h6>{this.props.site}</h6>
-        {resultNodes}
-      </div>
-    );
-  }
-});
-
-var IndividualProductCompareChoice = React.createClass({
-  handleCompareRequest: function(id, site, name, image) {
-    this.props.onCompareRequest(this.props.id, this.props.site, this.props.name, this.props.image);
-  },
-  render: function() {
-    return (
-      <div className="choose-another-product-individual-display" 
-        key={this.props.key}
-        onClick={this.handleCompareRequest}>
-        <img src={this.props.image} />
-        <strong>Product: </strong>{this.props.name}
-      </div>
-    );
-  }
-});
 
 // Home page container for the DisplayBox component
 var Home = React.createClass({

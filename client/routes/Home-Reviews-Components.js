@@ -1,5 +1,33 @@
 var React = require('react');
 
+
+var ReviewsDisplaySection = React.createClass({
+  dismissColumn: function(name, site) {
+    this.props.onDismissColumn(name, site);
+  },
+
+  render: function() {
+    var reviewColumns = this.props.allReviews.reviewSets.map(function (set, index) {
+      return (
+        <ReviewsDisplay 
+          key={'ReviewColumn'+index}
+          source={set.source}
+          data={set.Reviews}
+          name={set.name}
+          image={set.image}
+          AverageRating={set.AverageRating}
+          ReviewCount={set.ReviewCount}
+          onDismissColumn={this.dismissColumn} />
+        );
+    }.bind(this));
+    return (
+      <div className="reviews-display-section">
+        {reviewColumns}
+      </div>
+    );
+  }
+});
+
 var ReviewsDisplay = React.createClass ({
   dismissColumn: function(name, site) {
     this.props.onDismissColumn(this.props.name, this.props.source);
@@ -98,8 +126,4 @@ var BestbuyIndividualReviewDisplay = React.createClass({
   }
 });
 
-module.exports.ReviewsDisplay = ReviewsDisplay;
-
-module.exports.WalmartIndividualReviewDisplay = WalmartIndividualReviewDisplay;
-
-module.exports.BestbuyIndividualReviewDisplay = BestbuyIndividualReviewDisplay;
+module.exports.ReviewsDisplaySection = ReviewsDisplaySection;

@@ -35,7 +35,7 @@ var BestbuyRelatedResultsDisplay = React.createClass({
   }
 });
 
-// Component that displays individual results for Best Buy
+// Component that displays an individual result for Best Buy
 var BestbuyIndividualResultDisplay = React.createClass({
   handleReviewRequest: function() {
     $('.bestbuy-reviews-display').removeClass('hidden');

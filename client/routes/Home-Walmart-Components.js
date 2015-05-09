@@ -34,7 +34,7 @@ var WalmartRelatedResultsDisplay = React.createClass({
   }
 });
 
-// Component that displays individual results for Walmart
+// Component that displays an individual result for Walmart
 var WalmartIndividualResultDisplay = React.createClass({
   handleReviewRequest: function() {
     this.props.onReviewRequest({itemId: this.props.itemId}, 'Walmart', this.props.name, this.props.thumbnailImage);
