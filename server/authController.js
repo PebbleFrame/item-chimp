@@ -6,7 +6,7 @@ module.exports = {
     db.once("userAdded", function(token){
 	    //Sign Up Successful
       if(token){
-        res.json({"token": token});
+        res.send(true);
       }
       //Sign Up Failure
       else{
