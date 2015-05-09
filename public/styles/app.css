@@ -316,6 +316,36 @@ a.follow:hover, a.follow:active {
   text-decoration: none;
 }
 
+.welcome{
+  margin-top: 125px;
+  border-bottom: 1px solid #ccc;
+  margin-right: 0px;
+  padding-right: 0px;
+  border-right: 0px;
+}
+
+.welcomeGroup{
+  margin-top:50px;
+  border-left: 1px solid #ccc;
+  padding-left: 40px;
+  margin-left: 0px;
+}
+.logButton{
+  margin-top: 10px;
+}
+.signupForm{
+  border-left: 1px solid #ccc;
+  padding-left: 50px;
+}
+.loginForm{
+  padding-right: 50px;
+
+}
+.dashboardForm{
+  margin-top: 50px;
+}
+
+
 /* ========== D3 =============== */
 
 .chart {
