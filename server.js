@@ -22,8 +22,6 @@ app.get('/', function(req, res) {
   res.render('index.html');
 });
 
-var WalmartResultsToSend = "";
-var BestbuyResultsToSend = "";
 
 var walmartGeneralQuery = function(req, res,next){
   var query = req.body.query;
@@ -32,7 +30,7 @@ var walmartGeneralQuery = function(req, res,next){
     json: true
   },function (error, response, walmartBody) {
     if (!error && response.statusCode == 200) {
-      WalmartResultsToSend = walmartBody.items;
+      req.walmartResults = walmartBody.items;
      next();
     }
   });
@@ -45,7 +43,7 @@ var bestbuyGeneralQuery =  function(req, res,next) {
     json: true
   }, function (error, response, bestbuyBody) {
     if (!error && response.statusCode == 200) {
-      BestbuyResultsToSend = bestbuyBody.products;
+      req.bestbuyResults = bestbuyBody.products;
       next();
     }
   });
@@ -55,14 +53,11 @@ app.post('/general-query', [walmartGeneralQuery,bestbuyGeneralQuery], function(r
   next();
 }, function (req, res) {
   res.send([
-  {walmart: WalmartResultsToSend},
-  {bestbuy: BestbuyResultsToSend}
+  {walmart: req.walmartResults},
+  {bestbuy: req.bestbuyResults}
   ]);
 });
 
-var upc = "";
-var WalmartReviewstoSend = "";
-var BestBuyReviewsToSend = "";
 var bestBuySku = "";
 var customerReviewAverage = '';
 
@@ -73,9 +68,9 @@ var walmartReviewsW = function(req, res,next){
       url: 'http://api.walmartlabs.com/v1/reviews/' + itemId + '?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
     }, function (error, response, walmartReviewBody) {
       if (!error && response.statusCode == 200) {
-        WalmartReviewstoSend = walmartReviewBody;
-        var json = JSON.parse(WalmartReviewstoSend);
-        upc = (json.upc);
+        req.walmartReviews = walmartReviewBody;
+        var json = JSON.parse(walmartReviewBody);
+        req.upc = (json.upc);
         next();
       }
     }
@@ -83,19 +78,17 @@ var walmartReviewsW = function(req, res,next){
 };
 
 var bestbuyUPCToSku = function(req, res,next){
-  bestBuySku = "";
   request({
-      url: 'https://api.remix.bestbuy.com/v1/products(upc='+upc+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=sku,upc,name,longDescription,customerReviewAverage'
+      url: 'https://api.remix.bestbuy.com/v1/products(upc='+req.upc+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=sku,upc,name,longDescription,customerReviewAverage'
     }, function (error, response, bestBuySkuBody) {
       if (!error && response.statusCode == 200) {
         var json = JSON.parse(bestBuySkuBody);
-        var len = json.products.length;
-        if(len>0) {
-          bestBuySku = json.products[0].sku;
-          customerReviewAverage = json.products[0].customerReviewAverage;
+        if(json.products.length > 0) {
+          req.bestBuySku = json.products[0].sku;
+          req.customerReviewAverage = json.products[0].customerReviewAverage;
         }
-        else{
-          bestBuySku =undefined;
+        else {
+          req.bestBuySku = undefined;
         }
         next();
       }
@@ -104,14 +97,14 @@ var bestbuyUPCToSku = function(req, res,next){
 };
 
 var bestbuyReviewsW = function(req, res,next){
-  BestBuyReviewsToSend ="";
+  BestBuyReviewsToSend = "";
   if(bestBuySku !== undefined) {
     var bb = parseInt(bestBuySku);
     request({
-        url: 'http://api.remix.bestbuy.com/v1/reviews(sku='+bestBuySku+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&pageSize=25&show=id,sku,rating,title,comment,reviewer.name'
+        url: 'http://api.remix.bestbuy.com/v1/reviews(sku='+req.bestBuySku+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&pageSize=25&show=id,sku,rating,title,comment,reviewer.name'
       }, function (error, response, bestbuyReviewBody) {
         if (!error && response.statusCode == 200) {
-          BestBuyReviewsToSend = bestbuyReviewBody;
+          req.bestbuyReviews = bestbuyReviewBody;
         }
         next();
       }
@@ -126,28 +119,23 @@ app.post('/get-walmart-reviews', [walmartReviewsW,bestbuyUPCToSku,bestbuyReviews
   next();
 }, function (req, res) {
   var strJson = "";
-  if(BestBuyReviewsToSend) {
-    var json = JSON.parse(BestBuyReviewsToSend);
-    json.customerReviewAverage = customerReviewAverage;
+  if(req.bestbuyReviews) {
+    var json = JSON.parse(req.bestbuyReviews);
+    json.customerReviewAverage = req.customerReviewAverage;
     strJson = JSON.stringify(json);
   }
   res.send([
-    {walmartReviews: WalmartReviewstoSend,
+    {walmartReviews: req.walmartReviews,
     bestbuyReviews: strJson}
   ]);
 });
 
-var bbSku = "";
-var bbReviews = "";
-var bestbuyReviews = function(req, res,next){
-  var sku = req.body.sku;
-  bbSku = sku;
-  bbReviews = "";
+var bestbuyReviews = function(req, res, next){
   request({
-      url: 'http://api.remix.bestbuy.com/v1/reviews(sku=' + sku +')?format=json&apiKey=n34qnnunjqcb9387gthg8625&pageSize=25&show=id,sku,rating,title,comment,reviewer.name'
+      url: 'http://api.remix.bestbuy.com/v1/reviews(sku=' + req.body.sku +')?format=json&apiKey=n34qnnunjqcb9387gthg8625&pageSize=25&show=id,sku,rating,title,comment,reviewer.name'
     }, function (error, response, bestbuyReviewBody) {
       if (!error && response.statusCode == 200) {
-        bbReviews = bestbuyReviewBody;
+        req.bbReviews = bestbuyReviewBody;
         next();
       }
       else{
@@ -157,20 +145,18 @@ var bestbuyReviews = function(req, res,next){
   );
 };
 
-var bbUpc = "";
-customerReviewAverage = '';
-var bestbuySkuToUPC = function(req, res,next){
+var bestbuySkuToUPC = function(req, res, next){
   request({
-      url: 'https://api.remix.bestbuy.com/v1/products(sku='+bbSku+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=name,longDescription,upc,customerReviewAverage'
+      url: 'https://api.remix.bestbuy.com/v1/products(sku='+req.body.sku+')?format=json&apiKey=n34qnnunjqcb9387gthg8625&show=name,longDescription,upc,customerReviewAverage'
     }, function (error, response, bestbuyReviewBody) {
       if (!error && response.statusCode == 200) {
         var json = JSON.parse(bestbuyReviewBody);
         if(json.products.length>0) {
-          bbUpc = json.products[0].upc;
-          customerReviewAverage = json.products[0].customerReviewAverage;
+          req.bbUpc = json.products[0].upc;
+          req.customerReviewAverage = json.products[0].customerReviewAverage;
         }
         else{
-          bbUpc = undefined;
+          req.bbUpc = undefined;
         }
         next();
       }
@@ -178,43 +164,41 @@ var bestbuySkuToUPC = function(req, res,next){
   );
 };
 
-var bbItemId = "";
 var bestbuyUPCToItemId = function(req, res,next){
-  if(bbUpc !== undefined){
+  if(req.bbUpc !== undefined){
     request({
-        url: 'http://api.walmartlabs.com/v1/items?apiKey=va35uc9pw8cje38csxx7csk8&upc='+bbUpc
+        url: 'http://api.walmartlabs.com/v1/items?apiKey=va35uc9pw8cje38csxx7csk8&upc='+req.bbUpc
       }, function (error, response, cb3Body) {
         if (!error && response.statusCode == 200) {
           var json = JSON.parse(cb3Body);
           if(json.items.length>0) {
-            bbItemId = json.items[0].itemId;
+            req.bbItemId = json.items[0].itemId;
             }
           else{
-            bbItemId = undefined;
+            req.bbItemId = undefined;
           }
           next();
         }
         else{
-          bbItemId = undefined;
+          req.bbItemId = undefined;
           next();
         }
       }
     );
   }
   else{
-    bbItemId = undefined;
+    req.bbItemId = undefined;
     next();
   }
  };
 
 var walmartReviews = function(req, res,next){
-  WalmartReviewstoSend = "";
-  if(bbItemId !== undefined) {
+  if(req.bbItemId !== undefined) {
     request({
-        url: 'http://api.walmartlabs.com/v1/reviews/' + bbItemId + '?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
+        url: 'http://api.walmartlabs.com/v1/reviews/' + req.bbItemId + '?format=json&apiKey=va35uc9pw8cje38csxx7csk8'
       }, function (error, response, walmartReviewBody) {
         if (!error && response.statusCode == 200) {
-           WalmartReviewstoSend = walmartReviewBody;
+           req.walmartReviews = walmartReviewBody;
           next();
         }
       }
@@ -229,13 +213,13 @@ app.post('/get-bestbuy-reviews', [bestbuyReviews,bestbuySkuToUPC,bestbuyUPCToIte
   next();
 }, function (req, res) {
   var strJson = "";
-  if(bbReviews.length>0) {
-    var json = JSON.parse(bbReviews);
+  if(req.bbReviews.length>0) {
+    var json = JSON.parse(req.bbReviews);
     json.customerReviewAverage = customerReviewAverage;
      strJson = JSON.stringify(json);
   }
   res.send([
-    {walmartReviews: WalmartReviewstoSend,
+    {walmartReviews: req.walmartReviews,
       bestbuyReviews: strJson}
   ]);
 });
