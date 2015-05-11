@@ -1,7 +1,11 @@
 React = require('react');
 
 var Dashboard = React.createClass({
-
+  //only an empty div is rendered to the page until this function is callled 
+  //and either a username is set or login is set to true
+  //this function checks if the client has a token and if it does
+  //it retrieves the user data from server and sets the state
+  //for username and email
   loadUserFromServer: function(){
     if(this.state.token){
       $.ajax({
@@ -22,14 +26,14 @@ var Dashboard = React.createClass({
       this.setState({login:true})
     }
   },
-
+  //Here the components initial state is set
+  //If the client has a token, then it is set
   getInitialState: function() {
     if(!localStorage.getItem('tokenChimp')){
       return {
         token: false,
         username : false,
         email  : false,
-        mounted: false
       };
     }
     else {
@@ -43,10 +47,14 @@ var Dashboard = React.createClass({
         login: false
       };
     },
-
+  //this is called after the component is initially rendered
+  //which on any new visit to the page, will be right after the empty
+  //div is rendered
   componentDidMount: function(){
     this.loadUserFromServer();
   },
+  //If a new user is successfully added to database
+  //they are passed onto the login submit, where they are logged in
   handleSignupSubmit: function(user){
     $.ajax({
       url: '/auth/signup',
@@ -64,6 +72,8 @@ var Dashboard = React.createClass({
       }.bind(this)
     });
   },
+  //if user is in database and password is valid
+  //user is given token and state is set
   handleLoginSubmit: function(user) {
     $.ajax({
       url: '/auth/login',
@@ -85,6 +95,7 @@ var Dashboard = React.createClass({
       }.bind(this)
     });
   },
+  //users token is destroyed, state changed to reflect
   handleLogout: function(){
     this.setState({
       username: false,
@@ -93,6 +104,12 @@ var Dashboard = React.createClass({
     localStorage.removeItem('tokenChimp');
     this.setState({login: true});
   },
+
+  //Component is rendered depenending on state; if a user is logged in
+  //then dashboard is rendered; if user is not logged in login portal is rendered
+  //it renders an empty div initially so that user information can be checked before
+  //significant rendering and also prevents visual glitch when entering dashboard
+  //with a token--prevents the signup page from showing before switch to dashboard
   render: function() {
     if(this.state.username) {
       return (
@@ -137,111 +154,9 @@ var Dashboard = React.createClass({
   }
 });
 
-var WatchingPanel = React.createClass({
-  render: function(){
-    return(
-      <div className="panel panel-primary">
-          <div className="panel-heading" role="tab" id="headingFive">
-            <h4 className="panel-title">
-              <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
-                Products you are watching
-              </a>
-            </h4>
-          </div>
-          <div id="collapseFive" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
-            <div className="panel-body">
-            <WatchingBox /> 
-            </div>
-          </div>
-     </div>
-      );
-  }
-});
 
-var PasswordPanel = React.createClass({
-  render: function(){
-    return(
-      <div className="panel panel-primary">
-          <div className="panel-heading" role="tab" id="headingOne">
-            <h4 className="panel-title">
-              <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                Change Password
-              </a>
-            </h4>
-          </div>
-          <div id="collapseOne" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-            <div className="panel-body">
-            <ChangePasswordBox />  
-            </div>
-          </div>
-     </div>
-      );
-  }
-});
 
-var ContactPanel = React.createClass({
-  render: function(){
-    return(
-      <div className="panel panel-primary">
-          <div className="panel-heading" role="tab" id="headingTwo">
-            <h4 className="panel-title">
-              <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                Edit Contact Info
-              </a>
-            </h4>
-          </div>
-          <div id="collapseTwo" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-            <div className="panel-body">
-            <EditContactInfoBox email={this.props.email} />
-            </div>
-          </div>
-     </div>
-      );
-  }
-})
-
-var FollowingPanel = React.createClass({
-  render: function(){
-    return(
-      <div className="panel panel-primary">
-          <div className="panel-heading" role="tab" id="headingThree">
-            <h4 className="panel-title">
-              <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                Users You are Following
-              </a>
-            </h4>
-          </div>
-          <div id="collapseThree" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-            <div className="panel-body">
-            <YouAreFollowingBox />
-            </div>
-          </div>
-     </div>
-      );
-  }
-})
-
-var FollowersPanel = React.createClass({
-  render: function(){
-    return(
-      <div className="panel panel-primary">
-          <div className="panel-heading" role="tab" id="headingFour">
-            <h4 className="panel-title">
-              <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
-               Users Following You
-              </a>
-            </h4>
-          </div>
-          <div id="collapseFour" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-            <div className="panel-body">
-            <FollowingYouBox />
-            </div>
-          </div>
-     </div>
-      );
-  }
-})
-
+//Is rendered when user needs to sign in or signup
 var UserLoginPanel = React.createClass({
   handleSubmit:function(e){
     e.preventDefault();
@@ -269,7 +184,7 @@ var UserLoginPanel = React.createClass({
   }
 });
 
-
+//Is rendered when user needs to sign in or signup
 var SignUpPanel = React.createClass({
   handleSubmit:function(e){
     e.preventDefault();
@@ -300,6 +215,117 @@ var SignUpPanel = React.createClass({
   }
 });
 
+//Rendered after signing in
+var WatchingPanel = React.createClass({
+  render: function(){
+    return(
+      <div className="panel panel-primary">
+          <div className="panel-heading" role="tab" id="headingFive">
+            <h4 className="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+                Products you are watching
+              </a>
+            </h4>
+          </div>
+          <div id="collapseFive" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+            <div className="panel-body">
+            <WatchingBox /> 
+            </div>
+          </div>
+     </div>
+      );
+  }
+});
+
+//Rendered after signing in
+var PasswordPanel = React.createClass({
+  render: function(){
+    return(
+      <div className="panel panel-primary">
+          <div className="panel-heading" role="tab" id="headingOne">
+            <h4 className="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Change Password
+              </a>
+            </h4>
+          </div>
+          <div id="collapseOne" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+            <div className="panel-body">
+            <ChangePasswordBox />  
+            </div>
+          </div>
+     </div>
+      );
+  }
+});
+
+//Rendered after signing in
+var ContactPanel = React.createClass({
+  render: function(){
+    return(
+      <div className="panel panel-primary">
+          <div className="panel-heading" role="tab" id="headingTwo">
+            <h4 className="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                Edit Contact Info
+              </a>
+            </h4>
+          </div>
+          <div id="collapseTwo" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+            <div className="panel-body">
+            <EditContactInfoBox email={this.props.email} />
+            </div>
+          </div>
+     </div>
+      );
+  }
+})
+
+//Rendered after signing in
+var FollowingPanel = React.createClass({
+  render: function(){
+    return(
+      <div className="panel panel-primary">
+          <div className="panel-heading" role="tab" id="headingThree">
+            <h4 className="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                Users You are Following
+              </a>
+            </h4>
+          </div>
+          <div id="collapseThree" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+            <div className="panel-body">
+            <YouAreFollowingBox />
+            </div>
+          </div>
+     </div>
+      );
+  }
+})
+
+//Rendered after signing in
+var FollowersPanel = React.createClass({
+  render: function(){
+    return(
+      <div className="panel panel-primary">
+          <div className="panel-heading" role="tab" id="headingFour">
+            <h4 className="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+               Users Following You
+              </a>
+            </h4>
+          </div>
+          <div id="collapseFour" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+            <div className="panel-body">
+            <FollowingYouBox />
+            </div>
+          </div>
+     </div>
+      );
+  }
+})
+
+//Rendered after signing in
 var WatchingBox = React.createClass({
   render: function() {
     return (
@@ -310,6 +336,7 @@ var WatchingBox = React.createClass({
   }
 });
 
+//Rendered after signing in
 var ChangePasswordBox = React.createClass({
   render: function() {
     return (
@@ -322,6 +349,7 @@ var ChangePasswordBox = React.createClass({
   }
 });
 
+//Rendered after signing in
 var EditContactInfoBox = React.createClass({
   render: function() {
     return (
@@ -333,6 +361,7 @@ var EditContactInfoBox = React.createClass({
   }
 });
 
+//Rendered after signing in
 var YouAreFollowingBox = React.createClass({
   render: function() {
     return (
@@ -344,6 +373,7 @@ var YouAreFollowingBox = React.createClass({
   }
 });
 
+//Rendered after signing in
 var FollowingYouBox = React.createClass({
   render: function() {
     return (
@@ -355,6 +385,7 @@ var FollowingYouBox = React.createClass({
   }
 });
 
+//Rendered after signing in
 var FavoriteUsersDisplay = React.createClass({
   handleUnfollow: function(e) {
     e.preventDefault();
@@ -370,6 +401,7 @@ var FavoriteUsersDisplay = React.createClass({
   }
 });
 
+//Rendered after signing in
 var FollowersDisplay = React.createClass({
   handleUnfollow: function(e) {
     e.preventDefault();
