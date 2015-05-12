@@ -36,3 +36,6 @@ testServer.js
 
 # Compiled index.js file public/scripts/index.js
 public/scripts/index.js
+
+# Database config file
+server/db/config.json
