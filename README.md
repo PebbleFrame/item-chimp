@@ -32,7 +32,7 @@
 
 1. D3 - D3 is used to visualize the data retrieved from API requests.
 
-1. Browserify - Browserify is used to allow the `require` statement to be used on browser code. It recursively analyzes all the `require` calls in the app andn builds a bundle that is served up to the browser in a single `<script>` tag. It is standard practice to use something like Browserify (or Webpack) with React.js.
+1. Browserify - Browserify is used to allow the `require` statement to be used on browser code. It recursively analyzes all the `require` calls in the app and builds a bundle that is served up to the browser in a single `<script>` tag. It is standard practice to use something like Browserify (or Webpack) with React.js.
 
 1. Grunt - Grunt is used to run the server (`nodemon`) and `browserify` at the same time, so that whenever a React file is changed, browserify will automatically compile it. Therefore, use `grunt serve` for development.
 
