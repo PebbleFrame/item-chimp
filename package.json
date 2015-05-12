@@ -49,7 +49,6 @@
     "grunt-mocha-test": "^0.12.7",
     "grunt-react": "^0.12.2",
     "grunt-shell": "^1.1.2",
-    "jest-cli": "^0.4.1",
     "mocha": "^2.2.4",
     "supertest": "^0.15.0"
   },
