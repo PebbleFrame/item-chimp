@@ -1,5 +1,6 @@
 //DECLARE GLOBAL VARIABLES ---START
-  var 
+  var
+  fs = require('fs'),
   Bookshelf = require('bookshelf'),
   events = require('events'),
   EventEmitter = require("events").EventEmitter,
@@ -13,16 +14,20 @@
     EventEmitter.call(this);
   }
 
+// Import the db config settings
+var dbSettings = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+
   util.inherits(DB, EventEmitter);
 
   var db = new DB();
 
+// Apply the dbSettings object
   var knex = require('knex')({
     client: 'mysql',
     connection: {
-      host: 'localhost',
-      user: 'root',
-      password: '',
+      host: dbSettings.host,
+      user: dbSettings.user,
+      password: dbSettings.password,
       database: 'pebble',
       charset: 'utf8',
     }
@@ -33,7 +38,7 @@
 
 //-------------TABLES VERIFICATION START-----------/
   db.orm.knex.schema.hasTable('users').then(function(exists) {
-    if (!exists) 
+    if (!exists)
         console.log('Table users does not exist');
   });
 
@@ -43,17 +48,17 @@
   });
 
   db.orm.knex.schema.hasTable('products').then(function(exists) {
-    if (!exists) 
+    if (!exists)
         console.log('Table products does not exist');
   });
 
   db.orm.knex.schema.hasTable('followers').then(function(exists) {
-    if (!exists) 
+    if (!exists)
         console.log('Table followers does not exist');
   });
 
   db.orm.knex.schema.hasTable('watchers').then(function(exists) {
-    if (!exists) 
+    if (!exists)
         console.log('Table watchers does not exist');
   });
 //-------------TABLES VERIFICATION END-------------/
@@ -167,7 +172,7 @@
 //-------------ORM FOR WATCHERS END----------------/
 
 //-------------USER API CONFIGURATION START--------/
-  
+
   db.tokenUser = null;
   //This function determines whether a specific user
   //already exists in the database
@@ -183,7 +188,7 @@
       else{
         console.log(user + "Found");
         db.emit("foundUser", user);
-      } 
+      }
     });
   };
 
@@ -203,7 +208,7 @@
             }
             user.password = hash;
             console.log(user);
-            var newUser = new db.User(user);  
+            var newUser = new db.User(user);
             newUser.save().then(function(newUser) {
               db.Users.add(newUser);
               console.log("User Saved");
