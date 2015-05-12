@@ -79,7 +79,7 @@ from the root directory.
 
 ### Roadmap
 
-View the project roadmap [here](https://github.com/PebbleFrame/pebbleframe/issues)
+View the project roadmap [here](https://waffle.io/family-thief/pebbleframe)
 
 
 ## Contributing
