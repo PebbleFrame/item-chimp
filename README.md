@@ -1,12 +1,19 @@
+[![Stories in Ready](https://badge.waffle.io/family-thief/pebbleframe.svg?label=ready&title=Ready)](http://waffle.io/family-thief/pebbleframe)
+
 # ItemChimp
 
 > A Data Visualization Tool for Shoppers
 
 ## Team
 
+### Original Team
   - __Product Owner__: Chistina Holland
   - __Scrum Master__: Michael Cheng
   - __Development Team Members__: Jeff Peoples, Vinaya Gopisetti
+
+### Legacy Team
+  - __Scrum Master__: Craig Smith
+  - __Development Team Members__: Adam Van Antwerp, Henry Ng, Brandon Ellis
 
 ## Table of Contents
 
