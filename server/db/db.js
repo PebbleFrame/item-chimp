@@ -15,7 +15,7 @@
   }
 
 // Import the db config settings
-var dbSettings = JSON.parse(fs.readFileSync(__dirname + './config.json', 'utf8'));
+var dbSettings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'));
 
   util.inherits(DB, EventEmitter);
 
