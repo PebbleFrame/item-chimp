@@ -6,6 +6,12 @@ var authRouter = require('./server/auth-routes');
 //var OperationHelper = require('apac').OperationHelper;
 var request = require('request');
 var apiConfig = require('./apiConfig.js');
+var fs = require('fs');
+
+// Log any unhandled errors
+process.on('uncaughtException', function(err){
+  fs.appendFile(__dirname + '/server/server.log', new Date() + '  |  ' + err + '\n');
+});
 
 var wmAPIKey = apiConfig.walMartKey;
 var bbAPIKey = apiConfig.bestBuyKey;
