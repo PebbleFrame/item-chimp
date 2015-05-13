@@ -5,9 +5,10 @@ var nunjucks = require('nunjucks');
 var authRouter = require('./server/auth-routes');
 //var OperationHelper = require('apac').OperationHelper;
 var request = require('request');
+var apiConfig = require('./apiConfig.js');
 
-var wmAPIKey = "va35uc9pw8cje38csxx7csk8";
-var bbAPIKey = "n34qnnunjqcb9387gthg8625";
+var wmAPIKey = apiConfig.walMartKey;
+var bbAPIKey = apiConfig.bestBuyKey;
 
 var app = express();
 app.use(express.static('public'));

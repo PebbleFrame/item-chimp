@@ -39,3 +39,6 @@ public/scripts/index.js
 
 # Database config file
 server/db/config.json
+
+# Api-config file containing api keys
+apiConfig.js
