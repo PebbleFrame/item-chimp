@@ -406,6 +406,25 @@ var DisplayBox = React.createClass({
                            </div>
                        </div>
 
+                       <div>
+                           <label for="inputEmail" className="control-label col-xs-2">Rating</label>
+                              <label className="checkbox-inline">
+                                <input type="checkbox" name="rating" value="1"/> 1(Poor)
+                              </label>
+                              <label className="checkbox-inline">
+                                <input type="checkbox" name="rating" value="2"/> 2
+                              </label>
+                              <label className="checkbox-inline">  
+                                <input type="checkbox" name="rating" value="3"/> 3
+                              </label>
+                              <label className="checkbox-inline">  
+                                <input type="checkbox" name="rating" value="4"/> 4
+                              </label>
+                              <label className="checkbox-inline">  
+                                <input type="checkbox" name="rating" value="5"/> 5(Excellent)
+                              </label>
+                       </div>
+
                     </form>
 
 
