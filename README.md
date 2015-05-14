@@ -67,7 +67,12 @@ mysql.server start
 mysql -u root < server/db/schema.sql
 ```
 
+Then, rename server/db/config.json.example to config.json.  By default, it will point to the local database.  If you want to use a remote database, simply change the values in the config to point to your prefered server.
+
 `schema.sql` will build the necessary database for the app.
+
+![schema](http://i.imgur.com/7W7Uy9U.png "Schema")
+
 
 ### Getting started
 
