@@ -84,6 +84,8 @@ var DisplayBox = React.createClass({
       queryUrl = 'get-walmart-reviews';
     } else if (site === 'Best Buy') {
       queryUrl = 'get-bestbuy-reviews';
+    } else if (site === 'Item Chimp') {
+      queryUrl = 'get-itemchimp-reviews';
     }
 
     // Makes a specific API call to get reviews for the product clicked on
@@ -91,8 +93,9 @@ var DisplayBox = React.createClass({
       url: queryUrl,
       dataType: 'json',
       type: 'POST',
-      // "id" is itemId for Walmart
-      // and it's SKU for Best Buy
+      // "id" is itemId for Walmart,
+      // SKU for Best Buy,
+      // and UPC for itemChimp
       data: id,
       success: function(data) {
 
@@ -116,6 +119,7 @@ var DisplayBox = React.createClass({
               )
             );
         }
+
         if (data[0].bestbuyReviews) {
         // Get the reviews array from the response data
           reviewSetsArray.push(
@@ -125,6 +129,17 @@ var DisplayBox = React.createClass({
             );
 
           }
+
+        if (data[0].itemchimpReviews) {
+        // Get the reviews array from the response data
+          reviewSetsArray.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].itemchimpReviews), 'Item Chimp', name, image
+              )
+            );
+
+          }  
+
         // Put all reviews into an array stored in allReviews state
         this.setState({
           allReviews: { reviewSets: reviewSetsArray },
@@ -190,6 +205,24 @@ var DisplayBox = React.createClass({
         ReviewCount: ReviewCount
         });
 
+    } else if (site === 'Item Chimp') {
+      // array of reviews
+      ReviewsFromData = rawObj.reviews;
+      AverageRating = rawObj.customerReviewAverage;
+      ReviewCount = rawObj.total;
+      // saves id of current item so it won't show up in
+      // "choose another product" column
+      // doesn't hold up if you have 2 columns with 2 different
+      // items
+      this.setState({currentProductUPC: rawObj.reviews});
+      return({
+        source: 'Item Chimp',
+        name: name,
+        image: image,
+        Reviews: ReviewsFromData,
+        AverageRating: AverageRating,
+        ReviewCount: ReviewCount
+        });
     }
   },
 
@@ -247,7 +280,7 @@ var DisplayBox = React.createClass({
       // "id" is itemId for Walmart
       // and it's SKU for Best Buy
       data: data,
-      success: function(data) {;
+      success: function(data) {
 
         // will need to get this.state.allReviews.reviewSets array
         var reviewSetsTmp = this.state.allReviews.reviewSets;
