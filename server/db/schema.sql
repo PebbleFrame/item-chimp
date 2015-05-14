@@ -38,7 +38,7 @@ CREATE TABLE `reviews` (
   `upc` BIGINT(12) NULL DEFAULT NULL,
   `rating` INTEGER(3) NULL DEFAULT NULL,
   `review_text` VARCHAR(500) NULL DEFAULT NULL,
-  'review_title' VARCHAR(400) NULL DEFAULT NULL,
+  `review_title` VARCHAR(400) NULL DEFAULT NULL,
   PRIMARY KEY (`review_id`)
 );
 
