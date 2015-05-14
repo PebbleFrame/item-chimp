@@ -84,6 +84,8 @@ var DisplayBox = React.createClass({
       queryUrl = 'get-walmart-reviews';
     } else if (site === 'Best Buy') {
       queryUrl = 'get-bestbuy-reviews';
+    } else if (site === 'Item Chimp') {
+      queryUrl = 'get-itemchimp-reviews';
     }
 
     // Makes a specific API call to get reviews for the product clicked on
@@ -91,8 +93,9 @@ var DisplayBox = React.createClass({
       url: queryUrl,
       dataType: 'json',
       type: 'POST',
-      // "id" is itemId for Walmart
-      // and it's SKU for Best Buy
+      // "id" is itemId for Walmart,
+      // SKU for Best Buy,
+      // and UPC for itemChimp
       data: id,
       success: function(data) {
 
@@ -116,6 +119,7 @@ var DisplayBox = React.createClass({
               )
             );
         }
+
         if (data[0].bestbuyReviews) {
         // Get the reviews array from the response data
           reviewSetsArray.push(
@@ -125,6 +129,17 @@ var DisplayBox = React.createClass({
             );
 
           }
+
+        if (data[0].itemchimpReviews) {
+        // Get the reviews array from the response data
+          reviewSetsArray.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].itemchimpReviews), 'Item Chimp', name, image
+              )
+            );
+
+          }  
+
         // Put all reviews into an array stored in allReviews state
         this.setState({
           allReviews: { reviewSets: reviewSetsArray },
@@ -190,6 +205,24 @@ var DisplayBox = React.createClass({
         ReviewCount: ReviewCount
         });
 
+    } else if (site === 'Item Chimp') {
+      // array of reviews
+      ReviewsFromData = rawObj.reviews;
+      AverageRating = rawObj.customerReviewAverage;
+      ReviewCount = rawObj.total;
+      // saves id of current item so it won't show up in
+      // "choose another product" column
+      // doesn't hold up if you have 2 columns with 2 different
+      // items
+      this.setState({currentProductUPC: rawObj.reviews});
+      return({
+        source: 'Item Chimp',
+        name: name,
+        image: image,
+        Reviews: ReviewsFromData,
+        AverageRating: AverageRating,
+        ReviewCount: ReviewCount
+        });
     }
   },
 
@@ -247,7 +280,7 @@ var DisplayBox = React.createClass({
       // "id" is itemId for Walmart
       // and it's SKU for Best Buy
       data: data,
-      success: function(data) {;
+      success: function(data) {
 
         // will need to get this.state.allReviews.reviewSets array
         var reviewSetsTmp = this.state.allReviews.reviewSets;
@@ -311,6 +344,10 @@ var DisplayBox = React.createClass({
     this.refs.d3chart.startEngine(500, 275, reviewSetsTmp);
   },
 
+  showReviewForm: function() {
+    $('#myModal').modal('show');
+  },
+
   // Shows search results columns and hides reviews columns
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
@@ -323,6 +360,7 @@ var DisplayBox = React.createClass({
   render: function() {
     // Attributes are "props" which can be accessed by the component
     // Many "props" are set as the "state", which is set based on data received from API calls
+    // this is to overlay the modal window for posting a review
     return (
       <div className="displayBox">
         
@@ -333,7 +371,70 @@ var DisplayBox = React.createClass({
 
         <div className="reviews-display-container">
 
-          <div><button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results</button></div>
+            <div className="row">
+              <div className="col-md-5">
+                <button className="btn btn-info" onClick={this.showReviewForm}> Review this Product! </button>
+              </div>
+              <div className="col-md-1-offset-1">
+                <button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results                   </button>
+              </div>
+            </div>
+
+            
+
+      <div id="myModal" className="modal fade">
+          <div className="modal-dialog">
+              <div className="modal-content">
+                  <div className="modal-header">
+                      <button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                      
+
+                    <form className="form-horizontal">
+
+                       <div className="form-group">
+                           <label for="inputEmail" className="control-label col-xs-2">Title</label>
+                           <div className="col-xs-10">
+                               <input type="email" className="form-control" id="inputEmail" placeholder="Title"/>
+                           </div>
+                       </div>
+
+                       <div className="form-group">
+                           <label for="inputEmail" className="control-label col-xs-2">Review</label>
+                           <div className="col-xs-10">
+                               <input type="text" className="form-control" id="inputText" placeholder="Write your review here."/>
+                           </div>
+                       </div>
+
+                       <div>
+                           <label for="inputEmail" className="control-label col-xs-2">Rating</label>
+                            <div className="col-xs-10">   
+                              <label className="checkbox-inline">
+                                <input type="checkbox" name="rating1" value="1"/> 1(Poor)
+                              </label>
+                              <label className="checkbox-inline">
+                                <input type="checkbox" name="rating2" value="2"/> 2
+                              </label>
+                              <label className="checkbox-inline">  
+                                <input type="checkbox" name="rating3" value="3"/> 3
+                              </label>
+                              <label className="checkbox-inline">  
+                                <input type="checkbox" name="rating4" value="4"/> 4
+                              </label>
+                              <label className="checkbox-inline">  
+                                <input type="checkbox" name="rating5" value="5"/> 5(Excellent)
+                              </label>
+                            </div>  
+                       </div>
+                    </form>
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                      <button type="button" className="btn btn-primary">Submit Review</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
 
           <ReviewsDisplaySection
             allReviews={this.state.allReviews}
@@ -414,13 +515,13 @@ var SearchForm = React.createClass({
 
 // Home page container for the DisplayBox component
 var Home = React.createClass({
-	render: function() {
-		return (
+  render: function() {
+    return (
       <div className="home-page">
         <DisplayBox />
       </div>
-		);
-	}
+    );
+  }
 });
 
 module.exports = Home;

@@ -7,7 +7,10 @@ module.exports = {
 	addProduct:function(){
 		console.log("reviews");
 	},
-	createReview: function(){
-		console.log("watching");
+	createReview: function(req, res){
+		db.once("reviewAdded", function(review) {
+      res.json({reviewText: review.get('review_text')});
+    });
+    db.addReview(req.body);
 	}
 };
