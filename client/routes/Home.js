@@ -344,6 +344,10 @@ var DisplayBox = React.createClass({
     this.refs.d3chart.startEngine(500, 275, reviewSetsTmp);
   },
 
+  showReviewForm: function() {
+    $('#myModal').modal('show');
+  },
+
   // Shows search results columns and hides reviews columns
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
@@ -356,6 +360,7 @@ var DisplayBox = React.createClass({
   render: function() {
     // Attributes are "props" which can be accessed by the component
     // Many "props" are set as the "state", which is set based on data received from API calls
+    // this is to overlay the modal window for posting a review
     return (
       <div className="displayBox">
         
@@ -366,7 +371,55 @@ var DisplayBox = React.createClass({
 
         <div className="reviews-display-container">
 
-          <div><button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results</button></div>
+            <div className="row">
+              <div className="col-md-5">
+                <button className="btn btn-info" onClick={this.showReviewForm}> Review this Product! </button>
+              </div>
+              <div className="col-md-1-offset-1">
+                <button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results                   </button>
+              </div>
+            </div>
+
+            
+
+      <div id="myModal" className="modal fade">
+          <div className="modal-dialog">
+              <div className="modal-content">
+                  <div className="modal-header">
+                      <button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      </div>
+                      
+
+                    <form className="form-horizontal">
+
+                       <div className="form-group">
+                           <label for="inputEmail" className="control-label col-xs-2">Title</label>
+                           <div className="col-xs-10">
+                               <input type="email" className="form-control" id="inputEmail" placeholder="Title"/>
+                           </div>
+                       </div>
+
+                       <div className="form-group">
+                           <label for="inputEmail" className="control-label col-xs-2">Review</label>
+                           <div className="col-xs-10">
+                               <input type="text" className="form-control" id="inputText" placeholder="Write your review here."/>
+                           </div>
+                       </div>
+
+                    </form>
+
+
+                  <div className="modal-footer">
+                      <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                      <button type="button" className="btn btn-primary">Submit Review</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+
+
+
 
           <ReviewsDisplaySection
             allReviews={this.state.allReviews}
@@ -447,13 +500,13 @@ var SearchForm = React.createClass({
 
 // Home page container for the DisplayBox component
 var Home = React.createClass({
-	render: function() {
-		return (
+  render: function() {
+    return (
       <div className="home-page">
         <DisplayBox />
       </div>
-		);
-	}
+    );
+  }
 });
 
 module.exports = Home;
