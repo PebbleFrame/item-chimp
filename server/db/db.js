@@ -267,7 +267,26 @@ var dbSettings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'))
 
 
 
-//-------------API CONFIGURATION END---------------/
+//-------------USER API CONFIGURATION END---------------/
+
+//-------------Review API CONFIGURATION START-----------/
+
+  db.addReview = function(review){
+    db.User.where({username: db.tokenUser}).fetch()
+    .then(function (user) {
+      if (!user) {
+        db.emit("reviewAdded", undefined);
+      }
+      else{
+        console.log("Adding the review");
+        review.user_id = user.user_id;
+        var newReview = new db.Review(review);
+        newReview.save().then(function(newReview) {
+          db.emit("reviewAdded", newReview);
+        })
+      }
+    });
+  };
 
 //Create New Users --For Development Only
 	var user = {
