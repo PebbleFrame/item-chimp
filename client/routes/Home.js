@@ -387,7 +387,7 @@ var DisplayBox = React.createClass({
               <div className="modal-content">
                   <div className="modal-header">
                       <button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                      </div>
+                    </div>
                       
 
                     <form className="form-horizontal">
@@ -408,36 +408,32 @@ var DisplayBox = React.createClass({
 
                        <div>
                            <label for="inputEmail" className="control-label col-xs-2">Rating</label>
+                            <div className="col-xs-10">   
                               <label className="checkbox-inline">
-                                <input type="checkbox" name="rating" value="1"/> 1(Poor)
+                                <input type="checkbox" name="rating1" value="1"/> 1(Poor)
                               </label>
                               <label className="checkbox-inline">
-                                <input type="checkbox" name="rating" value="2"/> 2
+                                <input type="checkbox" name="rating2" value="2"/> 2
                               </label>
                               <label className="checkbox-inline">  
-                                <input type="checkbox" name="rating" value="3"/> 3
+                                <input type="checkbox" name="rating3" value="3"/> 3
                               </label>
                               <label className="checkbox-inline">  
-                                <input type="checkbox" name="rating" value="4"/> 4
+                                <input type="checkbox" name="rating4" value="4"/> 4
                               </label>
                               <label className="checkbox-inline">  
-                                <input type="checkbox" name="rating" value="5"/> 5(Excellent)
+                                <input type="checkbox" name="rating5" value="5"/> 5(Excellent)
                               </label>
+                            </div>  
                        </div>
-
                     </form>
-
-
-                  <div className="modal-footer">
+                    <div className="modal-footer">
                       <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
                       <button type="button" className="btn btn-primary">Submit Review</button>
+                    </div>
                   </div>
+                </div>
               </div>
-          </div>
-      </div>
-
-
-
 
 
           <ReviewsDisplaySection
