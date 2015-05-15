@@ -8,13 +8,19 @@ module.exports = {
 		});
 		db.findUser(db.tokenUser);
 	},
-	reviews:function(){
-		console.log("reviews");
+	reviews:function(req, res){
+		res.send("reviews");
 	},
-	watching: function(){
-		console.log("watching");
+	watching: function(req, res){
+		res.send("watching");
 	},
-	following: function(){
-		console.log("following");
+	following: function(req, res){
+		res.send("following");
+	},
+	follow : function(req,res){
+		db.once("foundUser", function(user){
+			res.json({hello: 'Hi there! You are: ' + Object.keys(user)+ '.  Your req is: ' + req.body.username});
+		});
+		db.findUser(db.tokenUser);
 	}
 };
