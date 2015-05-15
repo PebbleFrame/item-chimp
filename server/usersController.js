@@ -19,7 +19,7 @@ module.exports = {
 	},
 	follow : function(req,res){
 		db.once("foundUser", function(user){
-			res.json({hello: 'Hi there! You are: ' + Object.keys(user)+ '.  Your req is: ' + req.body.username});
+			db.followUser(user, req.body.username, res);
 		});
 		db.findUser(db.tokenUser);
 	}
