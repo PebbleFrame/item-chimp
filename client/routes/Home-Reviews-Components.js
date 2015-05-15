@@ -61,14 +61,14 @@ var ReviewsDisplay = React.createClass ({
             sku={result.sku} />
         );
       });
-    }else if (this.props.source === 'ItemChimp') {
+    }else if (this.props.source === 'Item Chimp') {
       resultNodes = this.props.data.map(function(result,index) {
         return (
           <ItemChimpIndividualReviewDisplay
-            key={'itemchimpReview' + index} /*itemchimpResult vs itemchimpReview?*/
-            title={result.title}
-            reviewer={result.reviewer} /*what's up w' [0].name for BestBuy?*/
-            reviewText={result.reviewText}
+            key={'itemchimpReview' + index}
+            title={result.review_title}
+            reviewer={result.user_id}
+            reviewText={result.review_text}
             rating={result.rating} />
         );
       });
@@ -148,7 +148,7 @@ var ItemChimpIndividualReviewDisplay = React.createClass({
           <strong>Reviewer:</strong> {this.props.reviewer}
         </div>
         <div>
-          <strong>Review:</strong> {this.props.reviewText} //this.props.comment?
+          <strong>Review:</strong> {this.props.reviewText}
         </div>
         <div className="review-rating-display">
           <strong>Rating:</strong>{this.props.rating}

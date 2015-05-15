@@ -11,7 +11,6 @@ var D3PriceChart = require('./D3-Price-Chart');
 var DisplayBox = React.createClass({
   // Sets initial state properties to empty arrays to avoid undefined errors
   getInitialState: function() {
-    console.log(localStorage.getItem('tokenChimp'));
     var token = localStorage.getItem('tokenChimp');
       if(!localStorage.getItem('tokenChimp')){
         return {
@@ -120,9 +119,6 @@ var DisplayBox = React.createClass({
   // var "id" may be itemId or SKU
   handleReviewRequest: function(id, site, name, image) {
 
-    console.log(id);
-    console.log(site);
-    console.log(name);
     var queryUrl;
 
     if (site === 'Walmart') {
@@ -176,7 +172,6 @@ var DisplayBox = React.createClass({
           }
 
         if (data[0].itemchimpReviews) {
-          console.log(data[0].itemchimpReviews);
         // Get the reviews array from the response data
           reviewSetsArray.push(
             this.makeReviewSetFromRawData(
@@ -196,11 +191,16 @@ var DisplayBox = React.createClass({
         // initialize d3 chart
         // params are (width, height)
         this.refs.d3chart.startEngine(500, 225, reviewSetsArray);
-        var itemUPC = this.state.bestbuy.results[0].upc || this.state.walmart.results[0].upc;
+
+        if (this.state.bestbuy.results[0]) {
+          var itemUPC = this.state.bestbuy.results[0].upc;
+        } else if (this.state.walmart.results[0]) {
+          var itemUPC = this.state.walmart.results[0].upc;
+        } 
+
         this.setState({
           itemUPC: itemUPC
         });
-
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(queryUrl, status, err.toString());
@@ -413,11 +413,9 @@ var DisplayBox = React.createClass({
   },
 
   postReview: function() {
-    console.log(this.state.itemUPC);
   var title = React.findDOMNode(this.refs.title).value.trim();
   var reviewText = React.findDOMNode(this.refs.reviewText).value.trim();
   //var rating = React.findDOMNode(this.refs.rating).value.trim();
-  console.log('here');
     $.ajax({
      type: 'POST',
      url: '/auth/products/review',
@@ -430,15 +428,12 @@ var DisplayBox = React.createClass({
       rating: 1
      },
      success: function (data) {
-      console.log('Sent!');
-      console.log(data);
       $('#myModal').modal('hide');
       React.findDOMNode(this.refs.title).value = '';
       React.findDOMNode(this.refs.reviewText).value = '';
      }.bind(this),
 
      error: function(xhr, status, err) {
-      console.log('error');
       console.error(status, err.toString());
      }.bind(this)
 
