@@ -42,3 +42,6 @@ server/db/config.json
 
 # Api-config file containing api keys
 apiConfig.js
+
+# Authorization Secret
+server/db/secret

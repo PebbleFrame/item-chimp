@@ -21,6 +21,9 @@ var dbSettings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'))
 
   var db = new DB();
 
+// Import secret from file
+db.secret = String(fs.readFileSync(__dirname + '/secret'));
+
 // Apply the dbSettings object
   var knex = require('knex')({
     client: 'mysql',
@@ -212,7 +215,7 @@ var dbSettings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'))
             newUser.save().then(function(newUser) {
               db.Users.add(newUser);
               console.log("User Saved");
-              token = jwt.encode(user.username, 'secret');
+              token = jwt.encode(user.username, db.secret);
               db.emit("userAdded", token);
             });
           });
@@ -242,7 +245,7 @@ var dbSettings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'))
         var savedPassword = user.get('password');
         bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
             if (isMatch) {
-	            token = jwt.encode(user.get('username'), 'secret');
+	            token = jwt.encode(user.get('username'), db.secret);
 	            db.emit('userLogin', {
 		            token: token,
 		            username: user.get('username'),
