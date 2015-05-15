@@ -11,7 +11,7 @@ module.exports = {
       //Sign Up Failure
       else{
         res.send(false);
-     
+
       }
     });
     db.addUser(req.body);
@@ -24,7 +24,7 @@ module.exports = {
 		  //Login Failure
       }else{
 		    console.log("Login Failed");
-        res.send(false);      
+        res.send(false);
       }
       return;
     });
@@ -33,16 +33,16 @@ module.exports = {
 
   //if a user has signed in, they will have a token
   //this function tests if the user has a token
-  //if the user has a token, the user is given 
+  //if the user has a token, the user is given
   //access to the desired route
   authorize: function(req, res, next) {
     var token = req.headers['x-access-token'];
     if (!token) {
       console.log("No Token Provided");
       res.send(false);
-    } 
+    }
     else {
-      var userName = jwt.decode(token, 'secret');
+      var userName = jwt.decode(token, db.secret);
       db.once('foundUser', function(){
         db.tokenUser = userName;
         console.log("Authorized " + userName);
