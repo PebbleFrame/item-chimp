@@ -15,7 +15,10 @@ module.exports = {
 		res.send("watching");
 	},
 	following: function(req, res){
-		res.send("following");
+		db.once("foundUser", function(user){
+			db.getFollowing(user, res);
+		});
+		db.findUser(db.tokenUser);
 	},
 	follow : function(req,res){
 		db.once("foundUser", function(user){
