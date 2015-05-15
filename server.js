@@ -232,10 +232,10 @@ var itemchimpReviews = function(req, res, next) {
   if (!req.upc) {
     return next();
   }
-  console.log(req.upc);
-  db.orm.knex.select().from('reviews').where({upc: req.upc})
+  db.orm.knex.select('rating', 'review_text', 'review_title', 'upc', 'username')
+    .from('reviews').leftJoin('users', 'reviews.user_id', 'users.user_id')
+    .where({upc: req.upc})
     .then(function(reviews) {
-      console.log(reviews);
       var itemchimpReviewBody = {};
       itemchimpReviewBody.reviews = reviews;
       itemchimpReviewBody.total = reviews.length;

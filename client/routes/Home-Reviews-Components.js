@@ -67,7 +67,7 @@ var ReviewsDisplay = React.createClass ({
           <ItemChimpIndividualReviewDisplay
             key={'itemchimpReview' + index}
             title={result.review_title}
-            reviewer={result.user_id}
+            reviewer={result.username}
             reviewText={result.review_text}
             rating={result.rating} />
         );
