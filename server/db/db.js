@@ -275,15 +275,15 @@ var dbSettings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'))
       } else {
         //Create New Follower
         db.Follower.where({
-          user_id: follower.get('user_id'),
-          follower_id: followed.get('user_id')
+          follower_id: follower.get('user_id'),
+          user_id: followed.get('user_id')
         }).fetch().then(function(alreadyFollowed){
 
           //There is not already a follow to this user
           if(!alreadyFollowed) {
             var newFollower = new db.Follower({
-              user_id: follower.get('user_id'),
-              follower_id: followed.get('user_id')
+              follower_id: follower.get('user_id'),
+              user_id : followed.get('user_id')
             });
 
             //Save follower to the database
@@ -301,6 +301,19 @@ var dbSettings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'))
           }
         });
       }
+    });
+  };
+
+  db.getFollowing= function(follower, res) {
+    db.Follower.where({follower_id : follower.get('user_id')}).fetchAll()
+    .then(function(following){
+      console.log("Grabbing users being followed");
+      var ids = following.pluck("user_id");
+      db.User.where('user_id', 'in', ids).fetchAll()
+      .then(function(followingNames){
+        res.status(201);
+        res.send(followingNames.pluck('username'));
+      });
     });
   };
 
