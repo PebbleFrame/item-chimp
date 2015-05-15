@@ -300,11 +300,11 @@ var dbSettings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'))
             res.status(400).end();
           }
         });
-
-
       }
     });
   };
+
+
 
 
 //-------------USER API CONFIGURATION END---------------/
