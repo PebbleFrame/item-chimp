@@ -271,8 +271,9 @@ var dbSettings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'))
 
 //-------------Review API CONFIGURATION START-----------/
 
-  db.addReview = function(review){
-    db.orm.knex.select().from('users').where({username: db.tokenUser})
+  db.addReview = function(review, username){
+    console.log(username);
+    db.orm.knex.select().from('users').where({username: username})
     .then(function (user) {
       if (!user) {
         db.emit("reviewAdded", undefined);
