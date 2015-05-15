@@ -5,22 +5,64 @@ var BestbuyRelatedResultsDisplay = require('./Home-Bestbuy-Components').BestbuyR
 var ReviewsDisplaySection = require('./Home-Reviews-Components').ReviewsDisplaySection;
 var ChooseAnotherProductSection = require('./Home-Compare-Components').ChooseAnotherProductSection;
 var D3Chart = require('./D3-Chart').D3Chart;
-
 var D3PriceChart = require('./D3-Price-Chart');
 
 // Centralized display for all components on the Home page
 var DisplayBox = React.createClass({
   // Sets initial state properties to empty arrays to avoid undefined errors
   getInitialState: function() {
-    return {
+    console.log(localStorage.getItem('tokenChimp'));
+    var token = localStorage.getItem('tokenChimp');
+      if(!localStorage.getItem('tokenChimp')){
+        return {
+          token: false,
+          username : false,
+          email  : false,
+          amazon: {results: []},
+          walmart: {results: []},
+          bestbuy: {results: []},
+          allReviews: {reviewSets: []}
+        };
+      } else {
       // We set the initial state to the format {'API name': [Array of results]}
       // to help organize the results we get back from the server, since the
       // general-query request returns results from three different APIs
-      amazon: {results: []},
-      walmart: {results: []},
-      bestbuy: {results: []},
-      allReviews: {reviewSets: []}
-    };
+        return {
+          token: token,
+          username: false,
+          email: false,
+          login: false,
+          amazon: {results: []},
+          walmart: {results: []},
+          bestbuy: {results: []},
+          allReviews: {reviewSets: []}
+        };
+      }
+  },
+
+  loadUserFromServer: function(){
+    if(this.state.token){
+      $.ajax({
+       type: 'GET',
+       url: '/auth/users',
+       headers: {'x-access-token': this.state.token},
+       success: function (data) {
+         this.setState({
+           username : data.username,
+           email : data.email});
+       }.bind(this),
+       error: function(xhr,status,err){
+        console.error('/auth/users', status, err.toString());
+       }.bind(this)
+      });
+    }
+    else{
+      this.setState({login:true});
+    }
+  },
+
+  componentDidMount: function(){
+    this.loadUserFromServer();
   },
 
   // Called when user submits a query
@@ -31,6 +73,7 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: query,
       success: function(data) {
+        
 
         // reset review column data to empty
         this.setState({
@@ -59,7 +102,6 @@ var DisplayBox = React.createClass({
           // amazon: data[2],
           query: query.query
         });
-
         // initialize d3 price chart
         // params are (width, height)
         this.refs.d3PriceChart.startEngine(500, 275);
@@ -77,7 +119,7 @@ var DisplayBox = React.createClass({
   // This call is the result of calls bubbling up from the individual review results
   // var "id" may be itemId or SKU
   handleReviewRequest: function(id, site, name, image) {
-
+    
     var queryUrl;
 
     if (site === 'Walmart') {
@@ -98,7 +140,6 @@ var DisplayBox = React.createClass({
       // and UPC for itemChimp
       data: id,
       success: function(data) {
-
         // Remove the general results display to display reviews
         $('.related-results-display-container').fadeOut();
         $('.d3-price-container').fadeOut();
@@ -150,7 +191,12 @@ var DisplayBox = React.createClass({
         // initialize d3 chart
         // params are (width, height)
         this.refs.d3chart.startEngine(500, 225, reviewSetsArray);
-
+        var itemUPC = this.state.bestbuy.results[0].upc || this.state.walmart.results[0].upc;
+        this.setState({
+          itemUPC: itemUPC
+        });
+        console.log(itemUPC);
+        console.log(this.state);
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(queryUrl, status, err.toString());
@@ -320,6 +366,7 @@ var DisplayBox = React.createClass({
 
   },
 
+
   // Handler for dismissing a column (by clicking the red X)
   handleDismissColumn: function(name, site) {
 
@@ -344,10 +391,6 @@ var DisplayBox = React.createClass({
     this.refs.d3chart.startEngine(500, 275, reviewSetsTmp);
   },
 
-  showReviewForm: function() {
-    $('#myModal').modal('show');
-  },
-
   // Shows search results columns and hides reviews columns
   showResultsHideReviews: function() {
     $('.reviews-display-container').fadeOut();
@@ -355,6 +398,42 @@ var DisplayBox = React.createClass({
     this.refs.d3PriceChart.startEngine(500, 275);
     $('.d3-price-container').delay(500).fadeIn();
     $('.related-results-display-container').delay(500).fadeIn();
+  },
+
+  showReviewForm: function() {
+    if (this.state.token) {
+      $('#myModal').modal('show');
+    } else {
+      console.log("not logged in");
+    }
+  },
+
+  postReview: function() {
+  var title = React.findDOMNode(this.refs.title).value.trim();
+  var reviewText = React.findDOMNode(this.refs.reviewText).value.trim();
+  //var rating = React.findDOMNode(this.refs.rating).value.trim();
+  $.ajax({
+   type: 'POST',
+   url: '/auth/products/review',
+   headers: {'x-access-token': this.state.token},
+   dataType: 'json',
+   data: {
+    title: title,
+    reviewText: reviewText,
+    itemUPC: this.state.itemUPC
+   },
+   success: function (data) {
+    console.log(data);
+    console.log('Sent!');
+   }.bind(this),
+
+   error: function(err) {
+    console.log(err);
+    console.log('error');
+   }.bind(this)
+
+  });
+
   },
 
   render: function() {
@@ -370,70 +449,61 @@ var DisplayBox = React.createClass({
           ref="d3chart" />
 
         <div className="reviews-display-container">
-
             <div className="row">
               <div className="col-md-5">
                 <button className="btn btn-info" onClick={this.showReviewForm}> Review this Product! </button>
               </div>
               <div className="col-md-1-offset-1">
-                <button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results                   </button>
+                <button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results </button>
               </div>
             </div>
-
-            
-
       <div id="myModal" className="modal fade">
-          <div className="modal-dialog">
-              <div className="modal-content">
-                  <div className="modal-header">
-                      <button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                      
-
-                    <form className="form-horizontal">
-
-                       <div className="form-group">
-                           <label for="inputEmail" className="control-label col-xs-2">Title</label>
-                           <div className="col-xs-10">
-                               <input type="email" className="form-control" id="inputEmail" placeholder="Title"/>
-                           </div>
-                       </div>
-
-                       <div className="form-group">
-                           <label for="inputEmail" className="control-label col-xs-2">Review</label>
-                           <div className="col-xs-10">
-                               <input type="text" className="form-control" id="inputText" placeholder="Write your review here."/>
-                           </div>
-                       </div>
-
-                       <div>
-                           <label for="inputEmail" className="control-label col-xs-2">Rating</label>
-                            <div className="col-xs-10">   
-                              <label className="checkbox-inline">
-                                <input type="checkbox" name="rating1" value="1"/> 1(Poor)
-                              </label>
-                              <label className="checkbox-inline">
-                                <input type="checkbox" name="rating2" value="2"/> 2
-                              </label>
-                              <label className="checkbox-inline">  
-                                <input type="checkbox" name="rating3" value="3"/> 3
-                              </label>
-                              <label className="checkbox-inline">  
-                                <input type="checkbox" name="rating4" value="4"/> 4
-                              </label>
-                              <label className="checkbox-inline">  
-                                <input type="checkbox" name="rating5" value="5"/> 5(Excellent)
-                              </label>
-                            </div>  
-                       </div>
-                    </form>
-                    <div className="modal-footer">
-                      <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-                      <button type="button" className="btn btn-primary">Submit Review</button>
-                    </div>
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <form className="form-horizontal">
+              <div className="form-group">
+                <label for="inputTitle" className="control-label col-xs-2">Title</label>
+                  <div className="col-xs-10">
+                    <input type="text" className="form-control" id="inputTitle" ref="title"placeholder="Title"/>
                   </div>
-                </div>
               </div>
+              <div className="form-group">
+                <label for="inputText" className="control-label col-xs-2">Review</label>
+                  <div className="col-xs-10">
+                    <input type="text" className="form-control" id="inputText" ref="reviewText" placeholder="Write your review here."/>
+                  </div>
+              </div>
+                <div>
+                  <label for="inputEmail" className="control-label col-xs-2">Rating</label>
+                    <div className="col-xs-10">   
+                      <label className="checkbox-inline">
+                        <input type="checkbox" name="rating1" value="1"/> 1(Poor)
+                      </label>
+                      <label className="checkbox-inline">
+                        <input type="checkbox" name="rating2" value="2"/> 2
+                      </label>
+                      <label className="checkbox-inline">  
+                        <input type="checkbox" name="rating3" value="3"/> 3
+                      </label>
+                      <label className="checkbox-inline">  
+                        <input type="checkbox" name="rating4" value="4"/> 4
+                      </label>
+                      <label className="checkbox-inline">  
+                        <input type="checkbox" name="rating5" value="5"/> 5(Excellent)
+                      </label>
+                    </div>  
+                </div>
+            </form>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-primary" onClick={this.postReview}>Submit Review</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
 
           <ReviewsDisplaySection
