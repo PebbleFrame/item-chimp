@@ -31,22 +31,22 @@
 
   describe('Users', function() {
   
-    before(function(done) {
-      new db.User({
-        'username': 'testUserOne',
-        'password': 'testUserOne',
-        'email': 'testUserOne@testUserOne.com'
-      }).save().then(function(){
-        done();
-      });
-    });
+    // before(function(done) {
+    //   new db.User({
+    //     'username': 'testUserOne',
+    //     'password': 'testUserOne',
+    //     'email': 'testUserOne@testUserOne.com'
+    //   }).save().then(function(){
+    //     done();
+    //   });
+    // });
 
-    it('should have testUserOne after it is added', function(done) {
-      db.once("foundUser", function(user){
-        done();
-      });
-      db.findUser('testUserOne');
-    });
+    // it('should have testUserOne after it is added', function(done) {
+    //   db.once("foundUser", function(user){
+    //     done();
+    //   });
+    //   db.findUser('testUserOne');
+    // });
 
     // it('should fail when saving a duplicate user', function(done) {
     //   user.save(function() {
