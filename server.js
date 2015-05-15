@@ -229,10 +229,11 @@ var itemchimpReviews = function(req, res, next) {
   if (req.body.upc) {
     req.upc = req.body.upc;
   }
-  if (req.upc) {
+  if (!req.upc) {
     return next();
   }
-  db.Review.forge({upc: req.upc}).fetch()
+  console.log(req.upc);
+  db.orm.knex.select().from('reviews').where({upc: req.upc})
     .then(function(reviews) {
       console.log(reviews);
       var itemchimpReviewBody = {};
@@ -244,10 +245,8 @@ var itemchimpReviews = function(req, res, next) {
           sumRatings += reviews[i].rating;
         }
         itemchimpReviewBody.customerReviewAverage = sumRatings/reviews.length;
-      } else {
-        itemchimpReviewBody.customerReviewAverage = undefined;
-      }
-      req.itemchimpReviews = JSON.stringify(itemchimpReviewBody);
+        req.itemchimpReviews = JSON.stringify(itemchimpReviewBody);
+      } 
       next();
     });
   

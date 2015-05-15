@@ -426,7 +426,8 @@ var DisplayBox = React.createClass({
      data: {
       review_title: title,
       review_text: reviewText,
-      upc: this.state.itemUPC
+      upc: this.state.itemUPC,
+      rating: 1
      },
      success: function (data) {
       console.log('Sent!');
