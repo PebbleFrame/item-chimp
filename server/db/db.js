@@ -265,6 +265,46 @@ var dbSettings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'))
     db.findUser(candidate.username);
   };
 
+  db.followUser = function(follower, followedName, res) {
+    db.User.where({username: followedName}).fetch()
+    .then(function(followed){
+      if (!followed) {
+        //totes doesn't exist
+        console.log("Requested to follow a user that doesn't exist");
+        res.status(400).end();
+      } else {
+        //Create New Follower
+        db.Follower.where({
+          user_id: follower.get('user_id'),
+          follower_id: followed.get('user_id')
+        }).fetch().then(function(alreadyFollowed){
+
+          //There is not already a follow to this user
+          if(!alreadyFollowed) {
+            var newFollower = new db.Follower({
+              user_id: follower.get('user_id'),
+              follower_id: followed.get('user_id')
+            });
+
+            //Save follower to the database
+            newFollower.save().then(function(newFollowerEntry) {
+              db.Followers.add(newFollowerEntry);
+              console.log("Follower Saved");
+            });
+
+            //Respond to the request
+            res.status(201).end();
+          } else {
+            // There is already a follow to this user
+            console.log("already following!");
+            res.status(400).end();
+          }
+        });
+
+
+      }
+    });
+  };
 
 
 //-------------USER API CONFIGURATION END---------------/
