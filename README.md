@@ -1,12 +1,19 @@
+[![Stories in Ready](https://badge.waffle.io/family-thief/pebbleframe.svg?label=ready&title=Ready)](http://waffle.io/family-thief/pebbleframe)
+
 # ItemChimp
 
 > A Data Visualization Tool for Shoppers
 
 ## Team
 
+### Original Team
   - __Product Owner__: Chistina Holland
   - __Scrum Master__: Michael Cheng
   - __Development Team Members__: Jeff Peoples, Vinaya Gopisetti
+
+### Legacy Team
+  - __Scrum Master__: Craig Smith
+  - __Development Team Members__: Adam Van Antwerp, Henry Ng, Brandon Ellis
 
 ## Table of Contents
 
@@ -60,7 +67,12 @@ mysql.server start
 mysql -u root < server/db/schema.sql
 ```
 
+Then, rename server/db/config.json.example to config.json.  By default, it will point to the local database.  If you want to use a remote database, simply change the values in the config to point to your prefered server.
+
 `schema.sql` will build the necessary database for the app.
+
+![schema](http://i.imgur.com/7W7Uy9U.png "Schema")
+
 
 ### Getting started
 
@@ -72,7 +84,7 @@ from the root directory.
 
 ### Roadmap
 
-View the project roadmap [here](https://github.com/PebbleFrame/pebbleframe/issues)
+View the project roadmap [here](https://waffle.io/family-thief/pebbleframe)
 
 
 ## Contributing

@@ -8,13 +8,22 @@ module.exports = {
 		});
 		db.findUser(db.tokenUser);
 	},
-	reviews:function(){
-		console.log("reviews");
+	reviews:function(req, res){
+		res.send("reviews");
 	},
-	watching: function(){
-		console.log("watching");
+	watching: function(req, res){
+		res.send("watching");
 	},
-	following: function(){
-		console.log("following");
+	following: function(req, res){
+		db.once("foundUser", function(user){
+			db.getFollowing(user, res);
+		});
+		db.findUser(db.tokenUser);
+	},
+	follow : function(req,res){
+		db.once("foundUser", function(user){
+			db.followUser(user, req.body.username, res);
+		});
+		db.findUser(db.tokenUser);
 	}
 };

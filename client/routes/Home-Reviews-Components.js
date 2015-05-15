@@ -61,6 +61,17 @@ var ReviewsDisplay = React.createClass ({
             sku={result.sku} />
         );
       });
+    }else if (this.props.source === 'Item Chimp') {
+      resultNodes = this.props.data.map(function(result,index) {
+        return (
+          <ItemChimpIndividualReviewDisplay
+            key={'itemchimpReview' + index}
+            title={result.review_title}
+            reviewer={result.username}
+            reviewText={result.review_text}
+            rating={result.rating} />
+        );
+      });
     }
 
     return (
@@ -126,4 +137,32 @@ var BestbuyIndividualReviewDisplay = React.createClass({
   }
 });
 
+var ItemChimpIndividualReviewDisplay = React.createClass({
+  render: function() {
+    return (
+      <div className="individual-review-display">
+        <h5>
+          {this.props.title}
+        </h5>
+        <div>
+          <strong>Reviewer:</strong> {this.props.reviewer}
+        </div>
+        <div>
+          <strong>Review:</strong> {this.props.reviewText}
+        </div>
+        <div className="review-rating-display">
+          <strong>Rating:</strong>{this.props.rating}
+          <button class="btn btn-md-primary">follow this user</button>
+        </div>
+      </div>
+    );
+  }
+});
+
 module.exports.ReviewsDisplaySection = ReviewsDisplaySection;
+
+
+
+
+
+

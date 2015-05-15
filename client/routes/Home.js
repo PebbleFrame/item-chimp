@@ -5,22 +5,63 @@ var BestbuyRelatedResultsDisplay = require('./Home-Bestbuy-Components').BestbuyR
 var ReviewsDisplaySection = require('./Home-Reviews-Components').ReviewsDisplaySection;
 var ChooseAnotherProductSection = require('./Home-Compare-Components').ChooseAnotherProductSection;
 var D3Chart = require('./D3-Chart').D3Chart;
-
 var D3PriceChart = require('./D3-Price-Chart');
 
 // Centralized display for all components on the Home page
 var DisplayBox = React.createClass({
   // Sets initial state properties to empty arrays to avoid undefined errors
   getInitialState: function() {
-    return {
+    var token = localStorage.getItem('tokenChimp');
+      if(!localStorage.getItem('tokenChimp')){
+        return {
+          token: false,
+          username : false,
+          email  : false,
+          amazon: {results: []},
+          walmart: {results: []},
+          bestbuy: {results: []},
+          allReviews: {reviewSets: []}
+        };
+      } else {
       // We set the initial state to the format {'API name': [Array of results]}
       // to help organize the results we get back from the server, since the
       // general-query request returns results from three different APIs
-      amazon: {results: []},
-      walmart: {results: []},
-      bestbuy: {results: []},
-      allReviews: {reviewSets: []}
-    };
+        return {
+          token: token,
+          username: false,
+          email: false,
+          login: false,
+          amazon: {results: []},
+          walmart: {results: []},
+          bestbuy: {results: []},
+          allReviews: {reviewSets: []}
+        };
+      }
+  },
+
+  loadUserFromServer: function(){
+    if(this.state.token){
+      $.ajax({
+       type: 'GET',
+       url: '/auth/users',
+       headers: {'x-access-token': this.state.token},
+       success: function (data) {
+         this.setState({
+           username : data.username,
+           email : data.email});
+       }.bind(this),
+       error: function(xhr,status,err){
+        console.error('/auth/users', status, err.toString());
+       }.bind(this)
+      });
+    }
+    else{
+      this.setState({login:true});
+    }
+  },
+
+  componentDidMount: function(){
+    this.loadUserFromServer();
   },
 
   // Called when user submits a query
@@ -31,6 +72,7 @@ var DisplayBox = React.createClass({
       type: 'POST',
       data: query,
       success: function(data) {
+        
 
         // reset review column data to empty
         this.setState({
@@ -59,7 +101,6 @@ var DisplayBox = React.createClass({
           // amazon: data[2],
           query: query.query
         });
-
         // initialize d3 price chart
         // params are (width, height)
         this.refs.d3PriceChart.startEngine(500, 275);
@@ -84,6 +125,8 @@ var DisplayBox = React.createClass({
       queryUrl = 'get-walmart-reviews';
     } else if (site === 'Best Buy') {
       queryUrl = 'get-bestbuy-reviews';
+    } else if (site === 'Item Chimp') {
+      queryUrl = 'get-itemchimp-reviews';
     }
 
     // Makes a specific API call to get reviews for the product clicked on
@@ -91,8 +134,9 @@ var DisplayBox = React.createClass({
       url: queryUrl,
       dataType: 'json',
       type: 'POST',
-      // "id" is itemId for Walmart
-      // and it's SKU for Best Buy
+      // "id" is itemId for Walmart,
+      // SKU for Best Buy,
+      // and UPC for itemChimp
       data: id,
       success: function(data) {
 
@@ -116,6 +160,7 @@ var DisplayBox = React.createClass({
               )
             );
         }
+
         if (data[0].bestbuyReviews) {
         // Get the reviews array from the response data
           reviewSetsArray.push(
@@ -125,6 +170,17 @@ var DisplayBox = React.createClass({
             );
 
           }
+
+        if (data[0].itemchimpReviews) {
+        // Get the reviews array from the response data
+          reviewSetsArray.push(
+            this.makeReviewSetFromRawData(
+              JSON.parse(data[0].itemchimpReviews), 'Item Chimp', name, image
+              )
+            );
+
+          }  
+
         // Put all reviews into an array stored in allReviews state
         this.setState({
           allReviews: { reviewSets: reviewSetsArray },
@@ -136,6 +192,15 @@ var DisplayBox = React.createClass({
         // params are (width, height)
         this.refs.d3chart.startEngine(500, 225, reviewSetsArray);
 
+        if (this.state.bestbuy.results[0]) {
+          var itemUPC = this.state.bestbuy.results[0].upc;
+        } else if (this.state.walmart.results[0]) {
+          var itemUPC = this.state.walmart.results[0].upc;
+        } 
+
+        this.setState({
+          itemUPC: itemUPC
+        });
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(queryUrl, status, err.toString());
@@ -190,6 +255,24 @@ var DisplayBox = React.createClass({
         ReviewCount: ReviewCount
         });
 
+    } else if (site === 'Item Chimp') {
+      // array of reviews
+      ReviewsFromData = rawObj.reviews;
+      AverageRating = rawObj.customerReviewAverage;
+      ReviewCount = rawObj.total;
+      // saves id of current item so it won't show up in
+      // "choose another product" column
+      // doesn't hold up if you have 2 columns with 2 different
+      // items
+      this.setState({currentProductUPC: rawObj.reviews});
+      return({
+        source: 'Item Chimp',
+        name: name,
+        image: image,
+        Reviews: ReviewsFromData,
+        AverageRating: AverageRating,
+        ReviewCount: ReviewCount
+        });
     }
   },
 
@@ -247,7 +330,7 @@ var DisplayBox = React.createClass({
       // "id" is itemId for Walmart
       // and it's SKU for Best Buy
       data: data,
-      success: function(data) {;
+      success: function(data) {
 
         // will need to get this.state.allReviews.reviewSets array
         var reviewSetsTmp = this.state.allReviews.reviewSets;
@@ -287,6 +370,7 @@ var DisplayBox = React.createClass({
 
   },
 
+
   // Handler for dismissing a column (by clicking the red X)
   handleDismissColumn: function(name, site) {
 
@@ -320,9 +404,48 @@ var DisplayBox = React.createClass({
     $('.related-results-display-container').delay(500).fadeIn();
   },
 
+  showReviewForm: function() {
+    if (this.state.token) {
+      $('#myModal').modal('show');
+    } else {
+      console.log("not logged in");
+    }
+  },
+
+  postReview: function() {
+  var title = React.findDOMNode(this.refs.title).value.trim();
+  var reviewText = React.findDOMNode(this.refs.reviewText).value.trim();
+  //var rating = React.findDOMNode(this.refs.rating).value.trim();
+    $.ajax({
+     type: 'POST',
+     url: '/auth/products/review',
+     headers: {'x-access-token': this.state.token},
+     dataType: 'json',
+     data: {
+      review_title: title,
+      review_text: reviewText,
+      upc: this.state.itemUPC,
+      rating: 1
+     },
+     success: function (data) {
+      $('#myModal').modal('hide');
+      React.findDOMNode(this.refs.title).value = '';
+      React.findDOMNode(this.refs.reviewText).value = '';
+     }.bind(this),
+
+     error: function(xhr, status, err) {
+      console.error(status, err.toString());
+     }.bind(this)
+
+
+    });
+
+  },
+
   render: function() {
     // Attributes are "props" which can be accessed by the component
     // Many "props" are set as the "state", which is set based on data received from API calls
+    // this is to overlay the modal window for posting a review
     return (
       <div className="displayBox">
         
@@ -332,8 +455,62 @@ var DisplayBox = React.createClass({
           ref="d3chart" />
 
         <div className="reviews-display-container">
+            <div className="row">
+              <div className="col-md-5">
+                <button className="btn btn-info" onClick={this.showReviewForm}> Review this Product! </button>
+              </div>
+              <div className="col-md-1-offset-1">
+                <button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results </button>
+              </div>
+            </div>
+      <div id="myModal" className="modal fade">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <form className="form-horizontal">
+              <div className="form-group">
+                <label for="inputTitle" className="control-label col-xs-2">Title</label>
+                  <div className="col-xs-10">
+                    <input type="text" className="form-control" id="inputTitle" ref="title"placeholder="Title"/>
+                  </div>
+              </div>
+              <div className="form-group">
+                <label for="inputText" className="control-label col-xs-2">Review</label>
+                  <div className="col-xs-10">
+                    <input type="text" className="form-control" id="inputText" ref="reviewText" placeholder="Write your review here."/>
+                  </div>
+              </div>
+                <div>
+                  <label for="inputEmail" className="control-label col-xs-2">Rating</label>
+                    <div className="col-xs-10">   
+                      <label className="checkbox-inline">
+                        <input type="checkbox" name="rating1" value="1"/> 1(Poor)
+                      </label>
+                      <label className="checkbox-inline">
+                        <input type="checkbox" name="rating2" value="2"/> 2
+                      </label>
+                      <label className="checkbox-inline">  
+                        <input type="checkbox" name="rating3" value="3"/> 3
+                      </label>
+                      <label className="checkbox-inline">  
+                        <input type="checkbox" name="rating4" value="4"/> 4
+                      </label>
+                      <label className="checkbox-inline">  
+                        <input type="checkbox" name="rating5" value="5"/> 5(Excellent)
+                      </label>
+                    </div>  
+                </div>
+            </form>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-primary" onClick={this.postReview}>Submit Review</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-          <div><button className="btn btn-info" onClick={this.showResultsHideReviews}>Back to Results</button></div>
 
           <ReviewsDisplaySection
             allReviews={this.state.allReviews}
@@ -414,13 +591,13 @@ var SearchForm = React.createClass({
 
 // Home page container for the DisplayBox component
 var Home = React.createClass({
-	render: function() {
-		return (
+  render: function() {
+    return (
       <div className="home-page">
         <DisplayBox />
       </div>
-		);
-	}
+    );
+  }
 });
 
 module.exports = Home;
