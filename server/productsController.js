@@ -1,4 +1,5 @@
 var db = require('./db/db.js');
+jwt  = require('jwt-simple');
 
 module.exports = {
 	getProduct: function(){
@@ -11,6 +12,7 @@ module.exports = {
 		db.once("reviewAdded", function(review) {
       res.json({reviewText: review.get('review_text')});
     });
-    db.addReview(req.body);
+    var username = jwt.decode(req.headers['x-access-token'], 'secret');
+    db.addReview(req.body, username);
 	}
 };
