@@ -12,7 +12,7 @@ module.exports = {
 		db.once("reviewAdded", function(review) {
       res.json({reviewText: review.get('review_text')});
     });
-    var username = jwt.decode(req.headers['x-access-token'], 'secret');
+    var username = jwt.decode(req.headers['x-access-token'], db.secret);
     db.addReview(req.body, username);
 	}
 };
