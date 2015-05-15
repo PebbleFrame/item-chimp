@@ -236,7 +236,7 @@ var itemchimpReviews = function(req, res, next) {
     .then(function(reviews) {
       var itemchimpReviewBody = {};
       itemchimpReviewBody.reviews = reviews;
-      itemchimpReviewBody.totalReviews = reviews.length;
+      itemchimpReviewBody.total = reviews.length;
       if (reviews.length > 0) {
         var sumRatings = 0;
         for(i = 0; i < reviews.length; i++) {
@@ -246,7 +246,7 @@ var itemchimpReviews = function(req, res, next) {
       } else {
         itemchimpReviewBody.customerReviewAverage = undefined;
       }
-      req.itemchimpReviews = itemchimpReviewBody;
+      req.itemchimpReviews = JSON.stringify(itemchimpReviewBody);
       next();
     });
   
