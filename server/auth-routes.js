@@ -11,6 +11,7 @@ module.exports = function(app) {
   app.get('/users/reviews', authorize, usersController.reviews);
   app.get('/users/watching', authorize,  usersController.watching);
   app.get('/users/following', authorize, usersController.following);
+  app.post('/users/follow', authorize, usersController.follow);
   app.get('/products/', authorize, productsController.getProduct);
   app.post('/products/', authorize, productsController.addProduct);
   app.post('/products/review', authorize, productsController.createReview);
