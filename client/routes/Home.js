@@ -119,7 +119,10 @@ var DisplayBox = React.createClass({
   // This call is the result of calls bubbling up from the individual review results
   // var "id" may be itemId or SKU
   handleReviewRequest: function(id, site, name, image) {
-    
+
+    console.log(id);
+    console.log(site);
+    console.log(name);
     var queryUrl;
 
     if (site === 'Walmart') {
@@ -140,6 +143,7 @@ var DisplayBox = React.createClass({
       // and UPC for itemChimp
       data: id,
       success: function(data) {
+
         // Remove the general results display to display reviews
         $('.related-results-display-container').fadeOut();
         $('.d3-price-container').fadeOut();
@@ -172,6 +176,7 @@ var DisplayBox = React.createClass({
           }
 
         if (data[0].itemchimpReviews) {
+          console.log(data[0].itemchimpReviews);
         // Get the reviews array from the response data
           reviewSetsArray.push(
             this.makeReviewSetFromRawData(
@@ -195,8 +200,7 @@ var DisplayBox = React.createClass({
         this.setState({
           itemUPC: itemUPC
         });
-        console.log(itemUPC);
-        console.log(this.state);
+
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(queryUrl, status, err.toString());
@@ -409,30 +413,36 @@ var DisplayBox = React.createClass({
   },
 
   postReview: function() {
+    console.log(this.state.itemUPC);
   var title = React.findDOMNode(this.refs.title).value.trim();
   var reviewText = React.findDOMNode(this.refs.reviewText).value.trim();
   //var rating = React.findDOMNode(this.refs.rating).value.trim();
-  $.ajax({
-   type: 'POST',
-   url: '/auth/products/review',
-   headers: {'x-access-token': this.state.token},
-   dataType: 'json',
-   data: {
-    title: title,
-    reviewText: reviewText,
-    itemUPC: this.state.itemUPC
-   },
-   success: function (data) {
-    console.log(data);
-    console.log('Sent!');
-   }.bind(this),
+  console.log('here');
+    $.ajax({
+     type: 'POST',
+     url: '/auth/products/review',
+     headers: {'x-access-token': this.state.token},
+     dataType: 'json',
+     data: {
+      review_title: title,
+      review_text: reviewText,
+      upc: this.state.itemUPC
+     },
+     success: function (data) {
+      console.log('Sent!');
+      console.log(data);
+      $('#myModal').modal('hide');
+      React.findDOMNode(this.refs.title).value = '';
+      React.findDOMNode(this.refs.reviewText).value = '';
+     }.bind(this),
 
-   error: function(err) {
-    console.log(err);
-    console.log('error');
-   }.bind(this)
+     error: function(xhr, status, err) {
+      console.log('error');
+      console.error(status, err.toString());
+     }.bind(this)
 
-  });
+
+    });
 
   },
 
