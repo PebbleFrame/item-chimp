@@ -4,7 +4,7 @@
 
 ## Team
 
-  - __Product Owner__: Chistina Holland
+  - __Product Owner__: Christina Holland
   - __Scrum Master__: Michael Cheng
   - __Development Team Members__: Jeff Peoples, Vinaya Gopisetti
 
